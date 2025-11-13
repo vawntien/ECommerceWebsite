@@ -1,0 +1,177 @@
+﻿/* Màu chính */
+:root {
+    --shopee-orange: #EE4D2D;
+    --sidebar-width: 250px; /* Chiều rộng sidebar */
+    --header-height: 60px; /* Chiều cao header */
+    --text-color: #333;
+    --text-muted: #757575;
+    --bg-light-gray: #f5f5f5;
+}
+
+body {
+    background-color: var(--bg-light-gray);
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+}
+
+/* ===== 1. HEADER ===== */
+.seller-header {
+    height: var(--header-height);
+    z-index: 1020;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+    .seller-header .navbar-brand {
+        color: var(--shopee-orange);
+        font-weight: 600;
+    }
+
+    .seller-header .nav-link {
+        color: var(--text-muted);
+    }
+
+        .seller-header .nav-link:hover {
+            color: var(--shopee-orange);
+        }
+
+/* ===== 2. BODY WRAPPER (flex layout) ===== */
+.seller-body-wrapper {
+    /* Đẩy nội dung xuống dưới header */
+    padding-top: var(--header-height);
+    display: flex;
+}
+
+/* ===== 3. SIDEBAR ===== */
+.seller-sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0; /* Không cho sidebar co lại */
+    background-color: #ffffff;
+    height: calc(100vh - var(--header-height)); /* Chiều cao đầy màn hình (trừ header) */
+    position: fixed; /* Cố định sidebar */
+    top: var(--header-height);
+    left: 0;
+    z-index: 1010;
+    overflow-y: auto; /* Tự động scroll nếu menu dài */
+    border-right: 1px solid #e0e0e0;
+    padding-top: 1rem;
+}
+
+.sidebar-nav {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+    .sidebar-nav .nav-item {
+        margin-bottom: 5px;
+    }
+
+    /* Link cấp 1 */
+    .sidebar-nav .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-color);
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            width: 20px; /* Đảm bảo các icon thẳng hàng */
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .sidebar-nav .nav-link span {
+            flex-grow: 1;
+        }
+
+        /* Trạng thái khi hover hoặc active */
+        .sidebar-nav .nav-link:hover {
+            background-color: #f7f7f7;
+            color: var(--shopee-orange);
+        }
+
+            .sidebar-nav .nav-link:hover i {
+                color: var(--shopee-orange);
+            }
+
+        /* Link active (đang ở trang đó) */
+        .sidebar-nav .nav-link.active {
+            color: var(--shopee-orange);
+            border-left: 3px solid var(--shopee-orange);
+            padding-left: 17px; /* 20px - 3px border */
+        }
+
+            .sidebar-nav .nav-link.active i {
+                color: var(--shopee-orange);
+            }
+
+        /* Link có menu con (khi chưa xổ) */
+        .sidebar-nav .nav-link.collapsed {
+            /* Không cần style đặc biệt khi chưa xổ */
+        }
+
+            .sidebar-nav .nav-link.collapsed:hover {
+                background-color: #f7f7f7;
+            }
+
+        /* Link có menu con (khi đã xổ) */
+        .sidebar-nav .nav-link:not(.collapsed) {
+            background-color: #fffaf8; /* Màu cam nhạt */
+            color: var(--shopee-orange);
+        }
+
+            .sidebar-nav .nav-link:not(.collapsed) i {
+                color: var(--shopee-orange);
+            }
+
+        /* Mũi tên (chevron) của menu con */
+        .sidebar-nav .nav-link .bi-chevron-down {
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        .sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+
+    /* Menu con (cấp 2) */
+    .sidebar-nav .nav-content {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        background-color: #fcfcfc; /* Màu nền hơi khác 1 chút */
+    }
+
+        .sidebar-nav .nav-content a {
+            display: block;
+            padding: 10px 20px 10px 58px; /* Thụt vào (20px padding + 20px icon + 15px margin - 3px) */
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+            .sidebar-nav .nav-content a:hover {
+                color: var(--shopee-orange);
+            }
+
+            .sidebar-nav .nav-content a.active {
+                color: var(--shopee-orange);
+                font-weight: 600;
+            }
+
+
+/* ===== 4. MAIN CONTENT ===== */
+.seller-content {
+    /* Quan trọng: Phải đẩy nội dung ra sau sidebar */
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    width: 100%; /* Chiếm hết phần còn lại */
+    min-height: calc(100vh - var(--header-height)); /* Đảm bảo footer (nếu có) luôn ở dưới */
+}
