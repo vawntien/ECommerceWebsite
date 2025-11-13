@@ -88,6 +88,55 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\11.png" />
+    <Content Include="assets\123.png" />
+    <Content Include="assets\1234.png" />
+    <Content Include="assets\12345.png" />
+    <Content Include="assets\22.png" />
+    <Content Include="assets\222.png" />
+    <Content Include="assets\3.png" />
+    <Content Include="assets\33.png" />
+    <Content Include="assets\333.png" />
+    <Content Include="assets\4.png" />
+    <Content Include="assets\44.png" />
+    <Content Include="assets\5.png" />
+    <Content Include="assets\55.png" />
+    <Content Include="assets\6.png" />
+    <Content Include="assets\66.png" />
+    <Content Include="assets\7.png" />
+    <Content Include="assets\77.png" />
+    <Content Include="assets\app.png" />
+    <Content Include="assets\asd.png" />
+    <Content Include="assets\asdd.png" />
+    <Content Include="assets\bantuan.png" />
+    <Content Include="assets\barcode.png" />
+    <Content Include="assets\bca.png" />
+    <Content Include="assets\brand.png" />
+    <Content Include="assets\facebook.png" />
+    <Content Include="assets\facec.png" />
+    <Content Include="assets\goggle.png" />
+    <Content Include="assets\gratis.png" />
+    <Content Include="assets\instagram.png" />
+    <Content Include="assets\jenisk\1.png" />
+    <Content Include="assets\jenisk\10.png" />
+    <Content Include="assets\jenisk\2.png" />
+    <Content Include="assets\jenisk\3.png" />
+    <Content Include="assets\jenisk\4.png" />
+    <Content Include="assets\jenisk\5.png" />
+    <Content Include="assets\jenisk\6.png" />
+    <Content Include="assets\jenisk\7.png" />
+    <Content Include="assets\jenisk\8.png" />
+    <Content Include="assets\jenisk\9.png" />
+    <Content Include="assets\line.png" />
+    <Content Include="assets\notif.png" />
+    <Content Include="assets\pendidikan.png" />
+    <Content Include="assets\poipoi.png" />
+    <Content Include="assets\search.png" />
+    <Content Include="assets\shape1.png" />
+    <Content Include="assets\shape2.png" />
+    <Content Include="assets\shop.png" />
+    <Content Include="assets\shope.png" />
+    <Content Include="assets\ubah.png" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -104,6 +153,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\style.css" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -139,6 +189,7 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="assets\.DS_Store" />
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />
@@ -146,6 +197,8 @@
     <Content Include="Scripts\bootstrap.esm.js.map" />
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -156,7 +209,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Home\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

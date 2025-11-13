@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Shopee Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/style.css" />
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <!-- navbar  -->
+            <div class="navbar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <span>Kênh người bán</span>
+                    <div class="hr1 mx-2"></div>
+                    <span>Tải ứng dụng</span>
+                    <div class="hr1 mx-2"></div>
+                    <span>Kết nối</span>
+                    <img class="icon-media mr-2 ml-2"
+                         src="~/assets/facebook.png"
+                         alt="" />
+                    <img class="icon-media mr-2" src="~/assets/instagram.png" alt="" />
+
+                </div>
+                <div class="d-flex align-items-center">
+                    <img class="icon-media mr-2" src="~/assets/notif.png" alt="" />
+                    <span class="mr-4">Thông báo</span>
+                    <img class="icon-media mr-2" src="~/assets/bantuan.png" alt="" />
+                    <span class="mr-4">Hỗ trợ</span>
+                    <span class="font-weight-bold">Đăng nhập</span>
+                    <div class="hr1 mx-2"></div>
+                    <span class="font-weight-bold">Đăng ký</span>
+                </div>
+            </div>
+            <!-- input search brand -->
+            <div class="d-flex align-items-center mt-4">
+                <div class="d-flex align-items-center">
+                    <img class="brand-img mr-2" src="~/assets/brand.png" alt="" />
+                    <span class="text-brand">Shopee</span>
+                </div>
+                <div class="wrap-navbar-input">
+                    <div class="wrap-search">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Tìm kiếm trong..." />
+                        <div class="wrap-icon-s">
+                            <img class="icon-media" src="~/assets/search.png" alt="" />
+                        </div>
+                    </div>
+                    <div class="under-input d-flex mt-2">
+
+                        <span class="mr-3">Danh muc 1</span>
+                        <span class="mr-3">Danh muc 2</span>
+                        <span class="mr-3">Danh muc3</span>
+                        <span class="mr-3">Danh muc 4</span>
+
+                    </div>
+                </div>
+                <img class="icon-shop" src="~/assets/shop.png" alt="" />
+            </div>
+        </div>
+    </div>
+
+    <!-- BODY -->
+    <main class="container my-4">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <h1>...</h1>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+</body>
+</html>
