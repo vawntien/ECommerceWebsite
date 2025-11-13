@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace ECommerceWebsiteMVC.Controllers
 {
-    public class HomeController : Controller
+    public class NguoiMuaController : Controller
     {
         // GET: Home
         public ActionResult Index()
