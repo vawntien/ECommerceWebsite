@@ -200,7 +200,7 @@
     <Content Include="Scripts\bootstrap.esm.js.map" />
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LayoutNguoiMua.cshtml" />
     <Content Include="Views\NguoiMua\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutNguoiBan.cshtml" />
     <Content Include="Views\NguoiBan\Index.cshtml" />
