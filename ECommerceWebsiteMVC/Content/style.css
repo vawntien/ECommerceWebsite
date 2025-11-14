@@ -1,15 +1,22 @@
-body {
+﻿/*body {
   background-color: #e1e1e1;
+  padding-top: 140px;
+}*/
+
+body {
+    margin: 0 !important;
+    background-color: #e1e1e1;
 }
 
 .header {
-  background: linear-gradient(-180deg, #f53d2d, #f63);
-  height: 130px;
-  width: 100%;
-  position: fixed;
-  color: #ffffff;
-  padding-top: 10px;
-  z-index: 999;
+    background: linear-gradient(-180deg, #f53d2d, #f63);
+    height: 130px;
+    width: 100%;
+    position: fixed;
+    color: #ffffff;
+    padding-top: 0px;
+    z-index: 999;
+    margin-top: 0 !important;
 }
 
 .container {

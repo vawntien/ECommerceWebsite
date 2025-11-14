@@ -1,4 +1,4 @@
-﻿/* Màu chính */
+﻿﻿ /* Màu chính */
 :root {
     --shopee-orange: #EE4D2D;
     --sidebar-width: 250px; /* Chiều rộng sidebar */
@@ -19,6 +19,7 @@ body {
     height: var(--header-height);
     z-index: 1020;
     border-bottom: 1px solid #e0e0e0;
+    margin-top: 0px;
 }
 
     .seller-header .navbar-brand {
@@ -36,9 +37,9 @@ body {
 
 /* ===== 2. BODY WRAPPER (flex layout) ===== */
 .seller-body-wrapper {
-    /* Đẩy nội dung xuống dưới header */
-    padding-top: var(--header-height);
+    padding-top: calc(var(--header-height) + 20px);
     display: flex;
+    margin-top: 100px;
 }
 
 /* ===== 3. SIDEBAR ===== */
@@ -170,7 +171,8 @@ body {
 /* ===== 4. MAIN CONTENT ===== */
 .seller-content {
     /* Quan trọng: Phải đẩy nội dung ra sau sidebar */
-    margin-left: var(--sidebar-width);
+    /*margin-left: var(--sidebar-width);*/
+    margin-left: 300px;
     padding: 2rem;
     width: 100%; /* Chiếm hết phần còn lại */
     min-height: calc(100vh - var(--header-height)); /* Đảm bảo footer (nếu có) luôn ở dưới */

@@ -1,0 +1,308 @@
+﻿
+@{
+    ViewBag.Title = "ChiTietDonHang";
+    Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
+}
+
+<div class="order-detail-page">
+    <div class="detail-card">
+        <div class="detail-header">
+            <div>
+                <h5>Mã đơn hàng: 2108082HXA1Y07</h5>
+                <div class="order-number text-muted">Đơn hàng đã hoàn thành</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-outline-secondary">Liên Hệ Người Bán</button>
+                <button class="btn btn-outline-secondary">Yêu Cầu Hóa Đơn Điện Tử</button>
+                <button class="btn btn-danger">Mua Lại</button>
+            </div>
+        </div>
+
+        <div class="status-timeline">
+            <div class="status-step completed">
+                <span>Chờ xác nhận</span>
+                <small>09:13 08-08-2021</small>
+            </div>
+            <div class="status-step completed">
+                <span>Chờ lấy hàng</span>
+                <small>09:43 08-08-2021</small>
+            </div>
+            <div class="status-step completed">
+                <span>Chờ giao hàng</span>
+                <small>18:37 09-08-2021</small>
+            </div>
+            <div class="status-step completed">
+                <span>Đã Giao</span>
+                <small>10:38 10-08-2021</small>
+            </div>
+            <div class="status-step active">
+                <span>Đơn Hủy</span>
+                <small>07:30 31-08-2021</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <div class="row mt-4">
+            <div class="col-lg-4">
+                <div class="address-card">
+                    <h6>Địa Chỉ Nhận Hàng</h6>
+                    <div class="info-line fw-semibold">Lê Thị Như Quỳnh</div>
+                    <div class="info-line">(+84) 943 019 598</div>
+                    <div class="info-line">188/29 Tân Kỳ Tân Quý, phường Tân Sơn Nhì, quận Tân Phú, Tp. HCM</div>
+                    <div class="info-line text-muted small">Đặt hàng thành công · Đơn hàng đã được đặt</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="shop-card">
+                    <h6>Người Bán</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-semibold">NOVSET</span>
+                        <span class="badge bg-light text-dark">Chat</span>
+                        <span class="badge bg-light text-dark">Xem Shop</span>
+                    </div>
+                    <div class="info-line text-muted mt-2">Đang điều phối ĐVVC</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="payment-card">
+                    <h6>Phương Thức Thanh Toán</h6>
+                    <div class="info-line">Thanh toán khi nhận hàng</div>
+                    <div class="info-line">Vui lòng thanh toán 12.500đ khi nhận hàng</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-product-card d-flex align-items-center">
+            <img src="https://cf.shopee.vn/file/fc1c24ef5d9d74b78d3c9f74c2b5d3f2" alt="Kẹp tóc càng cua" />
+            <div class="flex-grow-1">
+                <h6>[Mã 88FASHIONSALE1 giảm 10K đơn 50K] Kẹp tóc càng cua, cặp tóc càng cua đen nhám [set 12 cái]</h6>
+                <p>Phân loại hàng: 6 cái 3_R đen nhám · x1</p>
+            </div>
+            <div class="price">
+                <div class="old-price">20.000đ</div>
+                <div>10.000đ</div>
+            </div>
+        </div>
+
+        <div class="order-summary ms-auto">
+            <div class="row">
+                <div class="col">Tổng tiền hàng</div>
+                <div class="col text-end">10.000đ</div>
+            </div>
+            <div class="row">
+                <div class="col">Phí vận chuyển</div>
+                <div class="col text-end">42.500đ</div>
+            </div>
+            <div class="row">
+                <div class="col">Giảm giá phí vận chuyển</div>
+                <div class="col text-end text-success">-40.000đ</div>
+            </div>
+            <div class="row">
+                <div class="col text-danger fs-5 fw-bold"  >Thành tiền</div>
+                <div class="col text-danger fs-5 fw-bold text-end">12.500đ</div>
+            </div>
+            <div class="text-muted text-end small mt-1">Thanh toán khi nhận hàng</div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .order-detail-page {
+        padding-top: 140px;
+    }
+
+    .detail-card {
+        background-color: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 24px 28px;
+        margin-bottom: 20px;
+        margin-top: 5px;
+        padding-top:1px;
+    }
+
+    .detail-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        border-bottom: 1px solid #f1f1f1;
+        padding-bottom: 16px;
+        margin-bottom: 5px;
+        margin-top: 50px;
+
+    }
+
+        .detail-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-header .order-number {
+            color: #777;
+            font-size: 14px;
+        }
+
+    .status-timeline {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+        .status-timeline::before {
+            content: "";
+            position: absolute;
+            top: 24px;
+            left: 8%;
+            right: 8%;
+            height: 4px;
+            background-color: #f1f1f1;
+        }
+
+    .status-step {
+        text-align: center;
+        flex: 1;
+        position: relative;
+        padding: 0 5px;
+    }
+
+        .status-step::before {
+            content: "";
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #f1f1f1;
+            border: 4px solid #ffffff;
+            box-shadow: 0 0 0 2px #f1f1f1;
+            z-index: 2;
+        }
+
+        .status-step.completed::before {
+            background-color: #26aa99;
+            box-shadow: 0 0 0 2px #26aa99;
+        }
+
+        .status-step.active::before {
+            background-color: #ee4d2d;
+            box-shadow: 0 0 0 2px #ee4d2d;
+        }
+
+        .status-step span {
+            display: block;
+            margin-top: 40px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-step small {
+            display: block;
+            color: #777;
+            margin-top: 6px;
+            font-size: 12px;
+        }
+
+    .address-card h6,
+    .shop-card h6,
+    .payment-card h6 {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .address-card .info-line,
+    .payment-card .info-line {
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 14px;
+    }
+
+    .order-summary {
+        border-top: 1px dashed #ededed;
+        padding-top: 16px;
+        margin-top: 20px;
+        max-width: 380px;
+        padding-bottom:20px;
+    }
+
+        .order-summary .row {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .order-summary .total {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ee4d2d;
+        }
+
+    .order-product-card {
+        padding: 18px 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+        .order-product-card:last-child {
+            border-bottom: none;
+        }
+
+        .order-product-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #f1f1f1;
+            margin-right: 16px;
+        }
+
+        .order-product-card h6 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order-product-card p {
+            margin-bottom: 0;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .order-product-card .price {
+            text-align: right;
+        }
+
+            .order-product-card .price .old-price {
+                text-decoration: line-through;
+                color: #999;
+                font-size: 13px;
+            }
+
+    @@media (max-width: 767.98px) {
+        .detail-card {
+            padding: 18px;
+        }
+
+        .status-timeline::before {
+            left: 12%;
+            right: 12%;
+        }
+
+        .order-product-card {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+            .order-product-card .price {
+                text-align: left;
+                margin-top: 12px;
+            }
+    }
+</style>

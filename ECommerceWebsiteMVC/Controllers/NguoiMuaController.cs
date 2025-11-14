@@ -13,5 +13,15 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             return View();
         }
+
+        public ActionResult DonHang()
+        {
+           
+            return View();
+        }
+        public ActionResult ChiTietDonHang()
+        {
+            return View();
+        }
     }
 }
