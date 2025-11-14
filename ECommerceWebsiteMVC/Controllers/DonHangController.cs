@@ -6,14 +6,10 @@ using System.Web.Mvc;
 
 namespace ECommerceWebsiteMVC.Controllers
 {
-    public class NguoiBanController : Controller
+    public class DonHangController : Controller
     {
-        // GET: NguoiBan
+        // GET: DonHang
         public ActionResult Index()
-        {
-            return View();
-        }
-        public ActionResult DonHang()
         {
             return View();
         }
