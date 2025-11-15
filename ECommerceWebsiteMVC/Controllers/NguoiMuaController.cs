@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommerceWebsiteMVC.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +9,11 @@ namespace ECommerceWebsiteMVC.Controllers
 {
     public class NguoiMuaController : Controller
     {
+        QLBanHang_SPEntities ql = new QLBanHang_SPEntities();
         // GET: Home
         public ActionResult Index()
         {
-            return View();
+            return View(ql.SanPhams.Include("AnhSanPhams").ToList());
         }
 
         public ActionResult DonHang()

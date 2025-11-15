@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<ECommerceWebsiteMVC.Models.SanPham>
+@{
     ViewBag.Title = "Trang chủ";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
@@ -17,6 +18,7 @@
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
           crossorigin="anonymous" />
     <link rel="stylesheet" href="~/Content/style.css" />
+    <link href="~/Content/style_SanPham.css" rel="stylesheet" />
     <title>Shopee</title>
 </head>
 
@@ -420,8 +422,50 @@
         </div>
     </div>
 
+    <!--===================================================================================-->
+    <div class="container py-4">
+        <h5 class="mb-3">Danh sach san pham</h5>
+
+        <div class="row g-3">
+
+            @foreach (var item in Model)
+            {
+                var macdinh = item.AnhSanPhams.Where(x => x.MacDinh == true).Select(x => x.HinhAnh).FirstOrDefault() ?? item.AnhSanPhams.Select(x => x.HinhAnh).FirstOrDefault();
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="product-card">
+
+                        <div class="product-img-wrapper">
+                            <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })">
+                                <img src="~/Images/Products/@item.MaSanPham/@macdinh" />
+                            </a>
+
+                        </div>
+
+                        <div class="product-body">
+                            <div class="product-title">@item.TenSanPham</div>
+
+                            <div class="mt-1">
+                                <span class="product-price">0đ</span>
+                            </div>
+
+                            <div class="product-meta d-flex justify-content-between mt-1" style="font-size:11px;color:#777;">
+                                <span>★★★★★ (1,2k)</span>
+                                <span>Đã bán 3,5k</span>
+                            </div>
+                        </div>
 
 
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+
+
+    <!--===================================================================================-->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
