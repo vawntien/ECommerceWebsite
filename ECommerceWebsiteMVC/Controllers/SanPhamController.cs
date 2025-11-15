@@ -23,14 +23,8 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult ChiTietSanPham(int id)
         {
-            var sp = ql.SanPhams
-                .Include("AnhSanPhams")
-                .Include("BienTheSanPhams")
-                .Where(s => s.MaSanPham == id)
-                .FirstOrDefault();
-
+            var sp = ql.SanPhams.Include("AnhSanPhams").Include("BienTheSanPhams").Where(s => s.MaSanPham == id).FirstOrDefault();
             if (sp == null) return HttpNotFound();
-
             return View(sp);
         }
 

@@ -13,7 +13,9 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            return View(ql.SanPhams.Include("AnhSanPhams").ToList());
+            ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            List<SanPham> dssp = ql.SanPhams.Include("AnhSanPhams").ToList();
+            return View(dssp);
         }
 
         public ActionResult DonHang()

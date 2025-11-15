@@ -2194,6 +2194,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DanhMucController.cs" />
     <Compile Include="Controllers\NguoiMuaController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
@@ -2303,6 +2304,7 @@
     <Content Include="Views\NguoiMua\ChiTietDonHang.cshtml" />
     <Content Include="Views\NguoiBan\DonHang.cshtml" />
     <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
+    <Content Include="Views\Shared\_SidebarDanhMuc.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2312,6 +2314,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

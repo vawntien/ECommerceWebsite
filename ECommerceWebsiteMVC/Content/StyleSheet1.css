@@ -1,8 +1,8 @@
-﻿﻿ /* Màu chính */
+﻿
 :root {
     --shopee-orange: #EE4D2D;
-    --sidebar-width: 250px; /* Chiều rộng sidebar */
-    --header-height: 60px; /* Chiều cao header */
+    --sidebar-width: 250px; 
+    --header-height: 60px; 
     --text-color: #333;
     --text-muted: #757575;
     --bg-light-gray: #f5f5f5;

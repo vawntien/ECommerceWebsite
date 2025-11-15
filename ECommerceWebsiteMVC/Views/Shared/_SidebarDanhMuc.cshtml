@@ -1,0 +1,26 @@
+﻿@model List<ECommerceWebsiteMVC.Models.DanhMuc>
+
+<div class="sidebar-left p-3">
+    <h6 class="font-weight-bold mb-3">Tất Cả Danh Mục</h6>
+
+    @{
+        int? selected = ViewBag.DanhMucDangChon as int?;
+    }
+
+    <ul class="list-unstyled">
+        @foreach (var dm in Model)
+        {
+            bool active = selected == dm.MaDanhMuc;
+
+            <li class="pb-2">
+                <a href="@Url.Action("TheoDanhMuc", "DanhMuc", new { id = dm.MaDanhMuc })"
+                   style="text-decoration:none; color:@(active ? "#f53d2d" : "#333"); font-weight:@(active ? "bold" : "normal")">
+                    @dm.TenDanhMuc
+                </a>
+            </li>
+        }
+    </ul>
+
+    <hr />
+
+</div>
