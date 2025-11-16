@@ -423,48 +423,6 @@
     </div>
 
     <!--===================================================================================-->
-    @*<div class="container py-4" style="margin-top: 80px;">
-
-            <h5 class="mb-3">Danh sach san pham</h5>
-
-
-            <div class="row g-3">
-
-                @foreach (var item in Model)
-                {
-                    var macdinh = item.AnhSanPhams.Where(x => x.MacDinh == true).Select(x => x.HinhAnh).FirstOrDefault() ?? item.AnhSanPhams.Select(x => x.HinhAnh).FirstOrDefault();
-
-                    <div class="col-6 col-md-3 col-lg-2">
-                        <div class="product-card">
-
-                            <div class="product-img-wrapper">
-                                <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })">
-                                    <img src="~/Images/Products/@item.MaSanPham/@macdinh" />
-                                </a>
-
-                            </div>
-
-                            <div class="product-body">
-                                <div class="product-title">@item.TenSanPham</div>
-
-                                <div class="mt-1">
-                                    <span class="product-price">0đ</span>
-                                </div>
-
-                                <div class="product-meta d-flex justify-content-between mt-1" style="font-size:11px;color:#777;">
-                                    <span>★★★★★ (1,2k)</span>
-                                    <span>Đã bán 3,5k</span>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-                }
-
-            </div>
-        </div>*@
-
 
     <div class="container py-4" style="margin-top: 80px;">
 
