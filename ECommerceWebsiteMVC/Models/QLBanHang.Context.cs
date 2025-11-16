@@ -13,9 +13,9 @@ namespace ECommerceWebsiteMVC.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class QLBanHang_SPEntities : DbContext
+    public partial class QLBanHangEntities : DbContext
     {
-        public QLBanHang_SPEntities()
+        public QLBanHangEntities()
             : base("name=QLBanHang_SPEntities")
         {
         }

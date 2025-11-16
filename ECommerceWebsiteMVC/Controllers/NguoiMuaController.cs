@@ -9,7 +9,7 @@ namespace ECommerceWebsiteMVC.Controllers
 {
     public class NguoiMuaController : Controller
     {
-        QLBanHang_SPEntities ql = new QLBanHang_SPEntities();
+        QLBanHangEntities ql = new QLBanHangEntities();
         // GET: Home
         public ActionResult Index()
         {

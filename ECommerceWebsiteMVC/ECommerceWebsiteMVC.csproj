@@ -51,6 +51,9 @@
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -163,6 +166,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Site.css" />
     <Content Include="Content\style.css" />
     <Content Include="Content\StyleSheet1.css" />
     <Content Include="Content\style_chitietsanpham.css" />
@@ -2194,6 +2198,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\NguoiMuaController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
@@ -2236,6 +2241,7 @@
     <Compile Include="Models\GioHang.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CartViewModels.cs" />
     <Compile Include="Models\NguoiBan.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
@@ -2303,6 +2309,11 @@
     <Content Include="Views\NguoiMua\ChiTietDonHang.cshtml" />
     <Content Include="Views\NguoiBan\DonHang.cshtml" />
     <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\GioHang\Index.cshtml" />
+    <Content Include="Views\GioHang\Checkout.cshtml" />
+    <Content Include="Views\GioHang\OrderSuccess.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

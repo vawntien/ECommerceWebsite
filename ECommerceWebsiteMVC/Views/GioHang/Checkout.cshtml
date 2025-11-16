@@ -1,0 +1,213 @@
+﻿@model ECommerceWebsiteMVC.Models.CheckoutViewModel
+
+@{
+    ViewBag.Title = "Thanh toán";
+}
+
+<style>
+    body {
+        background: #f5f5f5;
+        font-family: Arial;
+    }
+
+    .checkout-container {
+        max-width: 900px;
+        margin: 20px auto 120px auto;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .section-title {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item-row {
+        display: grid;
+        grid-template-columns: 15% 55% 15% 15%;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+        font-size: 14px;
+    }
+
+        .item-row img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+    .total-box {
+        width: 350px;
+        margin-top: 20px;
+        margin-left: auto;
+        font-size: 15px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+    }
+
+    .confirm-button {
+        background: #ee4d2d;
+        padding: 12px 24px;
+        width: 100%;
+        border: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 16px;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+</style>
+
+<div class="checkout-container">
+
+    <!-- ĐỊA CHỈ NHẬN HÀNG -->
+    <div class="section-title">Địa chỉ nhận hàng</div>
+
+    <div style="margin-bottom:20px; font-size:14px;">
+        <strong>@Model.TenNguoiNhan</strong><br />
+        SĐT: @Model.SDT<br />
+        @Model.DiaChi
+    </div>
+
+    <!-- DANH SÁCH SẢN PHẨM -->
+    <div class="section-title">Sản phẩm</div>
+
+    @foreach (var item in Model.Items)
+    {
+        <div class="item-row">
+            <img src="/assets/@item.HinhAnh" />
+            <div>
+                <div style="font-weight:bold;">@item.TenSanPham</div>
+                <div style="color:#888;">@item.PhanLoai</div>
+            </div>
+            <div style="color:#ee4d2d;">@item.DonGia.ToString("N0") đ</div>
+            <div>x @item.SoLuong</div>
+        </div>
+    }
+
+    <!-- VOUCHER -->
+    <div class="section-title" style="margin-top:20px;">Shopee Voucher</div>
+
+    <div style="display:flex;align-items:center;">
+        <select id="voucherSelect"
+                style="width:300px;padding:6px;border:1px solid #ddd;border-radius:4px;">
+
+            <option value="">-- Không dùng voucher --</option>
+
+            @foreach (var vc in Model.DanhSachVoucher)
+            {
+                var g = Convert.ToDecimal(vc.GiaTriGiam);
+
+                <option value="@vc.MaGiamGia">
+                    @vc.TenMaGG - Giảm @g.ToString("N0")đ
+                </option>
+            }
+        </select>
+
+        <button id="applyVoucher"
+                type="button"
+                style="margin-left:10px;padding:6px 14px;
+                       background:#ee4d2d;color:white;border:none;border-radius:4px;cursor:pointer;">
+            Áp dụng
+        </button>
+    </div>
+
+    <!-- TÍNH TIỀN -->
+    <div class="total-box">
+
+        <div class="total-row">
+            <span>Tổng tiền hàng:</span>
+            <span id="tien-hang" data-raw="@Model.TongTienHang">
+                @Model.TongTienHang.ToString("N0") đ
+            </span>
+        </div>
+
+        <div class="total-row">
+            <span>Phí vận chuyển:</span>
+            <span id="phi-ship" data-raw="@Model.PhiVanChuyen">
+                @Model.PhiVanChuyen.ToString("N0") đ
+            </span>
+        </div>
+
+        <div class="total-row">
+            <span>Giảm giá:</span>
+            <span id="giam-gia" data-raw="@Model.GiamGia">
+                @Model.GiamGia.ToString("N0") đ
+            </span>
+        </div>
+
+        <div class="total-row" style="font-weight:bold;font-size:18px;">
+            <span>Tổng thanh toán:</span>
+            <span id="tong-thanh-toan" data-raw="@Model.TongThanhToan"
+                  style="color:#ee4d2d;">
+                @Model.TongThanhToan.ToString("N0") đ
+            </span>
+        </div>
+    </div>
+
+    <!-- FORM ĐẶT HÀNG -->
+    <form action="/GioHang/OrderSuccess" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="MaVoucher" id="voucherHidden" />
+
+        <button type="submit" class="confirm-button">
+            Đặt hàng
+        </button>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+
+        function parseMoney(raw) {
+            if (!raw) return 0;
+            return Number(raw.toString().replace(/[^0-9]/g, ""));
+        }
+
+        // BẮT SỰ KIỆN CHUẨN
+        $(document).on("click", "#applyVoucher", function () {
+
+            var maVoucher = $("#voucherSelect").val();
+            var tongTienHang = @Model.TongTienHang;
+            
+            console.log("DEBUG:", maVoucher, tongTienHang);
+
+            $.post("/GioHang/ApplyVoucher",
+                {
+                    maVoucher: maVoucher,
+                    tongTienHang: tongTienHang
+                },
+                function (res) {
+
+                    console.log("SERVER:", res);
+
+                    if (res.success) {
+
+                        $("#giam-gia")
+                            .attr("data-raw", res.giamGia)
+                            .text(res.giamGia.toLocaleString("vi-VN") + " đ");
+
+                        $("#tong-thanh-toan")
+                            .attr("data-raw", res.tongThanhToan)
+                            .text(res.tongThanhToan.toLocaleString("vi-VN") + " đ");
+
+                        $("#voucherHidden").val(maVoucher);
+                    }
+                });
+        });
+
+    </script>
+}
