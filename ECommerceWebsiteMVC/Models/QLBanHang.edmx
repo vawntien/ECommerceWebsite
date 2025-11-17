@@ -160,6 +160,7 @@
           <Property Name="MaCuaHang" Type="int" Nullable="false" />
           <Property Name="TenSanPham" Type="nvarchar" MaxLength="255" />
           <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="LoaiPhanLoai" Type="nvarchar" MaxLength="300" />
         </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
@@ -586,6 +587,7 @@
           <Property Name="MaCuaHang" Type="Int32" Nullable="false" />
           <Property Name="TenSanPham" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LoaiPhanLoai" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AnhSanPhams" Relationship="Self.FK_AnhSanPham_SanPham" FromRole="SanPham" ToRole="AnhSanPham" />
           <NavigationProperty Name="BienTheSanPhams" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="SanPham" ToRole="BienTheSanPham" />
           <NavigationProperty Name="CuaHang" Relationship="Self.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
@@ -759,7 +761,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="QLBanHang_SPEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="QLBanHang_SPEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AnhSanPhams" EntityType="Self.AnhSanPham" />
           <EntitySet Name="BienTheSanPhams" EntityType="Self.BienTheSanPham" />
           <EntitySet Name="ChiTietDonHangs" EntityType="Self.ChiTietDonHang" />
@@ -837,7 +839,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="QLBanHang_SPModelStoreContainer" CdmEntityContainer="QLBanHang_SPEntities">
+        <EntityContainerMapping StorageEntityContainer="QLBanHang_SPModelStoreContainer" CdmEntityContainer="QLBanHang_SPEntities1">
           <EntitySetMapping Name="AnhSanPhams">
             <EntityTypeMapping TypeName="QLBanHang_SPModel.AnhSanPham">
               <MappingFragment StoreEntitySet="AnhSanPham">
@@ -1006,6 +1008,7 @@
                 <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
                 <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
                 <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="LoaiPhanLoai" ColumnName="LoaiPhanLoai" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

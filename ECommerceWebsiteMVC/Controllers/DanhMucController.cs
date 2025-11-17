@@ -9,7 +9,7 @@ namespace ECommerceWebsiteMVC.Controllers
 {
     public class DanhMucController : Controller
     {
-        QLBanHang_SPEntities db = new QLBanHang_SPEntities();
+        QLBanHang_SPEntities1 db = new QLBanHang_SPEntities1();
         // GET: DanhMuc
         public ActionResult Index()
         {
