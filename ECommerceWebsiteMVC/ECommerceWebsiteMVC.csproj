@@ -2240,6 +2240,9 @@
     <Compile Include="Models\GioHang.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\KhieuNai.cs">
+      <DependentUpon>QLBanHang.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\NguoiBan.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>

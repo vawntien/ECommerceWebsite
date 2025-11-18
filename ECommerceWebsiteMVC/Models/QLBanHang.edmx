@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -126,6 +126,17 @@
           <Property Name="MaGioHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaNguoiMua" Type="int" Nullable="false" />
           <Property Name="SoLuong" Type="int" />
+        </EntityType>
+        <EntityType Name="KhieuNai">
+          <Key>
+            <PropertyRef Name="MaKN" />
+          </Key>
+          <Property Name="MaKN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TieuDe" Type="nvarchar" MaxLength="100" />
+          <Property Name="NoiDung" Type="nvarchar" MaxLength="500" />
+          <Property Name="ThoiGian" Type="datetime" />
+          <Property Name="TrangThai" Type="bit" />
+          <Property Name="MaSP" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="NguoiBan">
           <Key>
@@ -324,6 +335,18 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_KhieuNai_SanPham">
+          <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
+          <End Role="KhieuNai" Type="Self.KhieuNai" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SanPham">
+              <PropertyRef Name="MaSanPham" />
+            </Principal>
+            <Dependent Role="KhieuNai">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SanPham_CuaHang">
           <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="1" />
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="*" />
@@ -361,6 +384,7 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <EntitySet Name="DonViVanChuyen" EntityType="Self.DonViVanChuyen" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GiamGia" EntityType="Self.GiamGia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GioHang" EntityType="Self.GioHang" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="KhieuNai" EntityType="Self.KhieuNai" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiBan" EntityType="Self.NguoiBan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiMua" EntityType="Self.NguoiMua" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
@@ -422,6 +446,10 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="NguoiMua" EntitySet="NguoiMua" />
             <End Role="GioHang" EntitySet="GioHang" />
           </AssociationSet>
+          <AssociationSet Name="FK_KhieuNai_SanPham" Association="Self.FK_KhieuNai_SanPham">
+            <End Role="SanPham" EntitySet="SanPham" />
+            <End Role="KhieuNai" EntitySet="KhieuNai" />
+          </AssociationSet>
           <AssociationSet Name="FK_SanPham_CuaHang" Association="Self.FK_SanPham_CuaHang">
             <End Role="CuaHang" EntitySet="CuaHang" />
             <End Role="SanPham" EntitySet="SanPham" />
@@ -431,8 +459,7 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -620,6 +647,7 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <NavigationProperty Name="BienTheSanPhams" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="SanPham" ToRole="BienTheSanPham" />
           <NavigationProperty Name="CuaHang" Relationship="Self.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_SanPham_DanhMuc" FromRole="SanPham" ToRole="DanhMuc" />
+          <NavigationProperty Name="KhieuNais" Relationship="ECommerceWebsiteModel.FK_KhieuNai_SanPham" FromRole="SanPham" ToRole="KhieuNai" />
         </EntityType>
         <EntityType Name="database_firewall_rules">
           <Key>
@@ -878,7 +906,36 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="NguoiMua" EntitySet="NguoiMuas" />
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
+          <EntitySet Name="KhieuNais" EntityType="ECommerceWebsiteModel.KhieuNai" />
+          <AssociationSet Name="FK_KhieuNai_SanPham" Association="ECommerceWebsiteModel.FK_KhieuNai_SanPham">
+            <End Role="SanPham" EntitySet="SanPhams" />
+            <End Role="KhieuNai" EntitySet="KhieuNais" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="KhieuNai">
+          <Key>
+            <PropertyRef Name="MaKN" />
+          </Key>
+          <Property Name="MaKN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TieuDe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NoiDung" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ThoiGian" Type="DateTime" Precision="3" />
+          <Property Name="TrangThai" Type="Boolean" />
+          <Property Name="MaSP" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="SanPham" Relationship="ECommerceWebsiteModel.FK_KhieuNai_SanPham" FromRole="KhieuNai" ToRole="SanPham" />
+        </EntityType>
+        <Association Name="FK_KhieuNai_SanPham">
+          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.KhieuNai" Role="KhieuNai" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SanPham">
+              <PropertyRef Name="MaSanPham" />
+            </Principal>
+            <Dependent Role="KhieuNai">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1066,6 +1123,18 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
                 <ScalarProperty Name="end_ip_address" ColumnName="end_ip_address" />
                 <ScalarProperty Name="create_date" ColumnName="create_date" />
                 <ScalarProperty Name="modify_date" ColumnName="modify_date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KhieuNais">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.KhieuNai">
+              <MappingFragment StoreEntitySet="KhieuNai">
+                <ScalarProperty Name="MaSP" ColumnName="MaSP" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
+                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
+                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
+                <ScalarProperty Name="MaKN" ColumnName="MaKN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

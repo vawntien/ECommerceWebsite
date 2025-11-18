@@ -19,6 +19,7 @@ namespace ECommerceWebsiteMVC.Models
         {
             this.AnhSanPhams = new HashSet<AnhSanPham>();
             this.BienTheSanPhams = new HashSet<BienTheSanPham>();
+            this.KhieuNais = new HashSet<KhieuNai>();
         }
     
         public int MaSanPham { get; set; }
@@ -34,5 +35,7 @@ namespace ECommerceWebsiteMVC.Models
         public virtual ICollection<BienTheSanPham> BienTheSanPhams { get; set; }
         public virtual CuaHang CuaHang { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<KhieuNai> KhieuNais { get; set; }
     }
 }
