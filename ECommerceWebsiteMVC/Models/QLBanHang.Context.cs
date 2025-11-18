@@ -13,10 +13,10 @@ namespace ECommerceWebsiteMVC.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class QLBanHang_SPEntities1 : DbContext
+    public partial class ECommerceWebsiteEntities : DbContext
     {
-        public QLBanHang_SPEntities1()
-            : base("name=QLBanHang_SPEntities1")
+        public ECommerceWebsiteEntities()
+            : base("name=ECommerceWebsiteEntities")
         {
         }
     
@@ -40,5 +40,6 @@ namespace ECommerceWebsiteMVC.Models
         public virtual DbSet<NguoiBan> NguoiBans { get; set; }
         public virtual DbSet<NguoiMua> NguoiMuas { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
+        public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
     }
 }

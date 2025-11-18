@@ -10,7 +10,7 @@ namespace ECommerceWebsiteMVC.Controllers
     public class SanPhamController : Controller
     {
         // GET: SanPham
-        QLBanHang_SPEntities1 ql = new QLBanHang_SPEntities1();
+        ECommerceWebsiteEntities ql = new ECommerceWebsiteEntities();
         public ActionResult Index()
         {
             return View();

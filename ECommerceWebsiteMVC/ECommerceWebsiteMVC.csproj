@@ -2222,6 +2222,9 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\database_firewall_rules.cs">
+      <DependentUpon>QLBanHang.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DatHang.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>

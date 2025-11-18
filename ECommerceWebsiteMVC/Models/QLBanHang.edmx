@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="QLBanHang_SPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -161,6 +161,24 @@
           <Property Name="TenSanPham" Type="nvarchar" MaxLength="255" />
           <Property Name="MoTa" Type="nvarchar(max)" />
           <Property Name="LoaiPhanLoai" Type="nvarchar" MaxLength="300" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="start_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="end_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="create_date" Type="datetime" Nullable="false" />
+          <Property Name="modify_date" Type="datetime" Nullable="false" />
         </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
@@ -330,7 +348,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="QLBanHang_SPModelStoreContainer">
+        <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietDonHang" EntityType="Self.ChiTietDonHang" Schema="dbo" store:Type="Tables" />
@@ -346,6 +364,16 @@
           <EntitySet Name="NguoiBan" EntityType="Self.NguoiBan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiMua" EntityType="Self.NguoiMua" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" store:Type="Views" store:Schema="sys">
+            <DefiningQuery>SELECT 
+    [database_firewall_rules].[id] AS [id], 
+    [database_firewall_rules].[name] AS [name], 
+    [database_firewall_rules].[start_ip_address] AS [start_ip_address], 
+    [database_firewall_rules].[end_ip_address] AS [end_ip_address], 
+    [database_firewall_rules].[create_date] AS [create_date], 
+    [database_firewall_rules].[modify_date] AS [modify_date]
+    FROM [sys].[database_firewall_rules] AS [database_firewall_rules]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="AnhSanPham" EntitySet="AnhSanPham" />
@@ -407,7 +435,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="QLBanHang_SPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -593,6 +621,22 @@
           <NavigationProperty Name="CuaHang" Relationship="Self.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_SanPham_DanhMuc" FromRole="SanPham" ToRole="DanhMuc" />
         </EntityType>
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="start_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="end_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="create_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="modify_date" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
           <End Role="AnhSanPham" Type="Self.AnhSanPham" Multiplicity="*" />
@@ -761,7 +805,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="QLBanHang_SPEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="ECommerceWebsiteEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AnhSanPhams" EntityType="Self.AnhSanPham" />
           <EntitySet Name="BienTheSanPhams" EntityType="Self.BienTheSanPham" />
           <EntitySet Name="ChiTietDonHangs" EntityType="Self.ChiTietDonHang" />
@@ -777,6 +821,7 @@
           <EntitySet Name="NguoiBans" EntityType="Self.NguoiBan" />
           <EntitySet Name="NguoiMuas" EntityType="Self.NguoiMua" />
           <EntitySet Name="SanPhams" EntityType="Self.SanPham" />
+          <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" />
           <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
             <End Role="SanPham" EntitySet="SanPhams" />
             <End Role="AnhSanPham" EntitySet="AnhSanPhams" />
@@ -839,9 +884,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="QLBanHang_SPModelStoreContainer" CdmEntityContainer="QLBanHang_SPEntities1">
+        <EntityContainerMapping StorageEntityContainer="ECommerceWebsiteModelStoreContainer" CdmEntityContainer="ECommerceWebsiteEntities">
           <EntitySetMapping Name="AnhSanPhams">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.AnhSanPham">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.AnhSanPham">
               <MappingFragment StoreEntitySet="AnhSanPham">
                 <ScalarProperty Name="MaHinhAnh" ColumnName="MaHinhAnh" />
                 <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
@@ -851,7 +896,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BienTheSanPhams">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.BienTheSanPham">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.BienTheSanPham">
               <MappingFragment StoreEntitySet="BienTheSanPham">
                 <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
                 <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
@@ -863,7 +908,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChiTietDonHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.ChiTietDonHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.ChiTietDonHang">
               <MappingFragment StoreEntitySet="ChiTietDonHang">
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
@@ -873,7 +918,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChiTietGioHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.ChiTietGioHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.ChiTietGioHang">
               <MappingFragment StoreEntitySet="ChiTietGioHang">
                 <ScalarProperty Name="MaCTGH" ColumnName="MaCTGH" />
                 <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
@@ -884,7 +929,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="CuaHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.CuaHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.CuaHang">
               <MappingFragment StoreEntitySet="CuaHang">
                 <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
                 <ScalarProperty Name="MaNguoiBan" ColumnName="MaNguoiBan" />
@@ -895,7 +940,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DanhGiaSanPhams">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.DanhGiaSanPham">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhGiaSanPham">
               <MappingFragment StoreEntitySet="DanhGiaSanPham">
                 <ScalarProperty Name="MaDG" ColumnName="MaDG" />
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
@@ -908,7 +953,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DanhMucs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.DanhMuc">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhMuc">
               <MappingFragment StoreEntitySet="DanhMuc">
                 <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
                 <ScalarProperty Name="TenDanhMuc" ColumnName="TenDanhMuc" />
@@ -916,7 +961,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DatHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.DatHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DatHang">
               <MappingFragment StoreEntitySet="DatHang">
                 <ScalarProperty Name="MaDatHang" ColumnName="MaDatHang" />
                 <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
@@ -931,7 +976,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DonHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.DonHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonHang">
               <MappingFragment StoreEntitySet="DonHang">
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
                 <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
@@ -944,7 +989,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DonViVanChuyens">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.DonViVanChuyen">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonViVanChuyen">
               <MappingFragment StoreEntitySet="DonViVanChuyen">
                 <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
                 <ScalarProperty Name="TenDVVC" ColumnName="TenDVVC" />
@@ -952,7 +997,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GiamGias">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.GiamGia">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.GiamGia">
               <MappingFragment StoreEntitySet="GiamGia">
                 <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
                 <ScalarProperty Name="TenMaGG" ColumnName="TenMaGG" />
@@ -966,7 +1011,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GioHangs">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.GioHang">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.GioHang">
               <MappingFragment StoreEntitySet="GioHang">
                 <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
                 <ScalarProperty Name="MaNguoiMua" ColumnName="MaNguoiMua" />
@@ -975,7 +1020,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="NguoiBans">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.NguoiBan">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiBan">
               <MappingFragment StoreEntitySet="NguoiBan">
                 <ScalarProperty Name="MaNguoiBan" ColumnName="MaNguoiBan" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -988,7 +1033,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="NguoiMuas">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.NguoiMua">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiMua">
               <MappingFragment StoreEntitySet="NguoiMua">
                 <ScalarProperty Name="MaNguoiMua" ColumnName="MaNguoiMua" />
                 <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
@@ -1001,7 +1046,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SanPhams">
-            <EntityTypeMapping TypeName="QLBanHang_SPModel.SanPham">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.SanPham">
               <MappingFragment StoreEntitySet="SanPham">
                 <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
                 <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
@@ -1009,6 +1054,18 @@
                 <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
                 <ScalarProperty Name="MoTa" ColumnName="MoTa" />
                 <ScalarProperty Name="LoaiPhanLoai" ColumnName="LoaiPhanLoai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="database_firewall_rules">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.database_firewall_rules">
+              <MappingFragment StoreEntitySet="database_firewall_rules">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="start_ip_address" ColumnName="start_ip_address" />
+                <ScalarProperty Name="end_ip_address" ColumnName="end_ip_address" />
+                <ScalarProperty Name="create_date" ColumnName="create_date" />
+                <ScalarProperty Name="modify_date" ColumnName="modify_date" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
