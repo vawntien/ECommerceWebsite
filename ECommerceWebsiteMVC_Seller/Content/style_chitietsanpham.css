@@ -1,0 +1,124 @@
+﻿/*.container{
+    margin:400px;
+}
+
+.product-gallery img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.thumb-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+    .thumb-img:hover {
+        border-color: #ee4d2d;
+    }
+
+.variant-btn {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #fff;
+}
+
+    .variant-btn.active {
+        border-color: #ee4d2d !important;
+        color: #ee4d2d;
+        font-weight: 600;
+    }
+
+.price-box {
+    font-size: 22px;
+    color: #ee4d2d;
+    font-weight: bold;
+}
+
+.stock {
+    color: #999;
+    margin-left: 10px;
+    font-size: 13px;
+}
+
+
+*/
+
+
+/* ===== FIX HEADER ===== */
+body {
+    padding-top: 150px !important; /* tránh header đè lên nội dung */
+    background-color: #e1e1e1;
+}
+
+/* ========== GALLERY (KHÔI PHỤC CSS BỊ COMMENT) ========== */
+.product-gallery img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.thumb-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+    .thumb-img:hover {
+        border-color: #ee4d2d;
+    }
+
+.variant-btn {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #fff;
+}
+
+    .variant-btn.active {
+        border-color: #ee4d2d !important;
+        color: #ee4d2d;
+        font-weight: 600;
+    }
+
+.price-box {
+    font-size: 22px;
+    color: #ee4d2d;
+    font-weight: bold;
+}
+
+.stock {
+    color: #999;
+    margin-left: 10px;
+    font-size: 13px;
+}
+
+
+/* ======= DETAIL SECTION ======= */
+.detail-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 40px;
+}
+
+.product-description img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 12px auto;
+}
+
+.product-description p {
+    margin-bottom: 16px;
+}

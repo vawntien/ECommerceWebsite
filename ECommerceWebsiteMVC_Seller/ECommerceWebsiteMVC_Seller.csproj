@@ -8,12 +8,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BE81450D-2CBC-4D79-95B3-DFDC77281332}</ProjectGuid>
+    <ProjectGuid>{5149B6DA-4ECA-41DA-805A-E2ABB0869AE2}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ECommerceWebsiteMVC</RootNamespace>
-    <AssemblyName>ECommerceWebsiteMVC</AssemblyName>
+    <RootNamespace>ECommerceWebsiteMVC_Seller</RootNamespace>
+    <AssemblyName>ECommerceWebsiteMVC_Seller</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -168,143 +168,119 @@
     <Content Include="Content\style_chitietsanpham.css" />
     <Content Include="Content\style_SanPham.css" />
     <Content Include="Global.asax" />
-    <Content Include="Models\QLBanHang.Context.tt">
+    <Content Include="Models\QL_BanHang.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
-      <LastGenOutput>QLBanHang.Context.cs</LastGenOutput>
+      <DependentUpon>QL_BanHang.edmx</DependentUpon>
+      <LastGenOutput>QL_BanHang.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\QLBanHang.tt">
+    <Content Include="Models\QL_BanHang.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
-      <LastGenOutput>QLBanHang.cs</LastGenOutput>
+      <DependentUpon>QL_BanHang.edmx</DependentUpon>
+      <LastGenOutput>QL_BanHang.cs</LastGenOutput>
     </Content>
-    <Content Include="Scripts\bootstrap.bundle.js" />
-    <Content Include="Scripts\bootstrap.bundle.min.js" />
-    <Content Include="Scripts\bootstrap.esm.js" />
-    <Content Include="Scripts\bootstrap.esm.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\DanhMucController.cs" />
-    <Compile Include="Controllers\NguoiMuaController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
-    <Compile Include="Controllers\SanPhamController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AnhSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BienTheSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChiTietDonHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChiTietGioHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CuaHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhGiaSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhMuc.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\database_firewall_rules.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DatHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DonHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DonViVanChuyen.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GiamGia.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GioHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\KhieuNai.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\NguoiBan.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\NguoiMua.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QLBanHang.Context.cs">
+    <Compile Include="Models\QL_BanHang.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.Context.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QLBanHang.cs">
+    <Compile Include="Models\QL_BanHang.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QLBanHang.Designer.cs">
+    <Compile Include="Models\QL_BanHang.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
+      <DependentUpon>QL_BanHang.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHang.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
-    <Content Include="Content\bootstrap.rtl.min.css.map" />
-    <Content Include="Content\bootstrap.rtl.css.map" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.css.map" />
-    <Content Include="Content\bootstrap-utilities.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.css.map" />
-    <Content Include="Content\bootstrap-reboot.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.css.map" />
-    <Content Include="Content\bootstrap-grid.min.css.map" />
-    <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="assets\.DS_Store" />
-    <EntityDeploy Include="Models\QLBanHang.edmx">
+    <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Content\bootstrap-grid.min.css.map" />
+    <Content Include="Content\bootstrap-grid.rtl.css.map" />
+    <Content Include="Content\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="Content\bootstrap-reboot.css.map" />
+    <Content Include="Content\bootstrap-reboot.min.css.map" />
+    <Content Include="Content\bootstrap-reboot.rtl.css.map" />
+    <Content Include="Content\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="Content\bootstrap-utilities.css.map" />
+    <Content Include="Content\bootstrap-utilities.min.css.map" />
+    <Content Include="Content\bootstrap-utilities.rtl.css.map" />
+    <Content Include="Content\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.rtl.css.map" />
+    <Content Include="Content\bootstrap.rtl.min.css.map" />
+    <EntityDeploy Include="Models\QL_BanHang.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QLBanHang.Designer.cs</LastGenOutput>
+      <LastGenOutput>QL_BanHang.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\QLBanHang.edmx.diagram">
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
+    <Content Include="Models\QL_BanHang.edmx.diagram">
+      <DependentUpon>QL_BanHang.edmx</DependentUpon>
     </Content>
     <None Include="packages.config" />
-    <Content Include="Scripts\bootstrap.min.js.map" />
-    <Content Include="Scripts\bootstrap.js.map" />
-    <Content Include="Scripts\bootstrap.esm.min.js.map" />
-    <Content Include="Scripts\bootstrap.esm.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.js.map" />
-    <Content Include="Views\Shared\_LayoutNguoiMua.cshtml" />
-    <Content Include="Views\NguoiMua\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutNguoiBan.cshtml" />
     <Content Include="Views\NguoiBan\Index.cshtml" />
-    <Content Include="Views\NguoiMua\DonHang.cshtml" />
-    <Content Include="Views\NguoiMua\ChiTietDonHang.cshtml" />
     <Content Include="Views\NguoiBan\DonHang.cshtml" />
-    <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
-    <Content Include="Views\Shared\_SidebarDanhMuc.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -313,21 +289,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Code\" />
     <Folder Include="App_Data\" />
-    <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
-  
-  <ItemGroup>
-  <Content Include="..\Images\Products\**\*.*">
-    <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
-
-
-
-
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
@@ -344,9 +307,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59750</DevelopmentServerPort>
+          <DevelopmentServerPort>54687</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:59750/</IISUrl>
+          <IISUrl>http://localhost:52602/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
