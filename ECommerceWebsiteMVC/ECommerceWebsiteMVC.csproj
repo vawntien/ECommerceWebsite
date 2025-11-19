@@ -216,9 +216,6 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\database_firewall_rules.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\DatHang.cs">
       <DependentUpon>QLBanHang.tt</DependentUpon>
     </Compile>
@@ -305,6 +302,7 @@
     <Content Include="Views\NguoiBan\DonHang.cshtml" />
     <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
     <Content Include="Views\Shared\_SidebarDanhMuc.cshtml" />
+    <None Include="Properties\PublishProfiles\ecommerce-mvc-client - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -317,17 +315,12 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
-  
   <ItemGroup>
-  <Content Include="..\Images\Products\**\*.*">
-    <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
-
-
-
-
+    <Content Include="..\Images\Products\**\*.*">
+      <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>

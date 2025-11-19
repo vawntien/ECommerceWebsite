@@ -40,7 +40,6 @@ namespace ECommerceWebsiteMVC.Models
         public virtual DbSet<NguoiBan> NguoiBans { get; set; }
         public virtual DbSet<NguoiMua> NguoiMuas { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
-        public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
         public virtual DbSet<KhieuNai> KhieuNais { get; set; }
     }
 }
