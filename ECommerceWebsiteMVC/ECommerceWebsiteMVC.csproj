@@ -316,12 +316,6 @@
     <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Images\Products\**\*.*">
-      <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>

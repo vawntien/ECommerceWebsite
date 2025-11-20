@@ -455,7 +455,17 @@
 
                                 <div class="product-img-wrapper">
                                     <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })">
-                                        <img src="~/Images/Products/@item.MaSanPham/@macdinh" />
+                                        @*<img src="~/Images/Products/@item.MaSanPham/@macdinh" />*@
+                                        <img src="@($"https://raw.githubusercontent.com/vawntien/ECommerceWebsite/master/Images/Products/{item.MaSanPham}/{macdinh}")" />
+
+
+
+
+
+
+
+
+
                                     </a>
                                 </div>
 
