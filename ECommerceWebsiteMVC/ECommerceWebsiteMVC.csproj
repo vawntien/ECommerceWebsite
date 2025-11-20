@@ -188,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DanhGiaController.cs" />
     <Compile Include="Controllers\DanhMucController.cs" />
     <Compile Include="Controllers\NguoiMuaController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
@@ -303,6 +304,8 @@
     <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
     <Content Include="Views\Shared\_SidebarDanhMuc.cshtml" />
     <None Include="Properties\PublishProfiles\ecommerce-mvc-client - Web Deploy.pubxml" />
+    <Content Include="Views\Shared\_ProductReview.cshtml" />
+    <Content Include="Views\DanhGia\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
