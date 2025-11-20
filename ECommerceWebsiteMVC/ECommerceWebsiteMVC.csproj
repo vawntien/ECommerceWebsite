@@ -163,6 +163,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Site.css" />
     <Content Include="Content\style.css" />
     <Content Include="Content\StyleSheet1.css" />
     <Content Include="Content\style_chitietsanpham.css" />
@@ -192,6 +193,7 @@
     <Compile Include="Controllers\NguoiMuaController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
+    <Compile Include="Controllers\TaiKhoanController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -305,6 +307,10 @@
     <Content Include="Views\NguoiBan\DonHang.cshtml" />
     <Content Include="Views\SanPham\ChiTietSanPham.cshtml" />
     <Content Include="Views\Shared\_SidebarDanhMuc.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\TaiKhoan\DangKy.cshtml" />
+    <Content Include="Views\TaiKhoan\DangNhap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -317,17 +323,12 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
-  
   <ItemGroup>
-  <Content Include="..\Images\Products\**\*.*">
-    <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
-
-
-
-
+    <Content Include="..\Images\Products\**\*.*">
+      <Link>Images\Products\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
