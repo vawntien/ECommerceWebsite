@@ -168,15 +168,15 @@
     <Content Include="Content\style_chitietsanpham.css" />
     <Content Include="Content\style_SanPham.css" />
     <Content Include="Global.asax" />
-    <Content Include="Models\QLBanHang.Context.tt">
+    <Content Include="Models\QL_BanHangModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
-      <LastGenOutput>QLBanHang.Context.cs</LastGenOutput>
+      <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
+      <LastGenOutput>QL_BanHangModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\QLBanHang.tt">
+    <Content Include="Models\QL_BanHangModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
-      <LastGenOutput>QLBanHang.cs</LastGenOutput>
+      <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
+      <LastGenOutput>QL_BanHangModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -196,67 +196,64 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AnhSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BienTheSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChiTietDonHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChiTietGioHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CuaHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhGiaSanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhMuc.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\DatHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DonHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DonViVanChuyen.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GiamGia.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GioHang.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\KhieuNai.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NguoiBan.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+    <Compile Include="Models\NguoiDung.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NguoiMua.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\QLBanHang.Context.cs">
+    <Compile Include="Models\QL_BanHangModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.Context.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QLBanHang.cs">
+    <Compile Include="Models\QL_BanHangModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QLBanHang.Designer.cs">
+    <Compile Include="Models\QL_BanHangModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
+      <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.cs">
-      <DependentUpon>QLBanHang.tt</DependentUpon>
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -279,12 +276,12 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="assets\.DS_Store" />
-    <EntityDeploy Include="Models\QLBanHang.edmx">
+    <EntityDeploy Include="Models\QL_BanHangModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QLBanHang.Designer.cs</LastGenOutput>
+      <LastGenOutput>QL_BanHangModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\QLBanHang.edmx.diagram">
-      <DependentUpon>QLBanHang.edmx</DependentUpon>
+    <Content Include="Models\QL_BanHangModel.edmx.diagram">
+      <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Content>
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />

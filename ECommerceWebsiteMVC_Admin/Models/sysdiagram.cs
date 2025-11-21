@@ -7,21 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ECommerceWebsiteMVC.Models
+namespace ECommerceWebsiteMVC_Admin.Models
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class KhieuNai
+    public partial class sysdiagram
     {
-        public int MaKN { get; set; }
-        public string TieuDe { get; set; }
-        public string NoiDung { get; set; }
-        public System.DateTime ThoiGian { get; set; }
-        public Nullable<bool> TrangThai { get; set; }
-        public string HinhAnh { get; set; }
-        public int MaDonHang { get; set; }
-    
-        public virtual DonHang DonHang { get; set; }
+        public string name { get; set; }
+        public int principal_id { get; set; }
+        public int diagram_id { get; set; }
+        public Nullable<int> version { get; set; }
+        public byte[] definition { get; set; }
     }
 }

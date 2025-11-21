@@ -139,9 +139,6 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DatHang.cs">
-      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -157,10 +154,7 @@
     <Compile Include="Models\KhieuNai.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NguoiBan.cs">
-      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\NguoiMua.cs">
+    <Compile Include="Models\NguoiDung.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\QL_BanHangModel.Context.cs">
@@ -179,6 +173,9 @@
       <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

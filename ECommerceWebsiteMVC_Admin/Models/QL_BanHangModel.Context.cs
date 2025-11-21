@@ -32,14 +32,13 @@ namespace ECommerceWebsiteMVC_Admin.Models
         public virtual DbSet<CuaHang> CuaHangs { get; set; }
         public virtual DbSet<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
         public virtual DbSet<DanhMuc> DanhMucs { get; set; }
-        public virtual DbSet<DatHang> DatHangs { get; set; }
         public virtual DbSet<DonHang> DonHangs { get; set; }
         public virtual DbSet<DonViVanChuyen> DonViVanChuyens { get; set; }
         public virtual DbSet<GiamGia> GiamGias { get; set; }
         public virtual DbSet<GioHang> GioHangs { get; set; }
         public virtual DbSet<KhieuNai> KhieuNais { get; set; }
-        public virtual DbSet<NguoiBan> NguoiBans { get; set; }
-        public virtual DbSet<NguoiMua> NguoiMuas { get; set; }
+        public virtual DbSet<NguoiDung> NguoiDungs { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
     }
 }

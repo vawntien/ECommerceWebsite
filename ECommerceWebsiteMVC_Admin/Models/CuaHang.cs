@@ -21,12 +21,14 @@ namespace ECommerceWebsiteMVC_Admin.Models
         }
     
         public int MaCuaHang { get; set; }
-        public int MaNguoiBan { get; set; }
+        public int MaNguoiDung { get; set; }
         public string TenCuaHang { get; set; }
         public string HinhAnh { get; set; }
         public string DiaChi { get; set; }
+        public Nullable<System.DateTime> NgayDangKy { get; set; }
+        public string MaSoThue { get; set; }
     
-        public virtual NguoiBan NguoiBan { get; set; }
+        public virtual NguoiDung NguoiDung { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SanPham> SanPhams { get; set; }
     }

@@ -17,6 +17,7 @@ namespace ECommerceWebsiteMVC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BienTheSanPham()
         {
+            this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
             this.ChiTietGioHangs = new HashSet<ChiTietGioHang>();
         }
     
@@ -24,10 +25,12 @@ namespace ECommerceWebsiteMVC.Models
         public int MaSanPham { get; set; }
         public string TenBienThe { get; set; }
         public string HinhAnh { get; set; }
-        public Nullable<decimal> GiaBan { get; set; }
-        public Nullable<int> SoLuongTonKho { get; set; }
+        public decimal GiaBan { get; set; }
+        public int SoLuongTonKho { get; set; }
     
         public virtual SanPham SanPham { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
     }
