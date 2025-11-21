@@ -1,0 +1,240 @@
+﻿@model ECommerceWebsiteMVC.Models.DanhGiaSanPham
+
+<!-- Fonts + Icons + Tailwind -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    primary: "#f97316",
+                    "background-light": "#f8fafc",
+                    "background-dark": "#0f172a",
+                },
+                fontFamily: {
+                    display: ["Roboto", "sans-serif"],
+                },
+                borderRadius: {
+                    DEFAULT: "0.25rem",
+                },
+            },
+        },
+    };
+</script>
+
+<style>
+    .star-rating {
+        display: inline-flex;
+        gap: 0.25rem;
+    }
+
+        .star-rating .material-icons {
+            font-size: 1.75rem;
+            color: #f59e0b;
+            cursor: pointer;
+            user-select: none;
+        }
+</style>
+
+<!-- OVERLAY MODAL -->
+<div id="product-review-modal"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
+
+    <div class="max-w-4xl w-full mx-4 md:mx-auto">
+        <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg relative
+                    font-display text-gray-800 dark:text-gray-200">
+
+            @using (Html.BeginForm("DanhGia", "DonHang", FormMethod.Post,
+                   new { enctype = "multipart/form-data", id = "product-review-form" }))
+            {
+                <!-- nút đóng -->
+                <button type="button"
+                        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                        data-close-review-modal>
+                    <span class="material-icons">close</span>
+                </button>
+
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                    Đánh Giá Sản Phẩm
+                </h1>
+
+                @* nếu bạn có các khóa để biết đang đánh giá đơn/sản phẩm nào *@
+                <input type="hidden" name="MaSanPham" value="@Model?.MaSanPham" />
+                <input type="hidden" name="MaDonHang" value="@Model?.MaDonHang" />
+
+                <!-- Thông tin sản phẩm -->
+                <div class="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
+                    <img alt="Ảnh sản phẩm"
+                         class="w-12 h-12 object-cover rounded"
+                         src="@(Model?.HinhAnh ?? "/Content/images/no-image.png")" />
+                    <div>
+                        <h2 class="font-medium text-gray-900 dark:text-white">
+                            @ViewBag.TenSanPham
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            @ViewBag.PhanLoai
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CHẤT LƯỢNG + TIÊU ĐỀ -->
+                <input type="hidden"
+                       id="SoSao"
+                       name="SoSao"
+                       value="@(Model?.SoSao > 0 ? Model.SoSao : 5)" />
+
+                <div class="py-6 space-y-4">
+
+                    <!-- Chất lượng sản phẩm (5 sao chọn được) -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <span class="text-gray-700 dark:text-gray-300">
+                            Chất lượng sản phẩm
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <div class="star-rating" id="review-stars">
+                                <span class="material-icons" data-value="1">star</span>
+                                <span class="material-icons" data-value="2">star</span>
+                                <span class="material-icons" data-value="3">star</span>
+                                <span class="material-icons" data-value="4">star</span>
+                                <span class="material-icons" data-value="5">star</span>
+                            </div>
+                            <span id="rating-text" class="text-amber-500 font-medium">
+                                Tuyệt vời
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Tiêu đề (từ "Chất lượng sản phẩm" cũ) -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">
+                            Tiêu đề
+                        </span>
+
+                        <input type="text"
+                               name="TieuDe"
+                               value="@(Model?.TieuDe ?? "")"
+                               class="flex-1 min-w-[200px] p-2 border border-gray-300 dark:border-gray-600
+                                      rounded-md bg-white dark:bg-slate-800 focus:ring-primary focus:border-primary"
+                               placeholder="VD: Sản phẩm rất tốt, đáng mua" />
+                    </div>
+                </div>
+
+                <!-- NỘI DUNG (từ “Đúng với mô tả”) + ẢNH -->
+                <div class="p-4 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-slate-700/50">
+                    <div class="flex items-center gap-4 pb-4">
+                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">
+                            Nội dung
+                        </span>
+                    </div>
+
+                    <textarea name="NoiDung"
+                              class="w-full h-32 p-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600
+                                     rounded-md focus:ring-primary focus:border-primary placeholder-gray-400 dark:placeholder-gray-500"
+                              placeholder="Hãy chia sẻ những điều bạn thích / chưa hài lòng về sản phẩm…">@Model?.NoiDung</textarea>
+
+                    <!-- Hình ảnh (upload) -->
+                    <div class="mt-4 flex flex-wrap items-center gap-4">
+                        <input type="file"
+                               id="HinhAnhFile"
+                               name="HinhAnhFile"
+                               class="hidden"
+                               accept="image/*" />
+
+                        <button type="button"
+                                class="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded
+                                       text-sm font-medium hover:bg-primary/10 transition-colors"
+                                onclick="document.getElementById('HinhAnhFile').click();">
+                            <span class="material-icons" style="font-size: 1.25rem;">photo_camera</span>
+                            Thêm Hình ảnh
+                        </button>
+
+                        <span id="review-image-name"
+                              class="text-sm text-gray-600 dark:text-gray-300"></span>
+                    </div>
+                </div>
+
+                <!-- FOOTER NÚT -->
+                <div class="mt-6 bg-white dark:bg-slate-800 p-4 rounded-lg flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <span>Điều kiện nhận Xu</span>
+                        <span class="material-icons text-base cursor-pointer">help_outline</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button type="button"
+                                class="px-6 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700
+                                       rounded font-medium transition-colors"
+                                data-close-review-modal>
+                            TRỞ LẠI
+                        </button>
+                        <button type="submit"
+                                class="px-8 py-2.5 bg-primary text-white rounded font-medium hover:bg-orange-600 transition-colors">
+                            HOÀN THÀNH
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- JS: mở/đóng popup + chọn sao + hiện tên file -->
+<script>
+    // mở modal (gọi từ view cha)
+    window.openReviewModal = function () {
+        var m = document.getElementById('product-review-modal');
+        if (m) m.classList.remove('hidden');
+    };
+
+    // đóng modal khi bấm nút có data-close-review-modal
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-close-review-modal]')) {
+            var m = document.getElementById('product-review-modal');
+            if (m) m.classList.add('hidden');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var starsContainer = document.getElementById('review-stars');
+        var hiddenInput = document.getElementById('SoSao');
+        var ratingText = document.getElementById('rating-text');
+        var labels = ["", "Tệ", "Tạm ổn", "Khá", "Tốt", "Tuyệt vời"];
+
+        if (starsContainer && hiddenInput) {
+            var stars = starsContainer.querySelectorAll('.material-icons');
+
+            function render(value) {
+                stars.forEach(function (s) {
+                    var v = parseInt(s.getAttribute('data-value'));
+                    s.textContent = v <= value ? 'star' : 'star_border';
+                });
+                if (ratingText) ratingText.textContent = labels[value] || "";
+            }
+
+            stars.forEach(function (s) {
+                s.addEventListener('click', function () {
+                    var v = parseInt(this.getAttribute('data-value')) || 0;
+                    hiddenInput.value = v;
+                    render(v);
+                });
+            });
+
+            var initial = parseInt(hiddenInput.value) || 5;
+            render(initial);
+        }
+
+        // Hiện tên file ảnh đã chọn
+        var fileInput = document.getElementById('HinhAnhFile');
+        var nameSpan = document.getElementById('review-image-name');
+        if (fileInput && nameSpan) {
+            fileInput.addEventListener('change', function () {
+                nameSpan.textContent = (this.files && this.files.length > 0)
+                    ? this.files[0].name
+                    : "";
+            });
+        }
+    });
+</script>
