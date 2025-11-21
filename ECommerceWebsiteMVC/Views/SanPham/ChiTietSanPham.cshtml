@@ -26,7 +26,7 @@
         src="~/Images/Products/@Model.MaSanPham/@Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh"
         class="img-fluid shadow" />*@
                     <img id="main-img" style="height: 500px;width: 500px"
-                         src="@($"https://raw.githubusercontent.com/vawntien/ECommerceWebsite/master/Images/Products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
+                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
                          class="img-fluid shadow" />
 
 
@@ -37,7 +37,7 @@
                 onclick="document.getElementById('main-img').src=this.src;" />*@
                             <img class="thumb-img"
                                  style="height: 60px;width: 60px"
-                                 src="@($"https://raw.githubusercontent.com/vawntien/ECommerceWebsite/master/Images/Products/{Model.MaSanPham}/{img.HinhAnh}")"
+                                 src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}")"
                                  onclick="document.getElementById('main-img').src=this.src;" />
 
                                  //
@@ -125,7 +125,7 @@ document.querySelectorAll(".variant-btn").forEach(btn => {
         // Đổi ảnh nếu biến thể có ảnh riêng
         if (this.dataset.img) {
             @*mainImg.src = "/Images/Products/@Model.MaSanPham/" + this.dataset.img;*@
-            mainImg.src = "https://raw.githubusercontent.com/vawntien/ECommerceWebsite/master/Images/Products/@Model.MaSanPham/" + this.dataset.img;
+            mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/products/@Model.MaSanPham/" + this.dataset.img;
 
         }
 
