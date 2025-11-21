@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -22,8 +22,8 @@
           <Property Name="MaSanPham" Type="int" Nullable="false" />
           <Property Name="TenBienThe" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
-          <Property Name="GiaBan" Type="money" />
-          <Property Name="SoLuongTonKho" Type="int" />
+          <Property Name="GiaBan" Type="money" Nullable="false" />
+          <Property Name="SoLuongTonKho" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ChiTietDonHang">
           <Key>
@@ -31,8 +31,10 @@
           </Key>
           <Property Name="MaCTDH" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaDonHang" Type="int" Nullable="false" />
-          <Property Name="MaCTGH" Type="int" Nullable="false" />
-          <Property Name="ThanhTien" Type="money" />
+          <Property Name="ThanhTien" Type="money" Nullable="false" />
+          <Property Name="SoLuong" Type="int" Nullable="false" />
+          <Property Name="DonGia" Type="money" Nullable="false" />
+          <Property Name="MaBienThe" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ChiTietGioHang">
           <Key>
@@ -41,18 +43,19 @@
           <Property Name="MaCTGH" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaGioHang" Type="int" Nullable="false" />
           <Property Name="MaBienThe" Type="int" Nullable="false" />
-          <Property Name="SoLuong" Type="int" />
-          <Property Name="DonGia" Type="money" />
+          <Property Name="SoLuong" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CuaHang">
           <Key>
             <PropertyRef Name="MaCuaHang" />
           </Key>
           <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaNguoiBan" Type="int" Nullable="false" />
+          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
           <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="NgayDangKy" Type="date" />
+          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhGiaSanPham">
           <Key>
@@ -73,31 +76,23 @@
           <Property Name="MaDanhMuc" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TenDanhMuc" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="DatHang">
-          <Key>
-            <PropertyRef Name="MaDatHang" />
-          </Key>
-          <Property Name="MaDatHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaGiamGia" Type="int" />
-          <Property Name="TongTien" Type="money" />
-          <Property Name="TrangThaiThanhToan" Type="nvarchar" MaxLength="50" />
-          <Property Name="TenNguoiNhan" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
-          <Property Name="GhiChu" Type="nvarchar" MaxLength="200" />
-          <Property Name="NgayDat" Type="datetime" />
-        </EntityType>
         <EntityType Name="DonHang">
           <Key>
             <PropertyRef Name="MaDonHang" />
           </Key>
           <Property Name="MaDonHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaDVVC" Type="int" Nullable="false" />
-          <Property Name="MaDatHang" Type="int" Nullable="false" />
-          <Property Name="TongTien" Type="money" />
+          <Property Name="TongTien" Type="money" Nullable="false" />
           <Property Name="TrangThaiVanChuyen" Type="nvarchar" MaxLength="50" />
-          <Property Name="TrangThaiDonHang" Type="nvarchar" MaxLength="50" />
-          <Property Name="PhiVanChuyen" Type="money" />
+          <Property Name="TrangThaiDonHang" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PhiVanChuyen" Type="money" Nullable="false" />
+          <Property Name="TenNguoiNhan" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="GhiChu" Type="nvarchar" MaxLength="200" />
+          <Property Name="TrangThaiThanhToan" Type="bit" Nullable="false" />
+          <Property Name="ThoiGianDat" Type="datetime" Nullable="false" />
+          <Property Name="MaGiamGia" Type="int" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
@@ -111,10 +106,10 @@
             <PropertyRef Name="MaGiamGia" />
           </Key>
           <Property Name="MaGiamGia" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TenMaGG" Type="nvarchar" MaxLength="100" />
+          <Property Name="TenMaGG" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="MoTa" Type="nvarchar" MaxLength="200" />
-          <Property Name="GiaTriDonHangToiThieu" Type="float" />
-          <Property Name="GiaTriGiamToiDa" Type="float" />
+          <Property Name="GiaTriDonHangToiThieu" Type="money" Nullable="false" />
+          <Property Name="GiaTriGiamToiDa" Type="money" Nullable="false" />
           <Property Name="GiaTriGiam" Type="float" />
           <Property Name="NgayBD" Type="datetime" />
           <Property Name="NgayKT" Type="datetime" />
@@ -124,43 +119,35 @@
             <PropertyRef Name="MaGioHang" />
           </Key>
           <Property Name="MaGioHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaNguoiMua" Type="int" Nullable="false" />
-          <Property Name="SoLuong" Type="int" />
+          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
+          <Property Name="SoLuong" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="KhieuNai">
           <Key>
             <PropertyRef Name="MaKN" />
           </Key>
           <Property Name="MaKN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TieuDe" Type="nvarchar" MaxLength="100" />
-          <Property Name="NoiDung" Type="nvarchar" MaxLength="500" />
-          <Property Name="ThoiGian" Type="datetime" />
+          <Property Name="TieuDe" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="NoiDung" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ThoiGian" Type="datetime" Nullable="false" />
           <Property Name="TrangThai" Type="bit" />
-          <Property Name="MaSP" Type="int" Nullable="false" />
+          <Property Name="HinhAnh" Type="varchar" MaxLength="100" />
+          <Property Name="MaDonHang" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="NguoiBan">
+        <EntityType Name="NguoiDung">
           <Key>
-            <PropertyRef Name="MaNguoiBan" />
+            <PropertyRef Name="MaNguoiDung" />
           </Key>
-          <Property Name="MaNguoiBan" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaNguoiDung" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="HoVaTen" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
           <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="CCCD" Type="char" MaxLength="12" Nullable="false" />
-        </EntityType>
-        <EntityType Name="NguoiMua">
-          <Key>
-            <PropertyRef Name="MaNguoiMua" />
-          </Key>
-          <Property Name="MaNguoiMua" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="HoVaTen" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
-          <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="CCCD" Type="char" MaxLength="12" />
+          <Property Name="NgayDangKy" Type="date" />
+          <Property Name="HinhAnh" Type="varchar" MaxLength="100" />
+          <Property Name="VaiTro" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -169,12 +156,20 @@
           <Property Name="MaSanPham" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaDanhMuc" Type="int" Nullable="false" />
           <Property Name="MaCuaHang" Type="int" Nullable="false" />
-          <Property Name="TenSanPham" Type="nvarchar" MaxLength="255" />
+          <Property Name="TenSanPham" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="MoTa" Type="nvarchar(max)" />
-          <Property Name="LoaiPhanLoai" Type="nvarchar" MaxLength="300" />
+          <Property Name="LoaiPhanLoai" Type="nvarchar" MaxLength="300" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
           <End Role="AnhSanPham" Type="Self.AnhSanPham" Multiplicity="*" />
@@ -199,15 +194,15 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_CTGH">
-          <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="1" />
+        <Association Name="FK_CTDH_BTSP">
+          <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="ChiTietGioHang">
-              <PropertyRef Name="MaCTGH" />
+            <Principal Role="BienTheSanPham">
+              <PropertyRef Name="MaBienThe" />
             </Principal>
             <Dependent Role="ChiTietDonHang">
-              <PropertyRef Name="MaCTGH" />
+              <PropertyRef Name="MaBienThe" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -247,15 +242,15 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CuaHang_NguoiBan">
-          <End Role="NguoiBan" Type="Self.NguoiBan" Multiplicity="1" />
+        <Association Name="FK_CuaHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
           <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="NguoiBan">
-              <PropertyRef Name="MaNguoiBan" />
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
             </Principal>
             <Dependent Role="CuaHang">
-              <PropertyRef Name="MaNguoiBan" />
+              <PropertyRef Name="MaNguoiDung" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -271,30 +266,6 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DatHang_GiamGia">
-          <End Role="GiamGia" Type="Self.GiamGia" Multiplicity="0..1" />
-          <End Role="DatHang" Type="Self.DatHang" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GiamGia">
-              <PropertyRef Name="MaGiamGia" />
-            </Principal>
-            <Dependent Role="DatHang">
-              <PropertyRef Name="MaGiamGia" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DonHang_DatHang">
-          <End Role="DatHang" Type="Self.DatHang" Multiplicity="1" />
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DatHang">
-              <PropertyRef Name="MaDatHang" />
-            </Principal>
-            <Dependent Role="DonHang">
-              <PropertyRef Name="MaDatHang" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_DonHang_DVVC">
           <End Role="DonViVanChuyen" Type="Self.DonViVanChuyen" Multiplicity="1" />
           <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
@@ -307,27 +278,39 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_GioHang_NguoiMua">
-          <End Role="NguoiMua" Type="Self.NguoiMua" Multiplicity="1" />
-          <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
+        <Association Name="FK_DonHang_GiamGia">
+          <End Role="GiamGia" Type="Self.GiamGia" Multiplicity="0..1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="NguoiMua">
-              <PropertyRef Name="MaNguoiMua" />
+            <Principal Role="GiamGia">
+              <PropertyRef Name="MaGiamGia" />
             </Principal>
-            <Dependent Role="GioHang">
-              <PropertyRef Name="MaNguoiMua" />
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaGiamGia" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_KhieuNai_SanPham">
-          <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
+        <Association Name="FK_GioHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
+          <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
+            </Principal>
+            <Dependent Role="GioHang">
+              <PropertyRef Name="MaNguoiDung" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KhieuNai_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
           <End Role="KhieuNai" Type="Self.KhieuNai" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="SanPham">
-              <PropertyRef Name="MaSanPham" />
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
             </Principal>
             <Dependent Role="KhieuNai">
-              <PropertyRef Name="MaSP" />
+              <PropertyRef Name="MaDonHang" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -363,15 +346,14 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhGiaSanPham" EntityType="Self.DanhGiaSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="DatHang" EntityType="Self.DatHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonViVanChuyen" EntityType="Self.DonViVanChuyen" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GiamGia" EntityType="Self.GiamGia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GioHang" EntityType="Self.GioHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="KhieuNai" EntityType="Self.KhieuNai" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="NguoiBan" EntityType="Self.NguoiBan" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="NguoiMua" EntityType="Self.NguoiMua" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NguoiDung" EntityType="Self.NguoiDung" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="AnhSanPham" EntitySet="AnhSanPham" />
@@ -380,8 +362,8 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
           </AssociationSet>
-          <AssociationSet Name="FK_CTDH_CTGH" Association="Self.FK_CTDH_CTGH">
-            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHang" />
+          <AssociationSet Name="FK_CTDH_BTSP" Association="Self.FK_CTDH_BTSP">
+            <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
           <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
@@ -396,32 +378,28 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="GioHang" EntitySet="GioHang" />
             <End Role="ChiTietGioHang" EntitySet="ChiTietGioHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_CuaHang_NguoiBan" Association="Self.FK_CuaHang_NguoiBan">
-            <End Role="NguoiBan" EntitySet="NguoiBan" />
+          <AssociationSet Name="FK_CuaHang_NguoiDung" Association="Self.FK_CuaHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="CuaHang" EntitySet="CuaHang" />
           </AssociationSet>
           <AssociationSet Name="FK_DanhGiaSanPham_CTDH" Association="Self.FK_DanhGiaSanPham_CTDH">
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
             <End Role="DanhGiaSanPham" EntitySet="DanhGiaSanPham" />
           </AssociationSet>
-          <AssociationSet Name="FK_DatHang_GiamGia" Association="Self.FK_DatHang_GiamGia">
-            <End Role="GiamGia" EntitySet="GiamGia" />
-            <End Role="DatHang" EntitySet="DatHang" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DonHang_DatHang" Association="Self.FK_DonHang_DatHang">
-            <End Role="DatHang" EntitySet="DatHang" />
-            <End Role="DonHang" EntitySet="DonHang" />
-          </AssociationSet>
           <AssociationSet Name="FK_DonHang_DVVC" Association="Self.FK_DonHang_DVVC">
             <End Role="DonViVanChuyen" EntitySet="DonViVanChuyen" />
             <End Role="DonHang" EntitySet="DonHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_GioHang_NguoiMua" Association="Self.FK_GioHang_NguoiMua">
-            <End Role="NguoiMua" EntitySet="NguoiMua" />
+          <AssociationSet Name="FK_DonHang_GiamGia" Association="Self.FK_DonHang_GiamGia">
+            <End Role="GiamGia" EntitySet="GiamGia" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GioHang_NguoiDung" Association="Self.FK_GioHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="GioHang" EntitySet="GioHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_KhieuNai_SanPham" Association="Self.FK_KhieuNai_SanPham">
-            <End Role="SanPham" EntitySet="SanPham" />
+          <AssociationSet Name="FK_KhieuNai_DonHang" Association="Self.FK_KhieuNai_DonHang">
+            <End Role="DonHang" EntitySet="DonHang" />
             <End Role="KhieuNai" EntitySet="KhieuNai" />
           </AssociationSet>
           <AssociationSet Name="FK_SanPham_CuaHang" Association="Self.FK_SanPham_CuaHang">
@@ -433,7 +411,8 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -455,9 +434,10 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <Property Name="MaSanPham" Type="Int32" Nullable="false" />
           <Property Name="TenBienThe" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="GiaBan" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="SoLuongTonKho" Type="Int32" />
+          <Property Name="GiaBan" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="SoLuongTonKho" Type="Int32" Nullable="false" />
           <NavigationProperty Name="SanPham" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="BienTheSanPham" ToRole="SanPham" />
+          <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK_CTDH_BTSP" FromRole="BienTheSanPham" ToRole="ChiTietDonHang" />
           <NavigationProperty Name="ChiTietGioHangs" Relationship="Self.FK_CTGH_BienThe" FromRole="BienTheSanPham" ToRole="ChiTietGioHang" />
         </EntityType>
         <EntityType Name="ChiTietDonHang">
@@ -466,9 +446,11 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           </Key>
           <Property Name="MaCTDH" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDonHang" Type="Int32" Nullable="false" />
-          <Property Name="MaCTGH" Type="Int32" Nullable="false" />
-          <Property Name="ThanhTien" Type="Decimal" Precision="19" Scale="4" />
-          <NavigationProperty Name="ChiTietGioHang" Relationship="Self.FK_CTDH_CTGH" FromRole="ChiTietDonHang" ToRole="ChiTietGioHang" />
+          <Property Name="ThanhTien" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="SoLuong" Type="Int32" Nullable="false" />
+          <Property Name="DonGia" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="MaBienThe" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BienTheSanPham" Relationship="Self.FK_CTDH_BTSP" FromRole="ChiTietDonHang" ToRole="BienTheSanPham" />
           <NavigationProperty Name="DonHang" Relationship="Self.FK_CTDH_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
           <NavigationProperty Name="DanhGiaSanPhams" Relationship="Self.FK_DanhGiaSanPham_CTDH" FromRole="ChiTietDonHang" ToRole="DanhGiaSanPham" />
         </EntityType>
@@ -479,10 +461,8 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <Property Name="MaCTGH" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaGioHang" Type="Int32" Nullable="false" />
           <Property Name="MaBienThe" Type="Int32" Nullable="false" />
-          <Property Name="SoLuong" Type="Int32" />
-          <Property Name="DonGia" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SoLuong" Type="Int32" Nullable="false" />
           <NavigationProperty Name="BienTheSanPham" Relationship="Self.FK_CTGH_BienThe" FromRole="ChiTietGioHang" ToRole="BienTheSanPham" />
-          <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK_CTDH_CTGH" FromRole="ChiTietGioHang" ToRole="ChiTietDonHang" />
           <NavigationProperty Name="GioHang" Relationship="Self.FK_CTGH_GioHang" FromRole="ChiTietGioHang" ToRole="GioHang" />
         </EntityType>
         <EntityType Name="CuaHang">
@@ -490,11 +470,13 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <PropertyRef Name="MaCuaHang" />
           </Key>
           <Property Name="MaCuaHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MaNguoiBan" Type="Int32" Nullable="false" />
+          <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
           <Property Name="TenCuaHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="NguoiBan" Relationship="Self.FK_CuaHang_NguoiBan" FromRole="CuaHang" ToRole="NguoiBan" />
+          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="0" />
+          <Property Name="MaSoThue" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="NguoiDung" Relationship="Self.FK_CuaHang_NguoiDung" FromRole="CuaHang" ToRole="NguoiDung" />
           <NavigationProperty Name="SanPhams" Relationship="Self.FK_SanPham_CuaHang" FromRole="CuaHang" ToRole="SanPham" />
         </EntityType>
         <EntityType Name="DanhGiaSanPham">
@@ -518,36 +500,27 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <Property Name="TenDanhMuc" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="SanPhams" Relationship="Self.FK_SanPham_DanhMuc" FromRole="DanhMuc" ToRole="SanPham" />
         </EntityType>
-        <EntityType Name="DatHang">
-          <Key>
-            <PropertyRef Name="MaDatHang" />
-          </Key>
-          <Property Name="MaDatHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MaGiamGia" Type="Int32" />
-          <Property Name="TongTien" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="TrangThaiThanhToan" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TenNguoiNhan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="GhiChu" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="NgayDat" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="GiamGia" Relationship="Self.FK_DatHang_GiamGia" FromRole="DatHang" ToRole="GiamGia" />
-          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_DatHang" FromRole="DatHang" ToRole="DonHang" />
-        </EntityType>
         <EntityType Name="DonHang">
           <Key>
             <PropertyRef Name="MaDonHang" />
           </Key>
           <Property Name="MaDonHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDVVC" Type="Int32" Nullable="false" />
-          <Property Name="MaDatHang" Type="Int32" Nullable="false" />
-          <Property Name="TongTien" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="TongTien" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
           <Property Name="TrangThaiVanChuyen" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TrangThaiDonHang" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PhiVanChuyen" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="TrangThaiDonHang" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PhiVanChuyen" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="TenNguoiNhan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="GhiChu" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="TrangThaiThanhToan" Type="Boolean" Nullable="false" />
+          <Property Name="ThoiGianDat" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MaGiamGia" Type="Int32" />
           <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK_CTDH_DonHang" FromRole="DonHang" ToRole="ChiTietDonHang" />
-          <NavigationProperty Name="DatHang" Relationship="Self.FK_DonHang_DatHang" FromRole="DonHang" ToRole="DatHang" />
           <NavigationProperty Name="DonViVanChuyen" Relationship="Self.FK_DonHang_DVVC" FromRole="DonHang" ToRole="DonViVanChuyen" />
+          <NavigationProperty Name="GiamGia" Relationship="Self.FK_DonHang_GiamGia" FromRole="DonHang" ToRole="GiamGia" />
+          <NavigationProperty Name="KhieuNais" Relationship="Self.FK_KhieuNai_DonHang" FromRole="DonHang" ToRole="KhieuNai" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
@@ -562,50 +535,54 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <PropertyRef Name="MaGiamGia" />
           </Key>
           <Property Name="MaGiamGia" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenMaGG" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TenMaGG" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MoTa" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="GiaTriDonHangToiThieu" Type="Double" />
-          <Property Name="GiaTriGiamToiDa" Type="Double" />
+          <Property Name="GiaTriDonHangToiThieu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="GiaTriGiamToiDa" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
           <Property Name="GiaTriGiam" Type="Double" />
           <Property Name="NgayBD" Type="DateTime" Precision="3" />
           <Property Name="NgayKT" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="DatHangs" Relationship="Self.FK_DatHang_GiamGia" FromRole="GiamGia" ToRole="DatHang" />
+          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_GiamGia" FromRole="GiamGia" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="GioHang">
           <Key>
             <PropertyRef Name="MaGioHang" />
           </Key>
           <Property Name="MaGioHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MaNguoiMua" Type="Int32" Nullable="false" />
-          <Property Name="SoLuong" Type="Int32" />
+          <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
+          <Property Name="SoLuong" Type="Int32" Nullable="false" />
           <NavigationProperty Name="ChiTietGioHangs" Relationship="Self.FK_CTGH_GioHang" FromRole="GioHang" ToRole="ChiTietGioHang" />
-          <NavigationProperty Name="NguoiMua" Relationship="Self.FK_GioHang_NguoiMua" FromRole="GioHang" ToRole="NguoiMua" />
+          <NavigationProperty Name="NguoiDung" Relationship="Self.FK_GioHang_NguoiDung" FromRole="GioHang" ToRole="NguoiDung" />
         </EntityType>
-        <EntityType Name="NguoiBan">
+        <EntityType Name="KhieuNai">
           <Key>
-            <PropertyRef Name="MaNguoiBan" />
+            <PropertyRef Name="MaKN" />
           </Key>
-          <Property Name="MaNguoiBan" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaKN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TieuDe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NoiDung" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ThoiGian" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TrangThai" Type="Boolean" />
+          <Property Name="HinhAnh" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MaDonHang" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="DonHang" Relationship="Self.FK_KhieuNai_DonHang" FromRole="KhieuNai" ToRole="DonHang" />
+        </EntityType>
+        <EntityType Name="NguoiDung">
+          <Key>
+            <PropertyRef Name="MaNguoiDung" />
+          </Key>
+          <Property Name="MaNguoiDung" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="HoVaTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
           <Property Name="TaiKhoan" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MatKhau" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CCCD" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="CuaHangs" Relationship="Self.FK_CuaHang_NguoiBan" FromRole="NguoiBan" ToRole="CuaHang" />
-        </EntityType>
-        <EntityType Name="NguoiMua">
-          <Key>
-            <PropertyRef Name="MaNguoiMua" />
-          </Key>
-          <Property Name="MaNguoiMua" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="HoVaTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="TaiKhoan" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MatKhau" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="GioHangs" Relationship="Self.FK_GioHang_NguoiMua" FromRole="NguoiMua" ToRole="GioHang" />
+          <Property Name="CCCD" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="0" />
+          <Property Name="HinhAnh" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="VaiTro" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CuaHangs" Relationship="Self.FK_CuaHang_NguoiDung" FromRole="NguoiDung" ToRole="CuaHang" />
+          <NavigationProperty Name="GioHangs" Relationship="Self.FK_GioHang_NguoiDung" FromRole="NguoiDung" ToRole="GioHang" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -614,14 +591,23 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <Property Name="MaSanPham" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDanhMuc" Type="Int32" Nullable="false" />
           <Property Name="MaCuaHang" Type="Int32" Nullable="false" />
-          <Property Name="TenSanPham" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="TenSanPham" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="LoaiPhanLoai" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="LoaiPhanLoai" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="AnhSanPhams" Relationship="Self.FK_AnhSanPham_SanPham" FromRole="SanPham" ToRole="AnhSanPham" />
           <NavigationProperty Name="BienTheSanPhams" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="SanPham" ToRole="BienTheSanPham" />
           <NavigationProperty Name="CuaHang" Relationship="Self.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_SanPham_DanhMuc" FromRole="SanPham" ToRole="DanhMuc" />
-          <NavigationProperty Name="KhieuNais" Relationship="ECommerceWebsiteModel.FK_KhieuNai_SanPham" FromRole="SanPham" ToRole="KhieuNai" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
@@ -647,6 +633,18 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CTDH_BTSP">
+          <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BienTheSanPham">
+              <PropertyRef Name="MaBienThe" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaBienThe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CTGH_BienThe">
           <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
           <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="*" />
@@ -656,18 +654,6 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Principal>
             <Dependent Role="ChiTietGioHang">
               <PropertyRef Name="MaBienThe" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CTDH_CTGH">
-          <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="1" />
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ChiTietGioHang">
-              <PropertyRef Name="MaCTGH" />
-            </Principal>
-            <Dependent Role="ChiTietDonHang">
-              <PropertyRef Name="MaCTGH" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -707,15 +693,15 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CuaHang_NguoiBan">
-          <End Role="NguoiBan" Type="Self.NguoiBan" Multiplicity="1" />
+        <Association Name="FK_CuaHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
           <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="NguoiBan">
-              <PropertyRef Name="MaNguoiBan" />
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
             </Principal>
             <Dependent Role="CuaHang">
-              <PropertyRef Name="MaNguoiBan" />
+              <PropertyRef Name="MaNguoiDung" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -743,30 +729,6 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DatHang_GiamGia">
-          <End Role="GiamGia" Type="Self.GiamGia" Multiplicity="0..1" />
-          <End Role="DatHang" Type="Self.DatHang" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GiamGia">
-              <PropertyRef Name="MaGiamGia" />
-            </Principal>
-            <Dependent Role="DatHang">
-              <PropertyRef Name="MaGiamGia" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DonHang_DatHang">
-          <End Role="DatHang" Type="Self.DatHang" Multiplicity="1" />
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DatHang">
-              <PropertyRef Name="MaDatHang" />
-            </Principal>
-            <Dependent Role="DonHang">
-              <PropertyRef Name="MaDatHang" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_DonHang_DVVC">
           <End Role="DonViVanChuyen" Type="Self.DonViVanChuyen" Multiplicity="1" />
           <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
@@ -779,15 +741,39 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_GioHang_NguoiMua">
-          <End Role="NguoiMua" Type="Self.NguoiMua" Multiplicity="1" />
+        <Association Name="FK_DonHang_GiamGia">
+          <End Role="GiamGia" Type="Self.GiamGia" Multiplicity="0..1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GiamGia">
+              <PropertyRef Name="MaGiamGia" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaGiamGia" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KhieuNai_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="KhieuNai" Type="Self.KhieuNai" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="KhieuNai">
+              <PropertyRef Name="MaDonHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GioHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
           <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="NguoiMua">
-              <PropertyRef Name="MaNguoiMua" />
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
             </Principal>
             <Dependent Role="GioHang">
-              <PropertyRef Name="MaNguoiMua" />
+              <PropertyRef Name="MaNguoiDung" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -799,14 +785,14 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
           <EntitySet Name="CuaHangs" EntityType="Self.CuaHang" />
           <EntitySet Name="DanhGiaSanPhams" EntityType="Self.DanhGiaSanPham" />
           <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
-          <EntitySet Name="DatHangs" EntityType="Self.DatHang" />
           <EntitySet Name="DonHangs" EntityType="Self.DonHang" />
           <EntitySet Name="DonViVanChuyens" EntityType="Self.DonViVanChuyen" />
           <EntitySet Name="GiamGias" EntityType="Self.GiamGia" />
           <EntitySet Name="GioHangs" EntityType="Self.GioHang" />
-          <EntitySet Name="NguoiBans" EntityType="Self.NguoiBan" />
-          <EntitySet Name="NguoiMuas" EntityType="Self.NguoiMua" />
+          <EntitySet Name="KhieuNais" EntityType="Self.KhieuNai" />
+          <EntitySet Name="NguoiDungs" EntityType="Self.NguoiDung" />
           <EntitySet Name="SanPhams" EntityType="Self.SanPham" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
           <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
             <End Role="SanPham" EntitySet="SanPhams" />
             <End Role="AnhSanPham" EntitySet="AnhSanPhams" />
@@ -815,13 +801,13 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="SanPham" EntitySet="SanPhams" />
             <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
           </AssociationSet>
+          <AssociationSet Name="FK_CTDH_BTSP" Association="Self.FK_CTDH_BTSP">
+            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+          </AssociationSet>
           <AssociationSet Name="FK_CTGH_BienThe" Association="Self.FK_CTGH_BienThe">
             <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
             <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CTDH_CTGH" Association="Self.FK_CTDH_CTGH">
-            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
-            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
           </AssociationSet>
           <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
             <End Role="DonHang" EntitySet="DonHangs" />
@@ -835,8 +821,8 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="GioHang" EntitySet="GioHangs" />
             <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
           </AssociationSet>
-          <AssociationSet Name="FK_CuaHang_NguoiBan" Association="Self.FK_CuaHang_NguoiBan">
-            <End Role="NguoiBan" EntitySet="NguoiBans" />
+          <AssociationSet Name="FK_CuaHang_NguoiDung" Association="Self.FK_CuaHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
             <End Role="CuaHang" EntitySet="CuaHangs" />
           </AssociationSet>
           <AssociationSet Name="FK_SanPham_CuaHang" Association="Self.FK_SanPham_CuaHang">
@@ -847,52 +833,23 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <End Role="DanhMuc" EntitySet="DanhMucs" />
             <End Role="SanPham" EntitySet="SanPhams" />
           </AssociationSet>
-          <AssociationSet Name="FK_DatHang_GiamGia" Association="Self.FK_DatHang_GiamGia">
-            <End Role="GiamGia" EntitySet="GiamGias" />
-            <End Role="DatHang" EntitySet="DatHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DonHang_DatHang" Association="Self.FK_DonHang_DatHang">
-            <End Role="DatHang" EntitySet="DatHangs" />
-            <End Role="DonHang" EntitySet="DonHangs" />
-          </AssociationSet>
           <AssociationSet Name="FK_DonHang_DVVC" Association="Self.FK_DonHang_DVVC">
             <End Role="DonViVanChuyen" EntitySet="DonViVanChuyens" />
             <End Role="DonHang" EntitySet="DonHangs" />
           </AssociationSet>
-          <AssociationSet Name="FK_GioHang_NguoiMua" Association="Self.FK_GioHang_NguoiMua">
-            <End Role="NguoiMua" EntitySet="NguoiMuas" />
-            <End Role="GioHang" EntitySet="GioHangs" />
+          <AssociationSet Name="FK_DonHang_GiamGia" Association="Self.FK_DonHang_GiamGia">
+            <End Role="GiamGia" EntitySet="GiamGias" />
+            <End Role="DonHang" EntitySet="DonHangs" />
           </AssociationSet>
-          <EntitySet Name="KhieuNais" EntityType="ECommerceWebsiteModel.KhieuNai" />
-          <AssociationSet Name="FK_KhieuNai_SanPham" Association="ECommerceWebsiteModel.FK_KhieuNai_SanPham">
-            <End Role="SanPham" EntitySet="SanPhams" />
+          <AssociationSet Name="FK_KhieuNai_DonHang" Association="Self.FK_KhieuNai_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
             <End Role="KhieuNai" EntitySet="KhieuNais" />
           </AssociationSet>
+          <AssociationSet Name="FK_GioHang_NguoiDung" Association="Self.FK_GioHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
+            <End Role="GioHang" EntitySet="GioHangs" />
+          </AssociationSet>
         </EntityContainer>
-        <EntityType Name="KhieuNai">
-          <Key>
-            <PropertyRef Name="MaKN" />
-          </Key>
-          <Property Name="MaKN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TieuDe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="NoiDung" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="ThoiGian" Type="DateTime" Precision="3" />
-          <Property Name="TrangThai" Type="Boolean" />
-          <Property Name="MaSP" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="SanPham" Relationship="ECommerceWebsiteModel.FK_KhieuNai_SanPham" FromRole="KhieuNai" ToRole="SanPham" />
-        </EntityType>
-        <Association Name="FK_KhieuNai_SanPham">
-          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="1" />
-          <End Type="ECommerceWebsiteModel.KhieuNai" Role="KhieuNai" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SanPham">
-              <PropertyRef Name="MaSanPham" />
-            </Principal>
-            <Dependent Role="KhieuNai">
-              <PropertyRef Name="MaSP" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -926,8 +883,10 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
               <MappingFragment StoreEntitySet="ChiTietDonHang">
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
-                <ScalarProperty Name="MaCTGH" ColumnName="MaCTGH" />
                 <ScalarProperty Name="ThanhTien" ColumnName="ThanhTien" />
+                <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+                <ScalarProperty Name="DonGia" ColumnName="DonGia" />
+                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -938,7 +897,6 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
                 <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
                 <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
                 <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
-                <ScalarProperty Name="DonGia" ColumnName="DonGia" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -946,10 +904,12 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.CuaHang">
               <MappingFragment StoreEntitySet="CuaHang">
                 <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
-                <ScalarProperty Name="MaNguoiBan" ColumnName="MaNguoiBan" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="TenCuaHang" ColumnName="TenCuaHang" />
                 <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="MaSoThue" ColumnName="MaSoThue" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -974,31 +934,22 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DatHangs">
-            <EntityTypeMapping TypeName="ECommerceWebsiteModel.DatHang">
-              <MappingFragment StoreEntitySet="DatHang">
-                <ScalarProperty Name="MaDatHang" ColumnName="MaDatHang" />
-                <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
-                <ScalarProperty Name="TongTien" ColumnName="TongTien" />
-                <ScalarProperty Name="TrangThaiThanhToan" ColumnName="TrangThaiThanhToan" />
-                <ScalarProperty Name="TenNguoiNhan" ColumnName="TenNguoiNhan" />
-                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
-                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
-                <ScalarProperty Name="NgayDat" ColumnName="NgayDat" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="DonHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonHang">
               <MappingFragment StoreEntitySet="DonHang">
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
                 <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
-                <ScalarProperty Name="MaDatHang" ColumnName="MaDatHang" />
                 <ScalarProperty Name="TongTien" ColumnName="TongTien" />
                 <ScalarProperty Name="TrangThaiVanChuyen" ColumnName="TrangThaiVanChuyen" />
                 <ScalarProperty Name="TrangThaiDonHang" ColumnName="TrangThaiDonHang" />
                 <ScalarProperty Name="PhiVanChuyen" ColumnName="PhiVanChuyen" />
+                <ScalarProperty Name="TenNguoiNhan" ColumnName="TenNguoiNhan" />
+                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
+                <ScalarProperty Name="TrangThaiThanhToan" ColumnName="TrangThaiThanhToan" />
+                <ScalarProperty Name="ThoiGianDat" ColumnName="ThoiGianDat" />
+                <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1028,34 +979,37 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.GioHang">
               <MappingFragment StoreEntitySet="GioHang">
                 <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
-                <ScalarProperty Name="MaNguoiMua" ColumnName="MaNguoiMua" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="NguoiBans">
-            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiBan">
-              <MappingFragment StoreEntitySet="NguoiBan">
-                <ScalarProperty Name="MaNguoiBan" ColumnName="MaNguoiBan" />
+          <EntitySetMapping Name="KhieuNais">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.KhieuNai">
+              <MappingFragment StoreEntitySet="KhieuNai">
+                <ScalarProperty Name="MaKN" ColumnName="MaKN" />
+                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
+                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
+                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NguoiDungs">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiDung">
+              <MappingFragment StoreEntitySet="NguoiDung">
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
                 <ScalarProperty Name="SDT" ColumnName="SDT" />
                 <ScalarProperty Name="TaiKhoan" ColumnName="TaiKhoan" />
                 <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
                 <ScalarProperty Name="CCCD" ColumnName="CCCD" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="NguoiMuas">
-            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiMua">
-              <MappingFragment StoreEntitySet="NguoiMua">
-                <ScalarProperty Name="MaNguoiMua" ColumnName="MaNguoiMua" />
-                <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
-                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="TaiKhoan" ColumnName="TaiKhoan" />
-                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="VaiTro" ColumnName="VaiTro" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1071,15 +1025,14 @@ warning 6002: The table/view 'ECommerceWebsite.sys.database_firewall_rules' does
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="KhieuNais">
-            <EntityTypeMapping TypeName="ECommerceWebsiteModel.KhieuNai">
-              <MappingFragment StoreEntitySet="KhieuNai">
-                <ScalarProperty Name="MaSP" ColumnName="MaSP" />
-                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
-                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
-                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
-                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
-                <ScalarProperty Name="MaKN" ColumnName="MaKN" />
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -17,19 +17,19 @@ namespace ECommerceWebsiteMVC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public GiamGia()
         {
-            this.DatHangs = new HashSet<DatHang>();
+            this.DonHangs = new HashSet<DonHang>();
         }
     
         public int MaGiamGia { get; set; }
         public string TenMaGG { get; set; }
         public string MoTa { get; set; }
-        public Nullable<double> GiaTriDonHangToiThieu { get; set; }
-        public Nullable<double> GiaTriGiamToiDa { get; set; }
+        public decimal GiaTriDonHangToiThieu { get; set; }
+        public decimal GiaTriGiamToiDa { get; set; }
         public Nullable<double> GiaTriGiam { get; set; }
         public Nullable<System.DateTime> NgayBD { get; set; }
         public Nullable<System.DateTime> NgayKT { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DatHang> DatHangs { get; set; }
+        public virtual ICollection<DonHang> DonHangs { get; set; }
     }
 }

@@ -18,19 +18,28 @@ namespace ECommerceWebsiteMVC_Admin.Models
         public DonHang()
         {
             this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+            this.KhieuNais = new HashSet<KhieuNai>();
         }
     
         public int MaDonHang { get; set; }
         public int MaDVVC { get; set; }
-        public int MaDatHang { get; set; }
-        public Nullable<decimal> TongTien { get; set; }
+        public decimal TongTien { get; set; }
         public string TrangThaiVanChuyen { get; set; }
         public string TrangThaiDonHang { get; set; }
-        public Nullable<decimal> PhiVanChuyen { get; set; }
+        public decimal PhiVanChuyen { get; set; }
+        public string TenNguoiNhan { get; set; }
+        public string DiaChi { get; set; }
+        public string SDT { get; set; }
+        public string GhiChu { get; set; }
+        public bool TrangThaiThanhToan { get; set; }
+        public System.DateTime ThoiGianDat { get; set; }
+        public Nullable<int> MaGiamGia { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
-        public virtual DatHang DatHang { get; set; }
         public virtual DonViVanChuyen DonViVanChuyen { get; set; }
+        public virtual GiamGia GiamGia { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<KhieuNai> KhieuNais { get; set; }
     }
 }
