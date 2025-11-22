@@ -5,22 +5,21 @@
 }
 
 <style>
-    /* Reset container của layout để không bị bó hẹp */
-    body .container {
+    /* TẤT CẢ CSS CHỈ ÁP DỤNG TRONG TRANG HỒ SƠ */
+    .profile-page body .container {
         max-width: 100% !important;
         padding: 0 !important;
     }
 
-    .profile-wrapper {
+    .profile-page .profile-wrapper {
         width: 100%;
         display: flex;
         justify-content: center;
         background: #f5f5f5;
         padding: 150px 0;
-        
     }
 
-    .profile-container {
+    .profile-page .profile-container {
         max-width: 750px;
         width: 100%;
         margin: 0 auto;
@@ -31,25 +30,25 @@
         border: 1px solid #f0f0f0;
     }
 
-        .profile-container h3 {
+        .profile-page .profile-container h3 {
             font-size: 22px;
             font-weight: 600;
             color: #333;
         }
 
-        .profile-container p {
+        .profile-page .profile-container p {
             font-size: 14px;
             color: #777;
         }
 
-        .profile-container label {
+        .profile-page .profile-container label {
             font-weight: 500;
             color: #666;
             font-size: 14px;
             margin-bottom: 4px;
         }
 
-    .form-control-plaintext {
+    .profile-page .form-control-plaintext {
         background: #fafafa;
         padding: 10px 14px;
         border-radius: 4px;
@@ -58,33 +57,33 @@
         color: #444;
     }
 
-    .profile-container input.form-control {
+    .profile-page .profile-container input.form-control {
         padding: 10px 14px;
         height: 45px;
         font-size: 15px;
     }
 
-    .profile-container a {
+    .profile-page .profile-container a {
         font-size: 14px;
         color: #007bff;
         text-decoration: none;
     }
 
-        .profile-container a:hover {
+        .profile-page .profile-container a:hover {
             text-decoration: underline;
         }
 
-    .profile-avatar img {
+    .profile-page .profile-avatar img {
         border: 2px solid #eee;
         transition: 0.2s;
     }
 
-        .profile-avatar img:hover {
+        .profile-page .profile-avatar img:hover {
             border-color: #ee4d2d;
             transform: scale(1.05);
         }
 
-    .btn-save {
+    .profile-page .btn-save {
         background: #ee4d2d;
         border: none;
         padding: 10px 35px;
@@ -95,11 +94,11 @@
         transition: 0.2s;
     }
 
-        .btn-save:hover {
+        .profile-page .btn-save:hover {
             background: #d84324;
         }
 
-    .btn-back-home {
+    .profile-page .btn-back-home {
         display: inline-block;
         margin-bottom: 15px;
         padding: 6px 14px;
@@ -111,96 +110,88 @@
         transition: background 0.2s, color 0.2s;
     }
 
-        .btn-back-home:hover {
-            background: #ffe4db; /* nền cam nhạt */
-            color: #ee4d2d !important; /* cam Shopee */
-            text-decoration: none !important;
+        .profile-page .btn-back-home:hover {
+            background: #ffe4db;
+            color: #ee4d2d !important;
         }
 
-        .btn-back-home:active {
-            background: #f5c5b9; /* nền cam đậm hơn */
-            color: #c5321d !important; /* cam đậm */
-            text-decoration: none !important;
+        .profile-page .btn-back-home:active {
+            background: #f5c5b9;
+            color: #c5321d !important;
         }
-
-
 </style>
 
+<div class="profile-page">
+    <div class="profile-wrapper">
+        <div class="profile-container">
 
-<div class="profile-wrapper">
-    <div class="profile-container">
-        <a href="@Url.Action("Index", "NguoiMua")" class="btn-back-home">
-            ⬅ Quay lại trang chủ
-        </a>
+            <a href="@Url.Action("Index", "NguoiMua")" class="btn-back-home">
+                ⬅ Quay lại trang chủ
+            </a>
 
-        <h3 class="fw-bold">Hồ Sơ Của Tôi</h3>
-        <p class="text-muted">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+            <h3 class="fw-bold">Hồ Sơ Của Tôi</h3>
+            <p class="text-muted">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
 
-        <form method="post" action="@Url.Action("CapNhatThongTin", "TaiKhoan")">
+            <form method="post" action="@Url.Action("CapNhatThongTin", "TaiKhoan")">
 
-            <!-- Tên đăng nhập -->
-            <div class="mb-3">
-                <label class="text-muted">Tên đăng nhập</label>
-                <div class="form-control-plaintext">@Model.TaiKhoan</div>
-            </div>
-
-            <!-- Họ và tên -->
-            <div class="mb-3">
-                <label class="text-muted">Họ và tên</label>
-                <input type="text" class="form-control" name="HoVaTen" value="@Model.HoVaTen" />
-            </div>
-
-            <!-- Email -->
-            <div class="mb-3">
-                <label class="text-muted">Email</label>
-                <div class="form-control-plaintext">
-                    @MaskEmail(Model.Email)
-                    <a href="#" class="ms-2">Thay Đổi</a>
+                <div class="mb-3">
+                    <label class="text-muted">Tên đăng nhập</label>
+                    <div class="form-control-plaintext">@Model.TaiKhoan</div>
                 </div>
-            </div>
 
-            <!-- Số điện thoại -->
-            <div class="mb-3">
-                <label class="text-muted">Số điện thoại</label>
-                <div class="form-control-plaintext">
-                    @MaskPhone(Model.SDT)
-                    <a href="#" class="ms-2">Thay Đổi</a>
+                <div class="mb-3">
+                    <label class="text-muted">Họ và tên</label>
+                    <input type="text" class="form-control" name="HoVaTen" value="@Model.HoVaTen" />
                 </div>
-            </div>
 
-            <!-- CCCD -->
-            <div class="mb-3">
-                <label class="text-muted">CCCD</label>
-                <div class="form-control-plaintext">@Model.CCCD</div>
-            </div>
-
-            <!-- Ngày đăng ký -->
-            <div class="mb-3">
-                <label class="text-muted">Ngày đăng ký</label>
-                <div class="form-control-plaintext">
-                    @(Model.NgayDangKy.HasValue ? Model.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")
+                <div class="mb-3">
+                    <label class="text-muted">Email</label>
+                    <div class="form-control-plaintext">
+                        @MaskEmail(Model.Email)
+                        <a href="#" class="ms-2">Thay Đổi</a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Ảnh đại diện -->
-            <div class="mb-3 profile-avatar">
-                <label class="text-muted">Ảnh đại diện</label><br />
+                <div class="mb-3">
+                    <label class="text-muted">Số điện thoại</label>
+                    <div class="form-control-plaintext">
+                        @MaskPhone(Model.SDT)
+                        <a href="#" class="ms-2">Thay Đổi</a>
+                    </div>
+                </div>
 
-                <img src="@Url.Content(string.IsNullOrEmpty(Model.HinhAnh)
+                <div class="mb-3">
+                    <label class="text-muted">CCCD</label>
+                    <div class="form-control-plaintext">@Model.CCCD</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="text-muted">Ngày đăng ký</label>
+                    <div class="form-control-plaintext">
+                        @(Model.NgayDangKy.HasValue ? Model.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")
+                    </div>
+                </div>
+
+                <div class="mb-3 profile-avatar">
+                    <label class="text-muted">Ảnh đại diện</label><br />
+
+                    <img src="@Url.Content(string.IsNullOrEmpty(Model.HinhAnh)
                                       ? "~/assets/default-user.png"
                                       : Model.HinhAnh)"
-                     width="80" class="rounded-circle" />
+                         width="80" class="rounded-circle" />
 
-                <a class="ms-2" href="#">Thay Ảnh</a>
-            </div>
-            <center>
-                <button type="submit" class="btn-save">Lưu</button>
-            </center>
-        </form>
+                    <a class="ms-2" href="#">Thay Ảnh</a>
+                </div>
 
+                <center>
+                    <button type="submit" class="btn-save">Lưu</button>
+                </center>
+
+            </form>
+
+        </div>
     </div>
 </div>
-
 
 @helper MaskEmail(string email)
 {
