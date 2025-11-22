@@ -1,262 +1,252 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 
-namespace ECommerceWebsiteMVC.Models
+public class XuLyAnhAzure
 {
-    public class XuLyAnhAzure
+    private readonly string _connectionString;
+
+    // Tên các container
+    private const string USERS_CONTAINER = "users";
+    private const string PRODUCTS_CONTAINER = "products";
+    private const string VARIANTS_CONTAINER = "variants";
+    private const string STORES_CONTAINER = "stores";
+    private const string REVIEWS_CONTAINER = "reviews";
+    private const string COMPLAINTS_CONTAINER = "complaints";
+
+    public XuLyAnhAzure()
     {
-        private readonly string _connectionString;
+        _connectionString =
+            ConfigurationManager.ConnectionStrings["AzureBlobConnection"].ConnectionString;
+    }
 
-        // Tên các container
-        private const string USERS_CONTAINER = "users";
-        private const string PRODUCTS_CONTAINER = "products";
-        private const string VARIANTS_CONTAINER = "variants";
-        private const string STORES_CONTAINER = "stores";
-        private const string REVIEWS_CONTAINER = "reviews";
-        private const string COMPLAINTS_CONTAINER = "complaints";
+    // ==========================================================
+    // 1) USERS
+    // ==========================================================
 
-        public XuLyAnhAzure()
+    // Thêm ảnh user vào container "users"
+    // fileName: nếu null => dùng tên gốc từ file
+    public async Task<string> UploadUserImageAsync(HttpPostedFileBase file, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(USERS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            _connectionString =
-                ConfigurationManager.ConnectionStrings["AzureBlobConnection"].ConnectionString;
-        }
+            ContentType = file.ContentType
+        });
 
-        // =============================
-        // HÀM DÙNG RIÊNG CHO PRODUCTS
-        // Tạo "folder" sản phẩm nếu chưa có
-        // =============================
+        return blob.Uri.ToString();
+    }
 
-        // ==========================================================
-        // 1) USERS
-        // ==========================================================
+    public async Task DeleteUserImageAsync(string fileName)
+    {
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(USERS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
 
-        // Thêm ảnh user vào container "users"
-        public async Task<string> UploadUserImageAsync(HttpPostedFileBase file)
+        await blob.DeleteIfExistsAsync();
+    }
+
+    // ==========================================================
+    // 2) PRODUCTS  (Có folder theo mã sản phẩm)
+    // ==========================================================
+
+    // Thêm ảnh sản phẩm: products/{maSP}/{fileName}
+    // fileName: nếu null => dùng tên gốc từ file
+    public async Task<string> UploadProductImageAsync(HttpPostedFileBase file, string maSanPham, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
+
+        if (string.IsNullOrEmpty(maSanPham))
+            throw new Exception("Mã sản phẩm không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
+
+        string blobPath = $"{maSanPham}/{fileName}";
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(blobPath);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
+            ContentType = file.ContentType
+        });
 
-            string fileName = Path.GetFileName(file.FileName);
+        return blob.Uri.ToString(); // https://.../products/1/xxx.jpg
+    }
 
+    public async Task DeleteProductFolderAsync(string maSanPham)
+    {
+        if (string.IsNullOrEmpty(maSanPham))
+            throw new Exception("Mã sản phẩm không hợp lệ!");
 
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(USERS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
 
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
+        var blobs = container.GetBlobs(prefix: $"{maSanPham}/");
 
-            return blob.Uri.ToString();
-        }
-
-        // Xóa ảnh trong container "users"
-        public async Task DeleteUserImageAsync(string fileName)
+        foreach (var item in blobs)
         {
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(USERS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
+            BlobClient blob = container.GetBlobClient(item.Name);
             await blob.DeleteIfExistsAsync();
         }
+    }
 
-        // ==========================================================
-        // 2) PRODUCTS  (Có folder theo mã sản phẩm)
-        // ==========================================================
+    public async Task DeleteProductImageAsync(string maSanPham, string fileName)
+    {
+        string blobPath = $"{maSanPham}/{fileName}";
 
-        // Thêm ảnh sản phẩm: products/{maSP}/{fileName}
-        public async Task<string> UploadProductImageAsync(HttpPostedFileBase file, string maSanPham)
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(blobPath);
+
+        await blob.DeleteIfExistsAsync();
+    }
+
+    // ==========================================================
+    // 3) VARIANTS
+    // ==========================================================
+
+    public async Task<string> UploadVariantImageAsync(HttpPostedFileBase file, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(VARIANTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
+            ContentType = file.ContentType
+        });
 
-            if (string.IsNullOrEmpty(maSanPham))
-                throw new Exception("Mã sản phẩm không hợp lệ!");
+        return blob.Uri.ToString();
+    }
 
-            string fileName = Path.GetFileName(file.FileName);
+    public async Task DeleteVariantImageAsync(string fileName)
+    {
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(VARIANTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
 
-            // Tạo folder mã sản phẩm nếu chưa có
-            //await CreateProductFolderIfNotExistsAsync(maSanPham);
+        await blob.DeleteIfExistsAsync();
+    }
 
-            string blobPath = $"{maSanPham}/{fileName}";
+    // ==========================================================
+    // 4) STORES
+    // ==========================================================
 
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(blobPath);
+    public async Task<string> UploadStoreImageAsync(HttpPostedFileBase file, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
 
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
 
-            return blob.Uri.ToString(); // https://.../products/1/xxx.jpg
-        }
-        // XÓA TOÀN BỘ FOLDER SẢN PHẨM + TOÀN BỘ ẢNH BÊN TRONG
-        public async Task DeleteProductFolderAsync(string maSanPham)
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(STORES_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            if (string.IsNullOrEmpty(maSanPham))
-                throw new Exception("Mã sản phẩm không hợp lệ!");
+            ContentType = file.ContentType
+        });
 
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
+        return blob.Uri.ToString();
+    }
 
-            // Lấy danh sách blob theo prefix (thư mục sản phẩm)
-            var blobs = container.GetBlobs(prefix: $"{maSanPham}/");
+    public async Task DeleteStoreImageAsync(string fileName)
+    {
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(STORES_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
 
-            foreach (var item in blobs)
-            {
-                BlobClient blob = container.GetBlobClient(item.Name);
-                await blob.DeleteIfExistsAsync();
-            }
-        }
+        await blob.DeleteIfExistsAsync();
+    }
 
+    // ==========================================================
+    // 5) REVIEWS
+    // ==========================================================
 
-        // Xóa ảnh sản phẩm theo mã sản phẩm + tên file
-        public async Task DeleteProductImageAsync(string maSanPham, string fileName)
+    public async Task<string> UploadReviewImageAsync(HttpPostedFileBase file, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(REVIEWS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            string blobPath = $"{maSanPham}/{fileName}";
+            ContentType = file.ContentType
+        });
 
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(PRODUCTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(blobPath);
+        return blob.Uri.ToString();
+    }
 
-            await blob.DeleteIfExistsAsync();
-        }
+    public async Task DeleteReviewImageAsync(string fileName)
+    {
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(REVIEWS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
 
-        // ==========================================================
-        // 3) VARIANTS
-        // ==========================================================
+        await blob.DeleteIfExistsAsync();
+    }
 
-        public async Task<string> UploadVariantImageAsync(HttpPostedFileBase file)
+    // ==========================================================
+    // 6) COMPLAINTS
+    // ==========================================================
+
+    public async Task<string> UploadComplaintImageAsync(HttpPostedFileBase file, string fileName = null)
+    {
+        if (file == null || file.ContentLength == 0)
+            throw new Exception("File không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = Path.GetFileName(file.FileName);
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(COMPLAINTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
+
+        await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
         {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
+            ContentType = file.ContentType
+        });
 
-            string fileName = Path.GetFileName(file.FileName);
+        return blob.Uri.ToString();
+    }
 
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(VARIANTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
+    public async Task DeleteComplaintImageAsync(string fileName)
+    {
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+        BlobContainerClient container = service.GetBlobContainerClient(COMPLAINTS_CONTAINER);
+        BlobClient blob = container.GetBlobClient(fileName);
 
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
-
-            return blob.Uri.ToString();
-        }
-
-        public async Task DeleteVariantImageAsync(string fileName)
-        {
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(VARIANTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.DeleteIfExistsAsync();
-        }
-
-        // ==========================================================
-        // 4) STORES
-        // ==========================================================
-
-        public async Task<string> UploadStoreImageAsync(HttpPostedFileBase file)
-        {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
-
-            string fileName = Path.GetFileName(file.FileName);
-
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(STORES_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
-
-            return blob.Uri.ToString();
-        }
-
-        public async Task DeleteStoreImageAsync(string fileName)
-        {
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(STORES_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.DeleteIfExistsAsync();
-        }
-
-        // ==========================================================
-        // 5) REVIEWS
-        // ==========================================================
-
-        public async Task<string> UploadReviewImageAsync(HttpPostedFileBase file)
-        {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
-
-            string fileName = Path.GetFileName(file.FileName);
-
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(REVIEWS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
-
-            return blob.Uri.ToString();
-        }
-
-        public async Task DeleteReviewImageAsync(string fileName)
-        {
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(REVIEWS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.DeleteIfExistsAsync();
-        }
-
-        // ==========================================================
-        // 6) COMPLAINTS
-        // ==========================================================
-
-        public async Task<string> UploadComplaintImageAsync(HttpPostedFileBase file)
-        {
-            if (file == null || file.ContentLength == 0)
-                throw new Exception("File không hợp lệ!");
-
-            string fileName = Path.GetFileName(file.FileName);
-
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(COMPLAINTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.UploadAsync(file.InputStream, new BlobHttpHeaders
-            {
-                ContentType = file.ContentType
-            });
-
-            return blob.Uri.ToString();
-        }
-
-        public async Task DeleteComplaintImageAsync(string fileName)
-        {
-            BlobServiceClient service = new BlobServiceClient(_connectionString);
-            BlobContainerClient container = service.GetBlobContainerClient(COMPLAINTS_CONTAINER);
-            BlobClient blob = container.GetBlobClient(fileName);
-
-            await blob.DeleteIfExistsAsync();
-        }
+        await blob.DeleteIfExistsAsync();
     }
 }
