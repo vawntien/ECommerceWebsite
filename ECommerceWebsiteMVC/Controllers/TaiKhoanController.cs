@@ -57,10 +57,13 @@ namespace ECommerceWebsiteMVC.Controllers
             Session.Clear();
             return RedirectToAction("DangNhap");
         }
+<<<<<<< HEAD
 
         public ActionResult DangKy()
         {
             return View();
         }
+=======
+>>>>>>> f662fb1db217d535bfa7c6dc9812aff4ea72941f
     }
 }

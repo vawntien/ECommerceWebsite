@@ -34,9 +34,40 @@
                     <span class="mr-4">Thông báo</span>
                     <img class="icon-media mr-2" src="~/assets/bantuan.png" alt="" />
                     <span class="mr-4">Hỗ trợ</span>
-                    <span class="font-weight-bold">Đăng nhập</span>
-                    <div class="hr1 mx-2"></div>
-                    <span class="font-weight-bold">Đăng ký</span>
+                    @if (Session["TaiKhoan"] == null)
+                    {
+                        @Html.ActionLink(
+                            "Đăng ký",
+                            "DangKy",
+                            "TaiKhoan",
+                            null,
+                            new { @class = "login-link font-weight-bold me-3" }
+                        )
+
+                        @Html.ActionLink(
+                            "Đăng nhập",
+                            "DangNhap",
+                            "TaiKhoan",
+                            null,
+                            new { @class = "login-link font-weight-bold" }
+                        )
+                    }
+                    else
+                    {
+                        <div class="dropdown">
+                            <a class="login-link font-weight-bold dropdown-toggle"
+                               data-bs-toggle="dropdown"
+                               style="cursor:pointer;">
+                                @Session["HoVaTen"]
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="@Url.Action("ThongTinTaiKhoan","TaiKhoan")">Tài khoản của tôi</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("DangXuat","TaiKhoan")">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    }
+                    
                 </div>
             </div>
             <!-- input search brand -->
