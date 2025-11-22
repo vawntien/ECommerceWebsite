@@ -39,6 +39,16 @@ body {
   height: 17px;
 }
 
+.login-link {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+    .login-link:hover {
+        color: #ffd7d7 !important; /* màu sáng hơn khi hover */
+        text-decoration: none !important;
+    }
+
 .hr1 {
   width: 2px;
   height: 15px;

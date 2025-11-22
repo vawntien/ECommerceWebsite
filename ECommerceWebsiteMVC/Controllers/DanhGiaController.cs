@@ -34,6 +34,8 @@ namespace ECommerceWebsiteMVC.Controllers
         //    return View(model);
         //}
 
+        //themdonhang
+
         public ActionResult Index(int MaChiTietDonHang = 1)
         {
             // 1. Load ChiTietDonHang + sản phẩm + ảnh sản phẩm
