@@ -1,5 +1,22 @@
 ﻿@model ECommerceWebsiteMVC.Models.DanhGiaSanPham
 
+@{
+    // Ảnh sản phẩm mặc định
+    var macdinh = Model.ChiTietDonHang.BienTheSanPham.SanPham.AnhSanPhams
+        .Where(x => x.MacDinh == true)
+        .Select(x => x.HinhAnh)
+        .FirstOrDefault()
+        ?? Model.ChiTietDonHang.BienTheSanPham.SanPham.AnhSanPhams
+            .Select(x => x.HinhAnh)
+            .FirstOrDefault();
+
+    // Ảnh đánh giá cũ (nếu đang chỉnh sửa)
+    var hasReviewImage = !string.IsNullOrEmpty(Model.HinhAnh);
+    var reviewImageUrl = hasReviewImage
+        ? $"https://ecommerceshopstorage.blob.core.windows.net/reviews/{Model.HinhAnh}"
+        : "";
+}
+
 <!-- Fonts + Icons + Tailwind -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -48,9 +65,11 @@
         <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg relative
                     font-display text-gray-800 dark:text-gray-200">
 
-            @using (Html.BeginForm("DanhGia", "DonHang", FormMethod.Post,
+            @using (Html.BeginForm("ThemDanhGia", "DanhGia", FormMethod.Post,
                    new { enctype = "multipart/form-data", id = "product-review-form" }))
             {
+                @Html.AntiForgeryToken()
+
                 <!-- nút đóng -->
                 <button type="button"
                         class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
@@ -62,22 +81,17 @@
                     Đánh Giá Sản Phẩm
                 </h1>
 
-                @* nếu bạn có các khóa để biết đang đánh giá đơn/sản phẩm nào *@
-                <input type="hidden" name="MaSanPham" value="@Model?.MaSanPham" />
-                <input type="hidden" name="MaDonHang" value="@Model?.MaDonHang" />
+                @Html.HiddenFor(m => m.MaCTDH)
 
-                <!-- Thông tin sản phẩm -->
+                <!-- THÔNG TIN SẢN PHẨM -->
                 <div class="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
                     <img alt="Ảnh sản phẩm"
                          class="w-12 h-12 object-cover rounded"
-                         src="@(Model?.HinhAnh ?? "/Content/images/no-image.png")" />
+                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.ChiTietDonHang.BienTheSanPham.MaSanPham}/{macdinh}")" />
                     <div>
                         <h2 class="font-medium text-gray-900 dark:text-white">
-                            @ViewBag.TenSanPham
+                            @Model.ChiTietDonHang.BienTheSanPham.SanPham.TenSanPham
                         </h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            @ViewBag.PhanLoai
-                        </p>
                     </div>
                 </div>
 
@@ -89,11 +103,10 @@
 
                 <div class="py-6 space-y-4">
 
-                    <!-- Chất lượng sản phẩm (5 sao chọn được) -->
+                    <!-- Chất lượng sản phẩm -->
                     <div class="flex flex-wrap items-center gap-4">
-                        <span class="text-gray-700 dark:text-gray-300">
-                            Chất lượng sản phẩm
-                        </span>
+                        <span class="text-gray-700 dark:text-gray-300">Chất lượng sản phẩm</span>
+
                         <div class="flex items-center gap-2">
                             <div class="star-rating" id="review-stars">
                                 <span class="material-icons" data-value="1">star</span>
@@ -102,17 +115,13 @@
                                 <span class="material-icons" data-value="4">star</span>
                                 <span class="material-icons" data-value="5">star</span>
                             </div>
-                            <span id="rating-text" class="text-amber-500 font-medium">
-                                Tuyệt vời
-                            </span>
+                            <span id="rating-text" class="text-amber-500 font-medium">Tuyệt vời</span>
                         </div>
                     </div>
 
-                    <!-- Tiêu đề (từ "Chất lượng sản phẩm" cũ) -->
+                    <!-- Tiêu đề -->
                     <div class="flex flex-wrap items-center gap-4">
-                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">
-                            Tiêu đề
-                        </span>
+                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">Tiêu đề</span>
 
                         <input type="text"
                                name="TieuDe"
@@ -123,46 +132,52 @@
                     </div>
                 </div>
 
-                <!-- NỘI DUNG (từ “Đúng với mô tả”) + ẢNH -->
+                <!-- NỘI DUNG + ẢNH -->
                 <div class="p-4 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-slate-700/50">
                     <div class="flex items-center gap-4 pb-4">
-                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">
-                            Nội dung
-                        </span>
+                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">Nội dung</span>
                     </div>
 
                     <textarea name="NoiDung"
                               class="w-full h-32 p-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600
                                      rounded-md focus:ring-primary focus:border-primary placeholder-gray-400 dark:placeholder-gray-500"
-                              placeholder="Hãy chia sẻ những điều bạn thích / chưa hài lòng về sản phẩm…">@Model?.NoiDung</textarea>
+                              placeholder="Hãy chia sẻ những điều bạn thích / chưa hài lòng về sản phẩm…">@(Model?.NoiDung ?? "")</textarea>
 
-                    <!-- Hình ảnh (upload) -->
-                    <div class="mt-4 flex flex-wrap items-center gap-4">
-                        <input type="file"
-                               id="HinhAnhFile"
-                               name="HinhAnhFile"
-                               class="hidden"
-                               accept="image/*" />
+                    <!-- Upload + Preview -->
+                    <div class="mt-4 flex flex-col gap-3">
 
-                        <button type="button"
-                                class="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded
-                                       text-sm font-medium hover:bg-primary/10 transition-colors"
-                                onclick="document.getElementById('HinhAnhFile').click();">
-                            <span class="material-icons" style="font-size: 1.25rem;">photo_camera</span>
-                            Thêm Hình ảnh
-                        </button>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <input type="file"
+                                   id="HinhAnhFile"
+                                   name="HinhAnhFile"
+                                   class="hidden"
+                                   accept="image/*" />
 
-                        <span id="review-image-name"
-                              class="text-sm text-gray-600 dark:text-gray-300"></span>
+                            <button type="button"
+                                    class="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded
+                                           text-sm font-medium hover:bg-primary/10 transition-colors"
+                                    onclick="document.getElementById('HinhAnhFile').click();">
+                                <span class="material-icons" style="font-size: 1.25rem;">photo_camera</span>
+                                Thêm Hình ảnh
+                            </button>
+                        </div>
+
+                        <!-- Preview -->
+                        <div id="review-image-preview-wrapper"
+                             class="flex items-start gap-3 @(hasReviewImage ? "" : "hidden")">
+
+                            <img id="review-image-preview"
+                                 src="@(hasReviewImage ? reviewImageUrl : "")"
+                                 class="w-24 h-24 rounded-lg object-cover border border-gray-300 dark:border-gray-600 shadow-sm" />
+
+                        </div>
                     </div>
                 </div>
 
-                <!-- FOOTER NÚT -->
+                <!-- FOOTER -->
                 <div class="mt-6 bg-white dark:bg-slate-800 p-4 rounded-lg flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <span>Điều kiện nhận Xu</span>
-                        <span class="material-icons text-base cursor-pointer">help_outline</span>
-                    </div>
+                    <div></div>
+
                     <div class="flex items-center gap-4">
                         <button type="button"
                                 class="px-6 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700
@@ -170,18 +185,20 @@
                                 data-close-review-modal>
                             TRỞ LẠI
                         </button>
+
                         <button type="submit"
                                 class="px-8 py-2.5 bg-primary text-white rounded font-medium hover:bg-orange-600 transition-colors">
                             HOÀN THÀNH
                         </button>
                     </div>
                 </div>
+
             }
         </div>
     </div>
 </div>
 
-<!-- JS: mở/đóng popup + chọn sao + hiện tên file -->
+<!-- JS -->
 <script>
     // mở modal (gọi từ view cha)
     window.openReviewModal = function () {
@@ -189,14 +206,20 @@
         if (m) m.classList.remove('hidden');
     };
 
-    // đóng modal khi bấm nút có data-close-review-modal
+    // đóng modal
     document.addEventListener('click', function (e) {
+        var modal = document.getElementById('product-review-modal');
+
         if (e.target.closest('[data-close-review-modal]')) {
-            var m = document.getElementById('product-review-modal');
-            if (m) m.classList.add('hidden');
+            modal.classList.add('hidden');
+        }
+
+        if (e.target === modal) {
+            modal.classList.add('hidden');
         }
     });
 
+    // JS chọn sao
     document.addEventListener('DOMContentLoaded', function () {
         var starsContainer = document.getElementById('review-stars');
         var hiddenInput = document.getElementById('SoSao');
@@ -226,14 +249,23 @@
             render(initial);
         }
 
-        // Hiện tên file ảnh đã chọn
+        // Preview ảnh upload
         var fileInput = document.getElementById('HinhAnhFile');
-        var nameSpan = document.getElementById('review-image-name');
-        if (fileInput && nameSpan) {
+        var previewWrapper = document.getElementById('review-image-preview-wrapper');
+        var previewImg = document.getElementById('review-image-preview');
+
+        if (fileInput && previewWrapper && previewImg) {
             fileInput.addEventListener('change', function () {
-                nameSpan.textContent = (this.files && this.files.length > 0)
-                    ? this.files[0].name
-                    : "";
+                if (this.files && this.files.length > 0) {
+                    var file = this.files[0];
+                    var url = URL.createObjectURL(file);
+
+                    previewImg.src = url;
+                    previewWrapper.classList.remove('hidden');
+                } else {
+                    previewImg.src = "";
+                    previewWrapper.classList.add('hidden');
+                }
             });
         }
     });
