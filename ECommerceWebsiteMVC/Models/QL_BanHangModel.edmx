@@ -25,6 +25,18 @@
           <Property Name="GiaBan" Type="money" Nullable="false" />
           <Property Name="SoLuongTonKho" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="CuaHang">
+          <Key>
+            <PropertyRef Name="MaCuaHang" />
+          </Key>
+          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
+          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="NgayDangKy" Type="date" />
+          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
+        </EntityType>
         <EntityType Name="ChiTietDonHang">
           <Key>
             <PropertyRef Name="MaCTDH" />
@@ -44,18 +56,6 @@
           <Property Name="MaGioHang" Type="int" Nullable="false" />
           <Property Name="MaBienThe" Type="int" Nullable="false" />
           <Property Name="SoLuong" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="CuaHang">
-          <Key>
-            <PropertyRef Name="MaCuaHang" />
-          </Key>
-          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
-          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="NgayDangKy" Type="date" />
-          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhGiaSanPham">
           <Key>
@@ -93,6 +93,7 @@
           <Property Name="TrangThaiThanhToan" Type="bit" Nullable="false" />
           <Property Name="ThoiGianDat" Type="datetime" Nullable="false" />
           <Property Name="MaGiamGia" Type="int" />
+          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
@@ -194,7 +195,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_BTSP">
+        <Association Name="FK_CTDH_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDonHang_BienThe">
           <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
           <ReferentialConstraint>
@@ -206,15 +219,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_DonHang">
+        <Association Name="FK_CTDonHang_DonHang">
           <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="DonHang">
               <PropertyRef Name="MaDonHang" />
             </Principal>
             <Dependent Role="ChiTietDonHang">
-              <PropertyRef Name="MaDonHang" />
+              <PropertyRef Name="MaCTDH" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -254,7 +267,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DanhGiaSanPham_CTDH">
+        <Association Name="FK_DanhGiaSanPham_ChiTietDonHang">
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="1" />
           <End Role="DanhGiaSanPham" Type="Self.DanhGiaSanPham" Multiplicity="*" />
           <ReferentialConstraint>
@@ -287,6 +300,18 @@
             </Principal>
             <Dependent Role="DonHang">
               <PropertyRef Name="MaGiamGia" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNguoiDung" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -341,9 +366,9 @@
         <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietDonHang" EntityType="Self.ChiTietDonHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietGioHang" EntityType="Self.ChiTietGioHang" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhGiaSanPham" EntityType="Self.DanhGiaSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
@@ -362,11 +387,15 @@
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
           </AssociationSet>
-          <AssociationSet Name="FK_CTDH_BTSP" Association="Self.FK_CTDH_BTSP">
+          <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
+            <End Role="DonHang" EntitySet="DonHang" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDonHang_BienThe" Association="Self.FK_CTDonHang_BienThe">
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
+          <AssociationSet Name="FK_CTDonHang_DonHang" Association="Self.FK_CTDonHang_DonHang">
             <End Role="DonHang" EntitySet="DonHang" />
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
@@ -382,7 +411,7 @@
             <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="CuaHang" EntitySet="CuaHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_DanhGiaSanPham_CTDH" Association="Self.FK_DanhGiaSanPham_CTDH">
+          <AssociationSet Name="FK_DanhGiaSanPham_ChiTietDonHang" Association="Self.FK_DanhGiaSanPham_ChiTietDonHang">
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
             <End Role="DanhGiaSanPham" EntitySet="DanhGiaSanPham" />
           </AssociationSet>
@@ -392,6 +421,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_DonHang_GiamGia" Association="Self.FK_DonHang_GiamGia">
             <End Role="GiamGia" EntitySet="GiamGia" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NguoiDung" Association="Self.FK_DonHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="DonHang" EntitySet="DonHang" />
           </AssociationSet>
           <AssociationSet Name="FK_GioHang_NguoiDung" Association="Self.FK_GioHang_NguoiDung">
@@ -452,6 +485,7 @@
           <NavigationProperty Name="BienTheSanPham" Relationship="Self.FK_CTDH_BTSP" FromRole="ChiTietDonHang" ToRole="BienTheSanPham" />
           <NavigationProperty Name="DonHang" Relationship="Self.FK_CTDH_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
           <NavigationProperty Name="DanhGiaSanPhams" Relationship="Self.FK_DanhGiaSanPham_CTDH" FromRole="ChiTietDonHang" ToRole="DanhGiaSanPham" />
+          <NavigationProperty Name="DonHang1" Relationship="ECommerceWebsiteModel.FK_CTDonHang_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="ChiTietGioHang">
           <Key>
@@ -520,6 +554,9 @@
           <NavigationProperty Name="DonViVanChuyen" Relationship="Self.FK_DonHang_DVVC" FromRole="DonHang" ToRole="DonViVanChuyen" />
           <NavigationProperty Name="GiamGia" Relationship="Self.FK_DonHang_GiamGia" FromRole="DonHang" ToRole="GiamGia" />
           <NavigationProperty Name="KhieuNais" Relationship="Self.FK_KhieuNai_DonHang" FromRole="DonHang" ToRole="KhieuNai" />
+          <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ChiTietDonHang" Relationship="ECommerceWebsiteModel.FK_CTDonHang_DonHang" FromRole="DonHang" ToRole="ChiTietDonHang" />
+          <NavigationProperty Name="NguoiDung" Relationship="ECommerceWebsiteModel.FK_DonHang_NguoiDung" FromRole="DonHang" ToRole="NguoiDung" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
@@ -582,6 +619,7 @@
           <Property Name="VaiTro" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CuaHangs" Relationship="Self.FK_CuaHang_NguoiDung" FromRole="NguoiDung" ToRole="CuaHang" />
           <NavigationProperty Name="GioHangs" Relationship="Self.FK_GioHang_NguoiDung" FromRole="NguoiDung" ToRole="GioHang" />
+          <NavigationProperty Name="DonHangs" Relationship="ECommerceWebsiteModel.FK_DonHang_NguoiDung" FromRole="NguoiDung" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -848,7 +886,39 @@
             <End Role="NguoiDung" EntitySet="NguoiDungs" />
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
+          <AssociationSet Name="FK_CTDonHang_DonHang" Association="ECommerceWebsiteModel.FK_CTDonHang_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NguoiDung" Association="ECommerceWebsiteModel.FK_DonHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_CTDonHang_DonHang">
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietDonHang" Role="ChiTietDonHang" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaCTDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_NguoiDung">
+          <End Type="ECommerceWebsiteModel.NguoiDung" Role="NguoiDung" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNguoiDung" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -936,6 +1006,7 @@
           <EntitySetMapping Name="DonHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonHang">
               <MappingFragment StoreEntitySet="DonHang">
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
                 <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
                 <ScalarProperty Name="TongTien" ColumnName="TongTien" />

@@ -1,6 +1,7 @@
-﻿
+﻿@model ECommerceWebsiteMVC.Models.DonHang
+
 @{
-    ViewBag.Title = "ChiTietDonHang";
+    ViewBag.Title = "Chi Tiết Đơn Hàng";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
 
@@ -8,8 +9,8 @@
     <div class="detail-card">
         <div class="detail-header">
             <div>
-                <h5>Mã đơn hàng: 2108082HXA1Y07</h5>
-                <div class="order-number text-muted">Đơn hàng đã hoàn thành</div>
+                <h5>Mã đơn hàng: @Model.MaDonHang</h5>
+                <div class="order-number text-muted">@Model.TrangThaiDonHang</div>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button class="btn btn-outline-secondary">Liên Hệ Người Bán</button>
@@ -19,26 +20,29 @@
         </div>
 
         <div class="status-timeline">
-            <div class="status-step completed">
+            <div class="status-step @(Model.TrangThaiDonHang == "Chờ xác nhận" || Model.TrangThaiDonHang == "Chờ lấy hàng" || Model.TrangThaiDonHang == "Chờ giao hàng" || Model.TrangThaiDonHang == "Đã giao" ? "completed" : "")">
                 <span>Chờ xác nhận</span>
-                <small>09:13 08-08-2021</small>
+                <small>@Model.ThoiGianDat.ToString("HH:mm dd-MM-yyyy")</small>
             </div>
-            <div class="status-step completed">
+            <div class="status-step @(Model.TrangThaiDonHang == "Chờ lấy hàng" || Model.TrangThaiDonHang == "Chờ giao hàng" || Model.TrangThaiDonHang == "Đã giao" ? "completed" : Model.TrangThaiDonHang == "Chờ xác nhận" ? "" : "")">
                 <span>Chờ lấy hàng</span>
-                <small>09:43 08-08-2021</small>
+                <small>@(Model.TrangThaiDonHang != "Chờ xác nhận" && Model.TrangThaiDonHang != "Đã hủy" ? Model.ThoiGianDat.AddHours(1).ToString("HH:mm dd-MM-yyyy") : "")</small>
             </div>
-            <div class="status-step completed">
+            <div class="status-step @(Model.TrangThaiDonHang == "Chờ giao hàng" || Model.TrangThaiDonHang == "Đã giao" ? "completed" : Model.TrangThaiDonHang == "Chờ lấy hàng" ? "" : "")">
                 <span>Chờ giao hàng</span>
-                <small>18:37 09-08-2021</small>
+                <small>@(Model.TrangThaiDonHang == "Chờ giao hàng" || Model.TrangThaiDonHang == "Đã giao" ? Model.ThoiGianDat.AddDays(1).ToString("HH:mm dd-MM-yyyy") : "")</small>
             </div>
-            <div class="status-step completed">
+            <div class="status-step @(Model.TrangThaiDonHang == "Đã giao" ? "completed" : Model.TrangThaiDonHang == "Chờ giao hàng" ? "" : "")">
                 <span>Đã Giao</span>
-                <small>10:38 10-08-2021</small>
+                <small>@(Model.TrangThaiDonHang == "Đã giao" ? Model.ThoiGianDat.AddDays(2).ToString("HH:mm dd-MM-yyyy") : "")</small>
             </div>
-            <div class="status-step active">
-                <span>Đơn Hủy</span>
-                <small>07:30 31-08-2021</small>
-            </div>
+            @if (Model.TrangThaiDonHang == "Đã hủy")
+            {
+                <div class="status-step active">
+                    <span>Đơn Hủy</span>
+                    <small>@Model.ThoiGianDat.ToString("HH:mm dd-MM-yyyy")</small>
+                </div>
+            }
         </div>
     </div>
 
@@ -47,62 +51,96 @@
             <div class="col-lg-4">
                 <div class="address-card">
                     <h6>Địa Chỉ Nhận Hàng</h6>
-                    <div class="info-line fw-semibold">Lê Thị Như Quỳnh</div>
-                    <div class="info-line">(+84) 943 019 598</div>
-                    <div class="info-line">188/29 Tân Kỳ Tân Quý, phường Tân Sơn Nhì, quận Tân Phú, Tp. HCM</div>
-                    <div class="info-line text-muted small">Đặt hàng thành công · Đơn hàng đã được đặt</div>
+                    <div class="info-line fw-semibold">@Model.TenNguoiNhan</div>
+                    <div class="info-line">@Model.SDT</div>
+                    <div class="info-line">@Model.DiaChi</div>
+                    @if (!string.IsNullOrEmpty(Model.GhiChu))
+                    {
+                        <div class="info-line text-muted small">Ghi chú: @Model.GhiChu</div>
+                    }
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="shop-card">
                     <h6>Người Bán</h6>
+                    @{
+                        var cuaHang = Model.ChiTietDonHangs.FirstOrDefault()?.BienTheSanPham?.SanPham?.CuaHang;
+                    }
                     <div class="d-flex align-items-center gap-2">
-                        <span class="fw-semibold">NOVSET</span>
+                        <span class="fw-semibold">@(cuaHang?.TenCuaHang ?? "N/A")</span>
                         <span class="badge bg-light text-dark">Chat</span>
                         <span class="badge bg-light text-dark">Xem Shop</span>
                     </div>
-                    <div class="info-line text-muted mt-2">Đang điều phối ĐVVC</div>
+                    <div class="info-line text-muted mt-2">@Model.TrangThaiVanChuyen</div>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="payment-card">
                     <h6>Phương Thức Thanh Toán</h6>
-                    <div class="info-line">Thanh toán khi nhận hàng</div>
-                    <div class="info-line">Vui lòng thanh toán 12.500đ khi nhận hàng</div>
+                    <div class="info-line">@(Model.TrangThaiThanhToan ? "Đã thanh toán" : "Thanh toán khi nhận hàng")</div>
+                    @if (!Model.TrangThaiThanhToan)
+                    {
+                        <div class="info-line">Vui lòng thanh toán @Model.TongTien.ToString("N0")đ khi nhận hàng</div>
+                    }
+                    @if (Model.DonViVanChuyen != null)
+                    {
+                        <div class="info-line text-muted mt-2">Đơn vị vận chuyển: @Model.DonViVanChuyen.TenDVVC</div>
+                    }
                 </div>
             </div>
         </div>
 
-        <div class="order-product-card d-flex align-items-center">
-            <img src="https://cf.shopee.vn/file/fc1c24ef5d9d74b78d3c9f74c2b5d3f2" alt="Kẹp tóc càng cua" />
-            <div class="flex-grow-1">
-                <h6>[Mã 88FASHIONSALE1 giảm 10K đơn 50K] Kẹp tóc càng cua, cặp tóc càng cua đen nhám [set 12 cái]</h6>
-                <p>Phân loại hàng: 6 cái 3_R đen nhám · x1</p>
+        @foreach (var chiTiet in Model.ChiTietDonHangs)
+        {
+            var sanPham = chiTiet.BienTheSanPham.SanPham;
+            var bienThe = chiTiet.BienTheSanPham;          
+            var hinhAnh = sanPham.AnhSanPhams.FirstOrDefault(a => a.MacDinh == true) ?? sanPham.AnhSanPhams.FirstOrDefault();
+            var imageUrl = hinhAnh != null
+                ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{sanPham.MaSanPham}/{hinhAnh.HinhAnh}"
+                : "https://via.placeholder.com/100";
+
+            <div class="order-product-card d-flex align-items-center">
+                <img src="@imageUrl" alt="@sanPham.TenSanPham" />
+                <div class="flex-grow-1">
+                    <h6>@sanPham.TenSanPham</h6>
+                    <p>Phân loại hàng: @bienThe.TenBienThe | @chiTiet.SoLuong</p>
+                </div>
+                <div class="price">
+                    @if (bienThe != null && chiTiet.DonGia < bienThe.GiaBan)
+                    {
+                        <div class="old-price">@bienThe.GiaBan.ToString("N0")đ</div>
+                    }
+                    <div>@chiTiet.DonGia.ToString("N0")đ</div>
+                </div>
             </div>
-            <div class="price">
-                <div class="old-price">20.000đ</div>
-                <div>10.000đ</div>
-            </div>
-        </div>
+        }
 
         <div class="order-summary ms-auto">
+            @{
+                var tongTienHang = Model.ChiTietDonHangs.Sum(ct => ct.ThanhTien);
+                var giamGia = Model.GiamGia != null && Model.GiamGia.GiaTriGiam.HasValue ? (decimal)Model.GiamGia.GiaTriGiam.Value : 0;
+                var tienSauGiamGia = tongTienHang - giamGia;
+            }
             <div class="row">
                 <div class="col">Tổng tiền hàng</div>
-                <div class="col text-end">10.000đ</div>
+                <div class="col text-end">@tongTienHang.ToString("N0")đ</div>
             </div>
             <div class="row">
                 <div class="col">Phí vận chuyển</div>
-                <div class="col text-end">42.500đ</div>
+                <div class="col text-end">@Model.PhiVanChuyen.ToString("N0")đ</div>
             </div>
+            @if (giamGia > 0)
+            {
+                <div class="row">
+                    <div class="col">Giảm giá</div>
+                    <div class="col text-end text-success">-@giamGia.ToString("N0")đ</div>
+                </div>
+            }
             <div class="row">
-                <div class="col">Giảm giá phí vận chuyển</div>
-                <div class="col text-end text-success">-40.000đ</div>
+                <div class="col text-danger fs-5 fw-bold">Thành tiền</div>
+                <div class="col text-danger fs-5 fw-bold text-end">@Model.TongTien.ToString("N0")đ</div>
             </div>
-            <div class="row">
-                <div class="col text-danger fs-5 fw-bold"  >Thành tiền</div>
-                <div class="col text-danger fs-5 fw-bold text-end">12.500đ</div>
-            </div>
-            <div class="text-muted text-end small mt-1">Thanh toán khi nhận hàng</div>
+            <div class="text-muted text-end small mt-1">@(Model.TrangThaiThanhToan ? "Đã thanh toán" : "Thanh toán khi nhận hàng")</div>
         </div>
     </div>
 </div>
