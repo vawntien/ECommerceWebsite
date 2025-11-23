@@ -1,6 +1,7 @@
 ﻿@model ECommerceWebsiteMVC.Models.DanhGiaSanPham
 
 @{
+    Layout = null;
     // Ảnh sản phẩm mặc định
     var macdinh = Model.ChiTietDonHang.BienTheSanPham.SanPham.AnhSanPhams
         .Where(x => x.MacDinh == true)
@@ -28,7 +29,7 @@
         theme: {
             extend: {
                 colors: {
-                    primary: "#f97316",
+                    primaryColor: "#f97316",
                     "background-light": "#f8fafc",
                     "background-dark": "#0f172a",
                 },
@@ -44,17 +45,84 @@
 </script>
 
 <style>
+    /* Reset Bootstrap conflicts */
+    #product-review-modal * {
+        box-sizing: border-box;
+    }
+
+    #product-review-modal input[type="text"],
+    #product-review-modal textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
     .star-rating {
         display: inline-flex;
         gap: 0.25rem;
     }
 
-        .star-rating .material-icons {
-            font-size: 1.75rem;
-            color: #f59e0b;
-            cursor: pointer;
-            user-select: none;
-        }
+    .star-rating .material-icons {
+        font-size: 1.75rem;
+        color: #f59e0b;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Custom layout cho form fields */
+    .review-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .review-form-field.horizontal {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .review-form-field.textarea-field {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        align-items: start;
+        gap: 1rem;
+    }
+
+   
+
+    .review-input-wrapper {
+        width: 100%;
+    }
+
+    .review-input-wrapper input,
+    .review-input-wrapper textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+    }
+
+    .dark .review-input-wrapper input,
+    .dark .review-input-wrapper textarea {
+        background-color: #1e293b;
+        border-color: #475569;
+        color: #e5e7eb;
+    }
+
+    .review-input-wrapper input:focus,
+    .review-input-wrapper textarea:focus {
+        outline: none;
+        border-color: #f97316;
+        box-shadow: 0 0 0 1px #f97316;
+    }
+
+    .review-input-wrapper textarea {
+        height: 128px;
+        resize: vertical;
+    }
 </style>
 
 <!-- OVERLAY MODAL -->
@@ -120,28 +188,29 @@
                     </div>
 
                     <!-- Tiêu đề -->
-                    <div class="flex flex-wrap items-center gap-4">
-                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">Tiêu đề</span>
-
-                        <input type="text"
-                               name="TieuDe"
-                               value="@(Model?.TieuDe ?? "")"
-                               class="flex-1 min-w-[200px] p-2 border border-gray-300 dark:border-gray-600
-                                      rounded-md bg-white dark:bg-slate-800 focus:ring-primary focus:border-primary"
-                               placeholder="VD: Sản phẩm rất tốt, đáng mua" />
+                    <div class="review-form-field horizontal">
+                        <span class="text-gray-700 dark:text-gray-300">Tiêu đề</span>
+                        <div class="review-input-wrapper">
+                            <input type="text"
+                                   name="TieuDe"
+                                   placeholder="VD: Sản phẩm rất tốt, đáng mua"
+                                   value="@(Model?.TieuDe ?? "")" />
+                        </div>
                     </div>
+
                 </div>
 
                 <!-- NỘI DUNG + ẢNH -->
                 <div class="p-4 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-slate-700/50">
-                    <div class="flex items-center gap-4 pb-4">
-                        <span class="text-gray-700 dark:text-gray-300 w-full md:w-40">Nội dung</span>
-                    </div>
 
-                    <textarea name="NoiDung"
-                              class="w-full h-32 p-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600
-                                     rounded-md focus:ring-primary focus:border-primary placeholder-gray-400 dark:placeholder-gray-500"
-                              placeholder="Hãy chia sẻ những điều bạn thích / chưa hài lòng về sản phẩm…">@(Model?.NoiDung ?? "")</textarea>
+                    <!-- Nội dung -->
+                    <div class="review-form-field textarea-field">
+                        <span class="text-gray-700 dark:text-gray-300">Nội dung</span>
+                        <div class="review-input-wrapper">
+                            <textarea name="NoiDung"
+                                      placeholder="Hãy chia sẻ những điều bạn thích / chưa hài lòng về sản phẩm…">@(Model?.NoiDung ?? "")</textarea>
+                        </div>
+                    </div>
 
                     <!-- Upload + Preview -->
                     <div class="mt-4 flex flex-col gap-3">
@@ -154,8 +223,9 @@
                                    accept="image/*" />
 
                             <button type="button"
-                                    class="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded
-                                           text-sm font-medium hover:bg-primary/10 transition-colors"
+                                    class="flex items-center gap-2 px-4 py-2 text-primaryColor rounded
+                                           text-sm font-medium hover:bg-primaryColor/10 transition-colors"
+                                    style="border: 1px solid #f97316;"
                                     onclick="document.getElementById('HinhAnhFile').click();">
                                 <span class="material-icons" style="font-size: 1.25rem;">photo_camera</span>
                                 Thêm Hình ảnh
@@ -187,7 +257,7 @@
                         </button>
 
                         <button type="submit"
-                                class="px-8 py-2.5 bg-primary text-white rounded font-medium hover:bg-orange-600 transition-colors">
+                                class="px-8 py-2.5 bg-primaryColor text-white rounded font-medium hover:bg-orange-600 transition-colors">
                             HOÀN THÀNH
                         </button>
                     </div>
