@@ -93,6 +93,7 @@
           <Property Name="TrangThaiThanhToan" Type="bit" Nullable="false" />
           <Property Name="ThoiGianDat" Type="datetime" Nullable="false" />
           <Property Name="MaGiamGia" Type="int" />
+          <Property Name="MaNguoiDung" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
@@ -194,7 +195,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_BTSP">
+        <Association Name="FK_CTDH_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDonHang_BienThe">
           <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
           <ReferentialConstraint>
@@ -206,15 +219,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_DonHang">
+        <Association Name="FK_CTDonHang_DonHang">
           <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="DonHang">
               <PropertyRef Name="MaDonHang" />
             </Principal>
             <Dependent Role="ChiTietDonHang">
-              <PropertyRef Name="MaDonHang" />
+              <PropertyRef Name="MaCTDH" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -254,7 +267,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DanhGiaSanPham_CTDH">
+        <Association Name="FK_DanhGiaSanPham_ChiTietDonHang">
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="1" />
           <End Role="DanhGiaSanPham" Type="Self.DanhGiaSanPham" Multiplicity="*" />
           <ReferentialConstraint>
@@ -287,6 +300,18 @@
             </Principal>
             <Dependent Role="DonHang">
               <PropertyRef Name="MaGiamGia" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_NguoiDung">
+          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNguoiDung" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -362,11 +387,15 @@
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
           </AssociationSet>
-          <AssociationSet Name="FK_CTDH_BTSP" Association="Self.FK_CTDH_BTSP">
+          <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
+            <End Role="DonHang" EntitySet="DonHang" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDonHang_BienThe" Association="Self.FK_CTDonHang_BienThe">
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
+          <AssociationSet Name="FK_CTDonHang_DonHang" Association="Self.FK_CTDonHang_DonHang">
             <End Role="DonHang" EntitySet="DonHang" />
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
@@ -382,7 +411,7 @@
             <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="CuaHang" EntitySet="CuaHang" />
           </AssociationSet>
-          <AssociationSet Name="FK_DanhGiaSanPham_CTDH" Association="Self.FK_DanhGiaSanPham_CTDH">
+          <AssociationSet Name="FK_DanhGiaSanPham_ChiTietDonHang" Association="Self.FK_DanhGiaSanPham_ChiTietDonHang">
             <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
             <End Role="DanhGiaSanPham" EntitySet="DanhGiaSanPham" />
           </AssociationSet>
@@ -392,6 +421,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_DonHang_GiamGia" Association="Self.FK_DonHang_GiamGia">
             <End Role="GiamGia" EntitySet="GiamGia" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NguoiDung" Association="Self.FK_DonHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="DonHang" EntitySet="DonHang" />
           </AssociationSet>
           <AssociationSet Name="FK_GioHang_NguoiDung" Association="Self.FK_GioHang_NguoiDung">
@@ -415,15 +448,96 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ECommerceWebsiteEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AnhSanPhams" EntityType="ECommerceWebsiteModel.AnhSanPham" />
+          <EntitySet Name="BienTheSanPhams" EntityType="ECommerceWebsiteModel.BienTheSanPham" />
+          <EntitySet Name="ChiTietDonHangs" EntityType="ECommerceWebsiteModel.ChiTietDonHang" />
+          <EntitySet Name="ChiTietGioHangs" EntityType="ECommerceWebsiteModel.ChiTietGioHang" />
+          <EntitySet Name="CuaHangs" EntityType="ECommerceWebsiteModel.CuaHang" />
+          <EntitySet Name="DanhGiaSanPhams" EntityType="ECommerceWebsiteModel.DanhGiaSanPham" />
+          <EntitySet Name="DanhMucs" EntityType="ECommerceWebsiteModel.DanhMuc" />
+          <EntitySet Name="DonHangs" EntityType="ECommerceWebsiteModel.DonHang" />
+          <EntitySet Name="DonViVanChuyens" EntityType="ECommerceWebsiteModel.DonViVanChuyen" />
+          <EntitySet Name="GiamGias" EntityType="ECommerceWebsiteModel.GiamGia" />
+          <EntitySet Name="GioHangs" EntityType="ECommerceWebsiteModel.GioHang" />
+          <EntitySet Name="KhieuNais" EntityType="ECommerceWebsiteModel.KhieuNai" />
+          <EntitySet Name="NguoiDungs" EntityType="ECommerceWebsiteModel.NguoiDung" />
+          <EntitySet Name="SanPhams" EntityType="ECommerceWebsiteModel.SanPham" />
+          <EntitySet Name="sysdiagrams" EntityType="ECommerceWebsiteModel.sysdiagram" />
+          <AssociationSet Name="FK_AnhSanPham_SanPham" Association="ECommerceWebsiteModel.FK_AnhSanPham_SanPham">
+            <End Role="SanPham" EntitySet="SanPhams" />
+            <End Role="AnhSanPham" EntitySet="AnhSanPhams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BienTheSanPham_SanPham" Association="ECommerceWebsiteModel.FK_BienTheSanPham_SanPham">
+            <End Role="SanPham" EntitySet="SanPhams" />
+            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDonHang_BienThe" Association="ECommerceWebsiteModel.FK_CTDonHang_BienThe">
+            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTGH_BienThe" Association="ECommerceWebsiteModel.FK_CTGH_BienThe">
+            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
+            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDH_DonHang" Association="ECommerceWebsiteModel.FK_CTDH_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDonHang_DonHang" Association="ECommerceWebsiteModel.FK_CTDonHang_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DanhGiaSanPham_ChiTietDonHang" Association="ECommerceWebsiteModel.FK_DanhGiaSanPham_ChiTietDonHang">
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
+            <End Role="DanhGiaSanPham" EntitySet="DanhGiaSanPhams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTGH_GioHang" Association="ECommerceWebsiteModel.FK_CTGH_GioHang">
+            <End Role="GioHang" EntitySet="GioHangs" />
+            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CuaHang_NguoiDung" Association="ECommerceWebsiteModel.FK_CuaHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
+            <End Role="CuaHang" EntitySet="CuaHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SanPham_CuaHang" Association="ECommerceWebsiteModel.FK_SanPham_CuaHang">
+            <End Role="CuaHang" EntitySet="CuaHangs" />
+            <End Role="SanPham" EntitySet="SanPhams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SanPham_DanhMuc" Association="ECommerceWebsiteModel.FK_SanPham_DanhMuc">
+            <End Role="DanhMuc" EntitySet="DanhMucs" />
+            <End Role="SanPham" EntitySet="SanPhams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_DVVC" Association="ECommerceWebsiteModel.FK_DonHang_DVVC">
+            <End Role="DonViVanChuyen" EntitySet="DonViVanChuyens" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_GiamGia" Association="ECommerceWebsiteModel.FK_DonHang_GiamGia">
+            <End Role="GiamGia" EntitySet="GiamGias" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NguoiDung" Association="ECommerceWebsiteModel.FK_DonHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KhieuNai_DonHang" Association="ECommerceWebsiteModel.FK_KhieuNai_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="KhieuNai" EntitySet="KhieuNais" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GioHang_NguoiDung" Association="ECommerceWebsiteModel.FK_GioHang_NguoiDung">
+            <End Role="NguoiDung" EntitySet="NguoiDungs" />
+            <End Role="GioHang" EntitySet="GioHangs" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
           </Key>
           <Property Name="MaHinhAnh" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaSanPham" Type="Int32" Nullable="false" />
-          <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="HinhAnh" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="MacDinh" Type="Boolean" />
-          <NavigationProperty Name="SanPham" Relationship="Self.FK_AnhSanPham_SanPham" FromRole="AnhSanPham" ToRole="SanPham" />
+          <NavigationProperty Name="SanPham" Relationship="ECommerceWebsiteModel.FK_AnhSanPham_SanPham" FromRole="AnhSanPham" ToRole="SanPham" />
         </EntityType>
         <EntityType Name="BienTheSanPham">
           <Key>
@@ -431,13 +545,13 @@
           </Key>
           <Property Name="MaBienThe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaSanPham" Type="Int32" Nullable="false" />
-          <Property Name="TenBienThe" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TenBienThe" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="GiaBan" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="GiaBan" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
           <Property Name="SoLuongTonKho" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="SanPham" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="BienTheSanPham" ToRole="SanPham" />
-          <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK_CTDH_BTSP" FromRole="BienTheSanPham" ToRole="ChiTietDonHang" />
-          <NavigationProperty Name="ChiTietGioHangs" Relationship="Self.FK_CTGH_BienThe" FromRole="BienTheSanPham" ToRole="ChiTietGioHang" />
+          <NavigationProperty Name="SanPham" Relationship="ECommerceWebsiteModel.FK_BienTheSanPham_SanPham" FromRole="BienTheSanPham" ToRole="SanPham" />
+          <NavigationProperty Name="ChiTietDonHangs" Relationship="ECommerceWebsiteModel.FK_CTDonHang_BienThe" FromRole="BienTheSanPham" ToRole="ChiTietDonHang" />
+          <NavigationProperty Name="ChiTietGioHangs" Relationship="ECommerceWebsiteModel.FK_CTGH_BienThe" FromRole="BienTheSanPham" ToRole="ChiTietGioHang" />
         </EntityType>
         <EntityType Name="ChiTietDonHang">
           <Key>
@@ -445,13 +559,14 @@
           </Key>
           <Property Name="MaCTDH" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDonHang" Type="Int32" Nullable="false" />
-          <Property Name="ThanhTien" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="ThanhTien" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
           <Property Name="SoLuong" Type="Int32" Nullable="false" />
-          <Property Name="DonGia" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="DonGia" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
           <Property Name="MaBienThe" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="BienTheSanPham" Relationship="Self.FK_CTDH_BTSP" FromRole="ChiTietDonHang" ToRole="BienTheSanPham" />
-          <NavigationProperty Name="DonHang" Relationship="Self.FK_CTDH_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
-          <NavigationProperty Name="DanhGiaSanPhams" Relationship="Self.FK_DanhGiaSanPham_CTDH" FromRole="ChiTietDonHang" ToRole="DanhGiaSanPham" />
+          <NavigationProperty Name="BienTheSanPham" Relationship="ECommerceWebsiteModel.FK_CTDonHang_BienThe" FromRole="ChiTietDonHang" ToRole="BienTheSanPham" />
+          <NavigationProperty Name="DonHang" Relationship="ECommerceWebsiteModel.FK_CTDH_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
+          <NavigationProperty Name="DonHang1" Relationship="ECommerceWebsiteModel.FK_CTDonHang_DonHang" FromRole="ChiTietDonHang" ToRole="DonHang" />
+          <NavigationProperty Name="DanhGiaSanPhams" Relationship="ECommerceWebsiteModel.FK_DanhGiaSanPham_ChiTietDonHang" FromRole="ChiTietDonHang" ToRole="DanhGiaSanPham" />
         </EntityType>
         <EntityType Name="ChiTietGioHang">
           <Key>
@@ -461,8 +576,8 @@
           <Property Name="MaGioHang" Type="Int32" Nullable="false" />
           <Property Name="MaBienThe" Type="Int32" Nullable="false" />
           <Property Name="SoLuong" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="BienTheSanPham" Relationship="Self.FK_CTGH_BienThe" FromRole="ChiTietGioHang" ToRole="BienTheSanPham" />
-          <NavigationProperty Name="GioHang" Relationship="Self.FK_CTGH_GioHang" FromRole="ChiTietGioHang" ToRole="GioHang" />
+          <NavigationProperty Name="BienTheSanPham" Relationship="ECommerceWebsiteModel.FK_CTGH_BienThe" FromRole="ChiTietGioHang" ToRole="BienTheSanPham" />
+          <NavigationProperty Name="GioHang" Relationship="ECommerceWebsiteModel.FK_CTGH_GioHang" FromRole="ChiTietGioHang" ToRole="GioHang" />
         </EntityType>
         <EntityType Name="CuaHang">
           <Key>
@@ -470,13 +585,13 @@
           </Key>
           <Property Name="MaCuaHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
-          <Property Name="TenCuaHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TenCuaHang" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DiaChi" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="NgayDangKy" Type="DateTime" Precision="0" />
-          <Property Name="MaSoThue" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="NguoiDung" Relationship="Self.FK_CuaHang_NguoiDung" FromRole="CuaHang" ToRole="NguoiDung" />
-          <NavigationProperty Name="SanPhams" Relationship="Self.FK_SanPham_CuaHang" FromRole="CuaHang" ToRole="SanPham" />
+          <Property Name="MaSoThue" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="NguoiDung" Relationship="ECommerceWebsiteModel.FK_CuaHang_NguoiDung" FromRole="CuaHang" ToRole="NguoiDung" />
+          <NavigationProperty Name="SanPhams" Relationship="ECommerceWebsiteModel.FK_SanPham_CuaHang" FromRole="CuaHang" ToRole="SanPham" />
         </EntityType>
         <EntityType Name="DanhGiaSanPham">
           <Key>
@@ -489,15 +604,15 @@
           <Property Name="NoiDung" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="ThoiGian" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="ChiTietDonHang" Relationship="Self.FK_DanhGiaSanPham_CTDH" FromRole="DanhGiaSanPham" ToRole="ChiTietDonHang" />
+          <NavigationProperty Name="ChiTietDonHang" Relationship="ECommerceWebsiteModel.FK_DanhGiaSanPham_ChiTietDonHang" FromRole="DanhGiaSanPham" ToRole="ChiTietDonHang" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
             <PropertyRef Name="MaDanhMuc" />
           </Key>
           <Property Name="MaDanhMuc" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenDanhMuc" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="SanPhams" Relationship="Self.FK_SanPham_DanhMuc" FromRole="DanhMuc" ToRole="SanPham" />
+          <Property Name="TenDanhMuc" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="SanPhams" Relationship="ECommerceWebsiteModel.FK_SanPham_DanhMuc" FromRole="DanhMuc" ToRole="SanPham" />
         </EntityType>
         <EntityType Name="DonHang">
           <Key>
@@ -505,43 +620,46 @@
           </Key>
           <Property Name="MaDonHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDVVC" Type="Int32" Nullable="false" />
-          <Property Name="TongTien" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="TongTien" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
           <Property Name="TrangThaiVanChuyen" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TrangThaiDonHang" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PhiVanChuyen" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
-          <Property Name="TenNguoiNhan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DiaChi" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="TrangThaiDonHang" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PhiVanChuyen" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="TenNguoiNhan" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DiaChi" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="SDT" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
           <Property Name="GhiChu" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="TrangThaiThanhToan" Type="Boolean" Nullable="false" />
           <Property Name="ThoiGianDat" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="MaGiamGia" Type="Int32" />
-          <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK_CTDH_DonHang" FromRole="DonHang" ToRole="ChiTietDonHang" />
-          <NavigationProperty Name="DonViVanChuyen" Relationship="Self.FK_DonHang_DVVC" FromRole="DonHang" ToRole="DonViVanChuyen" />
-          <NavigationProperty Name="GiamGia" Relationship="Self.FK_DonHang_GiamGia" FromRole="DonHang" ToRole="GiamGia" />
-          <NavigationProperty Name="KhieuNais" Relationship="Self.FK_KhieuNai_DonHang" FromRole="DonHang" ToRole="KhieuNai" />
+          <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ChiTietDonHangs" Relationship="ECommerceWebsiteModel.FK_CTDH_DonHang" FromRole="DonHang" ToRole="ChiTietDonHang" />
+          <NavigationProperty Name="ChiTietDonHang" Relationship="ECommerceWebsiteModel.FK_CTDonHang_DonHang" FromRole="DonHang" ToRole="ChiTietDonHang" />
+          <NavigationProperty Name="DonViVanChuyen" Relationship="ECommerceWebsiteModel.FK_DonHang_DVVC" FromRole="DonHang" ToRole="DonViVanChuyen" />
+          <NavigationProperty Name="GiamGia" Relationship="ECommerceWebsiteModel.FK_DonHang_GiamGia" FromRole="DonHang" ToRole="GiamGia" />
+          <NavigationProperty Name="NguoiDung" Relationship="ECommerceWebsiteModel.FK_DonHang_NguoiDung" FromRole="DonHang" ToRole="NguoiDung" />
+          <NavigationProperty Name="KhieuNais" Relationship="ECommerceWebsiteModel.FK_KhieuNai_DonHang" FromRole="DonHang" ToRole="KhieuNai" />
         </EntityType>
         <EntityType Name="DonViVanChuyen">
           <Key>
             <PropertyRef Name="MaDVVC" />
           </Key>
           <Property Name="MaDVVC" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenDVVC" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_DVVC" FromRole="DonViVanChuyen" ToRole="DonHang" />
+          <Property Name="TenDVVC" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DonHangs" Relationship="ECommerceWebsiteModel.FK_DonHang_DVVC" FromRole="DonViVanChuyen" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="GiamGia">
           <Key>
             <PropertyRef Name="MaGiamGia" />
           </Key>
           <Property Name="MaGiamGia" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenMaGG" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TenMaGG" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="MoTa" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="GiaTriDonHangToiThieu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
-          <Property Name="GiaTriGiamToiDa" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="GiaTriDonHangToiThieu" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="GiaTriGiamToiDa" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
           <Property Name="GiaTriGiam" Type="Double" />
           <Property Name="NgayBD" Type="DateTime" Precision="3" />
           <Property Name="NgayKT" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_GiamGia" FromRole="GiamGia" ToRole="DonHang" />
+          <NavigationProperty Name="DonHangs" Relationship="ECommerceWebsiteModel.FK_DonHang_GiamGia" FromRole="GiamGia" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="GioHang">
           <Key>
@@ -550,38 +668,39 @@
           <Property Name="MaGioHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaNguoiDung" Type="Int32" Nullable="false" />
           <Property Name="SoLuong" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="ChiTietGioHangs" Relationship="Self.FK_CTGH_GioHang" FromRole="GioHang" ToRole="ChiTietGioHang" />
-          <NavigationProperty Name="NguoiDung" Relationship="Self.FK_GioHang_NguoiDung" FromRole="GioHang" ToRole="NguoiDung" />
+          <NavigationProperty Name="ChiTietGioHangs" Relationship="ECommerceWebsiteModel.FK_CTGH_GioHang" FromRole="GioHang" ToRole="ChiTietGioHang" />
+          <NavigationProperty Name="NguoiDung" Relationship="ECommerceWebsiteModel.FK_GioHang_NguoiDung" FromRole="GioHang" ToRole="NguoiDung" />
         </EntityType>
         <EntityType Name="KhieuNai">
           <Key>
             <PropertyRef Name="MaKN" />
           </Key>
           <Property Name="MaKN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TieuDe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="NoiDung" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TieuDe" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NoiDung" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="ThoiGian" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TrangThai" Type="Boolean" />
           <Property Name="HinhAnh" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="MaDonHang" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="DonHang" Relationship="Self.FK_KhieuNai_DonHang" FromRole="KhieuNai" ToRole="DonHang" />
+          <NavigationProperty Name="DonHang" Relationship="ECommerceWebsiteModel.FK_KhieuNai_DonHang" FromRole="KhieuNai" ToRole="DonHang" />
         </EntityType>
         <EntityType Name="NguoiDung">
           <Key>
             <PropertyRef Name="MaNguoiDung" />
           </Key>
           <Property Name="MaNguoiDung" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="HoVaTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="TaiKhoan" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MatKhau" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="HoVaTen" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SDT" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="TaiKhoan" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="MatKhau" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="CCCD" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="NgayDangKy" Type="DateTime" Precision="0" />
           <Property Name="HinhAnh" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="VaiTro" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="CuaHangs" Relationship="Self.FK_CuaHang_NguoiDung" FromRole="NguoiDung" ToRole="CuaHang" />
-          <NavigationProperty Name="GioHangs" Relationship="Self.FK_GioHang_NguoiDung" FromRole="NguoiDung" ToRole="GioHang" />
+          <NavigationProperty Name="CuaHangs" Relationship="ECommerceWebsiteModel.FK_CuaHang_NguoiDung" FromRole="NguoiDung" ToRole="CuaHang" />
+          <NavigationProperty Name="DonHangs" Relationship="ECommerceWebsiteModel.FK_DonHang_NguoiDung" FromRole="NguoiDung" ToRole="DonHang" />
+          <NavigationProperty Name="GioHangs" Relationship="ECommerceWebsiteModel.FK_GioHang_NguoiDung" FromRole="NguoiDung" ToRole="GioHang" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -590,27 +709,27 @@
           <Property Name="MaSanPham" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaDanhMuc" Type="Int32" Nullable="false" />
           <Property Name="MaCuaHang" Type="Int32" Nullable="false" />
-          <Property Name="TenSanPham" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TenSanPham" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="LoaiPhanLoai" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AnhSanPhams" Relationship="Self.FK_AnhSanPham_SanPham" FromRole="SanPham" ToRole="AnhSanPham" />
-          <NavigationProperty Name="BienTheSanPhams" Relationship="Self.FK_BienTheSanPham_SanPham" FromRole="SanPham" ToRole="BienTheSanPham" />
-          <NavigationProperty Name="CuaHang" Relationship="Self.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
-          <NavigationProperty Name="DanhMuc" Relationship="Self.FK_SanPham_DanhMuc" FromRole="SanPham" ToRole="DanhMuc" />
+          <Property Name="LoaiPhanLoai" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AnhSanPhams" Relationship="ECommerceWebsiteModel.FK_AnhSanPham_SanPham" FromRole="SanPham" ToRole="AnhSanPham" />
+          <NavigationProperty Name="BienTheSanPhams" Relationship="ECommerceWebsiteModel.FK_BienTheSanPham_SanPham" FromRole="SanPham" ToRole="BienTheSanPham" />
+          <NavigationProperty Name="CuaHang" Relationship="ECommerceWebsiteModel.FK_SanPham_CuaHang" FromRole="SanPham" ToRole="CuaHang" />
+          <NavigationProperty Name="DanhMuc" Relationship="ECommerceWebsiteModel.FK_SanPham_DanhMuc" FromRole="SanPham" ToRole="DanhMuc" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
             <PropertyRef Name="diagram_id" />
           </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="principal_id" Type="Int32" Nullable="false" />
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_AnhSanPham_SanPham">
-          <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
-          <End Role="AnhSanPham" Type="Self.AnhSanPham" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.AnhSanPham" Role="AnhSanPham" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="SanPham">
               <PropertyRef Name="MaSanPham" />
@@ -621,8 +740,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BienTheSanPham_SanPham">
-          <End Role="SanPham" Type="Self.SanPham" Multiplicity="1" />
-          <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.BienTheSanPham" Role="BienTheSanPham" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="SanPham">
               <PropertyRef Name="MaSanPham" />
@@ -632,9 +751,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CTDH_BTSP">
-          <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+        <Association Name="FK_CTDonHang_BienThe">
+          <End Type="ECommerceWebsiteModel.BienTheSanPham" Role="BienTheSanPham" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietDonHang" Role="ChiTietDonHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BienTheSanPham">
               <PropertyRef Name="MaBienThe" />
@@ -645,8 +764,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CTGH_BienThe">
-          <End Role="BienTheSanPham" Type="Self.BienTheSanPham" Multiplicity="1" />
-          <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.BienTheSanPham" Role="BienTheSanPham" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietGioHang" Role="ChiTietGioHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BienTheSanPham">
               <PropertyRef Name="MaBienThe" />
@@ -657,8 +776,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CTDH_DonHang">
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietDonHang" Role="ChiTietDonHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DonHang">
               <PropertyRef Name="MaDonHang" />
@@ -668,9 +787,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DanhGiaSanPham_CTDH">
-          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="1" />
-          <End Role="DanhGiaSanPham" Type="Self.DanhGiaSanPham" Multiplicity="*" />
+        <Association Name="FK_CTDonHang_DonHang">
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietDonHang" Role="ChiTietDonHang" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaCTDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DanhGiaSanPham_ChiTietDonHang">
+          <End Type="ECommerceWebsiteModel.ChiTietDonHang" Role="ChiTietDonHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.DanhGiaSanPham" Role="DanhGiaSanPham" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ChiTietDonHang">
               <PropertyRef Name="MaCTDH" />
@@ -681,8 +812,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CTGH_GioHang">
-          <End Role="GioHang" Type="Self.GioHang" Multiplicity="1" />
-          <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.GioHang" Role="GioHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.ChiTietGioHang" Role="ChiTietGioHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GioHang">
               <PropertyRef Name="MaGioHang" />
@@ -693,8 +824,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CuaHang_NguoiDung">
-          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
-          <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.NguoiDung" Role="NguoiDung" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.CuaHang" Role="CuaHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="NguoiDung">
               <PropertyRef Name="MaNguoiDung" />
@@ -705,8 +836,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SanPham_CuaHang">
-          <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="1" />
-          <End Role="SanPham" Type="Self.SanPham" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.CuaHang" Role="CuaHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="CuaHang">
               <PropertyRef Name="MaCuaHang" />
@@ -717,8 +848,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SanPham_DanhMuc">
-          <End Role="DanhMuc" Type="Self.DanhMuc" Multiplicity="1" />
-          <End Role="SanPham" Type="Self.SanPham" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.DanhMuc" Role="DanhMuc" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.SanPham" Role="SanPham" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DanhMuc">
               <PropertyRef Name="MaDanhMuc" />
@@ -729,8 +860,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_DonHang_DVVC">
-          <End Role="DonViVanChuyen" Type="Self.DonViVanChuyen" Multiplicity="1" />
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.DonViVanChuyen" Role="DonViVanChuyen" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DonViVanChuyen">
               <PropertyRef Name="MaDVVC" />
@@ -741,8 +872,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_DonHang_GiamGia">
-          <End Role="GiamGia" Type="Self.GiamGia" Multiplicity="0..1" />
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.GiamGia" Role="GiamGia" Multiplicity="0..1" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GiamGia">
               <PropertyRef Name="MaGiamGia" />
@@ -752,9 +883,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DonHang_NguoiDung">
+          <End Type="ECommerceWebsiteModel.NguoiDung" Role="NguoiDung" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NguoiDung">
+              <PropertyRef Name="MaNguoiDung" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNguoiDung" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_KhieuNai_DonHang">
-          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
-          <End Role="KhieuNai" Type="Self.KhieuNai" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.DonHang" Role="DonHang" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.KhieuNai" Role="KhieuNai" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DonHang">
               <PropertyRef Name="MaDonHang" />
@@ -765,8 +908,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_GioHang_NguoiDung">
-          <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
-          <End Role="GioHang" Type="Self.GioHang" Multiplicity="*" />
+          <End Type="ECommerceWebsiteModel.NguoiDung" Role="NguoiDung" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.GioHang" Role="GioHang" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="NguoiDung">
               <PropertyRef Name="MaNguoiDung" />
@@ -776,80 +919,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ECommerceWebsiteEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AnhSanPhams" EntityType="Self.AnhSanPham" />
-          <EntitySet Name="BienTheSanPhams" EntityType="Self.BienTheSanPham" />
-          <EntitySet Name="ChiTietDonHangs" EntityType="Self.ChiTietDonHang" />
-          <EntitySet Name="ChiTietGioHangs" EntityType="Self.ChiTietGioHang" />
-          <EntitySet Name="CuaHangs" EntityType="Self.CuaHang" />
-          <EntitySet Name="DanhGiaSanPhams" EntityType="Self.DanhGiaSanPham" />
-          <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
-          <EntitySet Name="DonHangs" EntityType="Self.DonHang" />
-          <EntitySet Name="DonViVanChuyens" EntityType="Self.DonViVanChuyen" />
-          <EntitySet Name="GiamGias" EntityType="Self.GiamGia" />
-          <EntitySet Name="GioHangs" EntityType="Self.GioHang" />
-          <EntitySet Name="KhieuNais" EntityType="Self.KhieuNai" />
-          <EntitySet Name="NguoiDungs" EntityType="Self.NguoiDung" />
-          <EntitySet Name="SanPhams" EntityType="Self.SanPham" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
-          <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
-            <End Role="SanPham" EntitySet="SanPhams" />
-            <End Role="AnhSanPham" EntitySet="AnhSanPhams" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BienTheSanPham_SanPham" Association="Self.FK_BienTheSanPham_SanPham">
-            <End Role="SanPham" EntitySet="SanPhams" />
-            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CTDH_BTSP" Association="Self.FK_CTDH_BTSP">
-            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
-            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CTGH_BienThe" Association="Self.FK_CTGH_BienThe">
-            <End Role="BienTheSanPham" EntitySet="BienTheSanPhams" />
-            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CTDH_DonHang" Association="Self.FK_CTDH_DonHang">
-            <End Role="DonHang" EntitySet="DonHangs" />
-            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DanhGiaSanPham_CTDH" Association="Self.FK_DanhGiaSanPham_CTDH">
-            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHangs" />
-            <End Role="DanhGiaSanPham" EntitySet="DanhGiaSanPhams" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CTGH_GioHang" Association="Self.FK_CTGH_GioHang">
-            <End Role="GioHang" EntitySet="GioHangs" />
-            <End Role="ChiTietGioHang" EntitySet="ChiTietGioHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CuaHang_NguoiDung" Association="Self.FK_CuaHang_NguoiDung">
-            <End Role="NguoiDung" EntitySet="NguoiDungs" />
-            <End Role="CuaHang" EntitySet="CuaHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SanPham_CuaHang" Association="Self.FK_SanPham_CuaHang">
-            <End Role="CuaHang" EntitySet="CuaHangs" />
-            <End Role="SanPham" EntitySet="SanPhams" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SanPham_DanhMuc" Association="Self.FK_SanPham_DanhMuc">
-            <End Role="DanhMuc" EntitySet="DanhMucs" />
-            <End Role="SanPham" EntitySet="SanPhams" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DonHang_DVVC" Association="Self.FK_DonHang_DVVC">
-            <End Role="DonViVanChuyen" EntitySet="DonViVanChuyens" />
-            <End Role="DonHang" EntitySet="DonHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DonHang_GiamGia" Association="Self.FK_DonHang_GiamGia">
-            <End Role="GiamGia" EntitySet="GiamGias" />
-            <End Role="DonHang" EntitySet="DonHangs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_KhieuNai_DonHang" Association="Self.FK_KhieuNai_DonHang">
-            <End Role="DonHang" EntitySet="DonHangs" />
-            <End Role="KhieuNai" EntitySet="KhieuNais" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GioHang_NguoiDung" Association="Self.FK_GioHang_NguoiDung">
-            <End Role="NguoiDung" EntitySet="NguoiDungs" />
-            <End Role="GioHang" EntitySet="GioHangs" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -858,180 +928,181 @@
           <EntitySetMapping Name="AnhSanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.AnhSanPham">
               <MappingFragment StoreEntitySet="AnhSanPham">
-                <ScalarProperty Name="MaHinhAnh" ColumnName="MaHinhAnh" />
-                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="MacDinh" ColumnName="MacDinh" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
+                <ScalarProperty Name="MaHinhAnh" ColumnName="MaHinhAnh" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BienTheSanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.BienTheSanPham">
               <MappingFragment StoreEntitySet="BienTheSanPham">
-                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
-                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
-                <ScalarProperty Name="TenBienThe" ColumnName="TenBienThe" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
-                <ScalarProperty Name="GiaBan" ColumnName="GiaBan" />
                 <ScalarProperty Name="SoLuongTonKho" ColumnName="SoLuongTonKho" />
+                <ScalarProperty Name="GiaBan" ColumnName="GiaBan" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="TenBienThe" ColumnName="TenBienThe" />
+                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
+                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChiTietDonHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.ChiTietDonHang">
               <MappingFragment StoreEntitySet="ChiTietDonHang">
-                <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
-                <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
-                <ScalarProperty Name="ThanhTien" ColumnName="ThanhTien" />
-                <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
-                <ScalarProperty Name="DonGia" ColumnName="DonGia" />
                 <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
+                <ScalarProperty Name="DonGia" ColumnName="DonGia" />
+                <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+                <ScalarProperty Name="ThanhTien" ColumnName="ThanhTien" />
+                <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
+                <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChiTietGioHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.ChiTietGioHang">
               <MappingFragment StoreEntitySet="ChiTietGioHang">
-                <ScalarProperty Name="MaCTGH" ColumnName="MaCTGH" />
-                <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
-                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
                 <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
+                <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
+                <ScalarProperty Name="MaCTGH" ColumnName="MaCTGH" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="CuaHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.CuaHang">
               <MappingFragment StoreEntitySet="CuaHang">
-                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
-                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
-                <ScalarProperty Name="TenCuaHang" ColumnName="TenCuaHang" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
-                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
-                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
                 <ScalarProperty Name="MaSoThue" ColumnName="MaSoThue" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="TenCuaHang" ColumnName="TenCuaHang" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
+                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DanhGiaSanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhGiaSanPham">
               <MappingFragment StoreEntitySet="DanhGiaSanPham">
-                <ScalarProperty Name="MaDG" ColumnName="MaDG" />
-                <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
-                <ScalarProperty Name="SoSao" ColumnName="SoSao" />
-                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
-                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
+                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
+                <ScalarProperty Name="SoSao" ColumnName="SoSao" />
+                <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
+                <ScalarProperty Name="MaDG" ColumnName="MaDG" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DanhMucs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhMuc">
               <MappingFragment StoreEntitySet="DanhMuc">
-                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
                 <ScalarProperty Name="TenDanhMuc" ColumnName="TenDanhMuc" />
+                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DonHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonHang">
               <MappingFragment StoreEntitySet="DonHang">
-                <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
-                <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
-                <ScalarProperty Name="TongTien" ColumnName="TongTien" />
-                <ScalarProperty Name="TrangThaiVanChuyen" ColumnName="TrangThaiVanChuyen" />
-                <ScalarProperty Name="TrangThaiDonHang" ColumnName="TrangThaiDonHang" />
-                <ScalarProperty Name="PhiVanChuyen" ColumnName="PhiVanChuyen" />
-                <ScalarProperty Name="TenNguoiNhan" ColumnName="TenNguoiNhan" />
-                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
-                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
-                <ScalarProperty Name="TrangThaiThanhToan" ColumnName="TrangThaiThanhToan" />
-                <ScalarProperty Name="ThoiGianDat" ColumnName="ThoiGianDat" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
+                <ScalarProperty Name="ThoiGianDat" ColumnName="ThoiGianDat" />
+                <ScalarProperty Name="TrangThaiThanhToan" ColumnName="TrangThaiThanhToan" />
+                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
+                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="TenNguoiNhan" ColumnName="TenNguoiNhan" />
+                <ScalarProperty Name="PhiVanChuyen" ColumnName="PhiVanChuyen" />
+                <ScalarProperty Name="TrangThaiDonHang" ColumnName="TrangThaiDonHang" />
+                <ScalarProperty Name="TrangThaiVanChuyen" ColumnName="TrangThaiVanChuyen" />
+                <ScalarProperty Name="TongTien" ColumnName="TongTien" />
+                <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
+                <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DonViVanChuyens">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DonViVanChuyen">
               <MappingFragment StoreEntitySet="DonViVanChuyen">
-                <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
                 <ScalarProperty Name="TenDVVC" ColumnName="TenDVVC" />
+                <ScalarProperty Name="MaDVVC" ColumnName="MaDVVC" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GiamGias">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.GiamGia">
               <MappingFragment StoreEntitySet="GiamGia">
-                <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
-                <ScalarProperty Name="TenMaGG" ColumnName="TenMaGG" />
-                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
-                <ScalarProperty Name="GiaTriDonHangToiThieu" ColumnName="GiaTriDonHangToiThieu" />
-                <ScalarProperty Name="GiaTriGiamToiDa" ColumnName="GiaTriGiamToiDa" />
-                <ScalarProperty Name="GiaTriGiam" ColumnName="GiaTriGiam" />
-                <ScalarProperty Name="NgayBD" ColumnName="NgayBD" />
                 <ScalarProperty Name="NgayKT" ColumnName="NgayKT" />
+                <ScalarProperty Name="NgayBD" ColumnName="NgayBD" />
+                <ScalarProperty Name="GiaTriGiam" ColumnName="GiaTriGiam" />
+                <ScalarProperty Name="GiaTriGiamToiDa" ColumnName="GiaTriGiamToiDa" />
+                <ScalarProperty Name="GiaTriDonHangToiThieu" ColumnName="GiaTriDonHangToiThieu" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="TenMaGG" ColumnName="TenMaGG" />
+                <ScalarProperty Name="MaGiamGia" ColumnName="MaGiamGia" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GioHangs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.GioHang">
               <MappingFragment StoreEntitySet="GioHang">
-                <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
-                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
                 <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
+                <ScalarProperty Name="MaGioHang" ColumnName="MaGioHang" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="KhieuNais">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.KhieuNai">
               <MappingFragment StoreEntitySet="KhieuNai">
-                <ScalarProperty Name="MaKN" ColumnName="MaKN" />
-                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
-                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
-                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
-                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="MaDonHang" ColumnName="MaDonHang" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
+                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
+                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
+                <ScalarProperty Name="MaKN" ColumnName="MaKN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="NguoiDungs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiDung">
               <MappingFragment StoreEntitySet="NguoiDung">
-                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
-                <ScalarProperty Name="TaiKhoan" ColumnName="TaiKhoan" />
-                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
-                <ScalarProperty Name="CCCD" ColumnName="CCCD" />
-                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
-                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="VaiTro" ColumnName="VaiTro" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="CCCD" ColumnName="CCCD" />
+                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+                <ScalarProperty Name="TaiKhoan" ColumnName="TaiKhoan" />
+                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="MaNguoiDung" ColumnName="MaNguoiDung" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.SanPham">
               <MappingFragment StoreEntitySet="SanPham">
-                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
-                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
-                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
-                <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
-                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
                 <ScalarProperty Name="LoaiPhanLoai" ColumnName="LoaiPhanLoai" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
+                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
+                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
+                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.sysdiagram">
               <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

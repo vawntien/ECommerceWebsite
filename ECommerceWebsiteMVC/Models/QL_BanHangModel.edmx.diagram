@@ -4,36 +4,38 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1e0b055c1d374d67954d67958074865a" Name="Diagram1" ZoomLevel="59">
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.AnhSanPham" Width="1.5" PointX="7.5" PointY="2.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.BienTheSanPham" Width="1.5" PointX="7.5" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietDonHang" Width="1.5" PointX="9.75" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietGioHang" Width="1.5" PointX="9.75" PointY="9.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.CuaHang" Width="1.5" PointX="3" PointY="4.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhGiaSanPham" Width="1.5" PointX="12" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhMuc" Width="1.5" PointX="3" PointY="1.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.DonHang" Width="1.5" PointX="7.5" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.DonViVanChuyen" Width="1.5" PointX="5.25" PointY="9.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.GiamGia" Width="1.5" PointX="5.25" PointY="11.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.GioHang" Width="1.5" PointX="3" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.KhieuNai" Width="1.5" PointX="9.75" PointY="12.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.NguoiDung" Width="1.5" PointX="0.75" PointY="5.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.SanPham" Width="1.5" PointX="5.25" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.sysdiagram" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_AnhSanPham_SanPham" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_BienTheSanPham_SanPham" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTDH_BTSP" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTGH_BienThe" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTDH_DonHang" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_DanhGiaSanPham_CTDH" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTGH_GioHang" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_CuaHang_NguoiDung" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_SanPham_CuaHang" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_SanPham_DanhMuc" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_DVVC" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_GiamGia" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_KhieuNai_DonHang" ManuallyRouted="false" />
-        <AssociationConnector Association="ECommerceWebsiteModel.FK_GioHang_NguoiDung" ManuallyRouted="false" />
+      <Diagram DiagramId="1e0b055c1d374d67954d67958074865a" Name="Diagram1" ZoomLevel="69">
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.AnhSanPham" Width="1.5" PointX="7.5" PointY="2.5" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.BienTheSanPham" Width="1.5" PointX="7.5" PointY="6" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietDonHang" Width="1.5" PointX="9.75" PointY="8.875" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietGioHang" Width="1.5" PointX="10.75" PointY="13.125" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.CuaHang" Width="1.5" PointX="3" PointY="7.375" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhGiaSanPham" Width="1.5" PointX="12" PointY="9" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhMuc" Width="1.5" PointX="3" PointY="5" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.DonHang" Width="1.5" PointX="6" PointY="11.75" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.DonViVanChuyen" Width="1.5" PointX="3.75" PointY="11.625" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.GiamGia" Width="1.5" PointX="3.75" PointY="20" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.GioHang" Width="1.5" PointX="3" PointY="16.5" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.KhieuNai" Width="1.5" PointX="8.25" PointY="12.875" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.NguoiDung" Width="1.5" PointX="0.75" PointY="8.375" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.SanPham" Width="1.5" PointX="5.25" PointY="7.25" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_AnhSanPham_SanPham" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_BienTheSanPham_SanPham" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTDonHang_BienThe" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTGH_BienThe" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTDH_DonHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTDonHang_DonHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_DanhGiaSanPham_ChiTietDonHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CTGH_GioHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_CuaHang_NguoiDung" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_SanPham_CuaHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_SanPham_DanhMuc" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_DVVC" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_GiamGia" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_NguoiDung" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_KhieuNai_DonHang" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_GioHang_NguoiDung" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

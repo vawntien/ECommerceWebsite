@@ -1,0 +1,484 @@
+﻿@model ECommerceWebsiteMVC.Models.GioHangViewModel
+
+@{
+    ViewBag.Title = "Giỏ hàng";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    body {
+        background: #f5f5f5;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .cart-container {
+        max-width: 1200px;
+        margin: 20px auto 120px auto;
+        background: #fff;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+    }
+
+    .cart-header-row {
+        display: grid;
+        grid-template-columns: 4% 34% 16% 12% 10% 14% 10%;
+        padding: 12px 20px;
+        color: #888;
+        font-size: 13px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .shop-block {
+        padding: 6px 20px 0;
+        border-top: 10px solid #f5f5f5;
+    }
+
+    .shop-header {
+        display: flex;
+        align-items: center;
+        padding: 10px 0 16px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .shop-name {
+        font-weight: bold;
+        margin-right: 6px;
+    }
+
+    .cart-item-row {
+        display: grid;
+        grid-template-columns: 4% 34% 16% 12% 10% 14% 10%;
+        padding: 16px 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .cart-col-check {
+        text-align: center;
+    }
+
+    .cart-col-product {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+        .cart-col-product img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 2px;
+            margin-right: 12px;
+        }
+
+    .product-info {
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .current-price {
+        color: #ee4d2d;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .qty-box {
+        display: inline-flex;
+        border: 1px solid #ccc;
+    }
+
+        .qty-box button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #fff;
+            cursor: pointer;
+        }
+
+    .qty-input {
+        width: 40px;
+        height: 28px;
+        text-align: center;
+        border: 0;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+    }
+
+    .product-subtotal {
+        font-weight: bold;
+        color: #ee4d2d;
+        font-size: 15px;
+    }
+
+    .checkout-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        padding: 12px 40px;
+        border-top: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        z-index: 99;
+    }
+
+    .checkout-button {
+        background: #ee4d2d;
+        border: none;
+        color: #fff;
+        padding: 8px 24px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    /* POPUP PHÂN LOẠI */
+    #variant-modal {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .variant-option {
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        margin: 4px;
+        display: inline-block;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+        .variant-option.active {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+            font-weight: bold;
+        }
+
+    .variant-change {
+        cursor: pointer;
+        color: #007bff;
+        margin-left: 6px;
+    }
+</style>
+
+
+<!-- ===================== -->
+<!--        FORM           -->
+<!-- ===================== -->
+<form id="cartForm" action="/GioHang/Checkout" method="post">
+    <input type="hidden" id="SelectedIds" name="chon" />
+
+    <div class="cart-container">
+
+        <div class="cart-header-row">
+            <div><input type="checkbox" class="chk-all" /></div>
+            <div>Sản phẩm</div>
+            <div>Phân loại hàng</div>
+            <div>Đơn giá</div>
+            <div>Số lượng</div>
+            <div>Số tiền</div>
+            <div>Thao tác</div>
+        </div>
+
+        @foreach (var shop in Model.Shops)
+        {
+            <div class="shop-block">
+
+                <div class="shop-header">
+                    <input type="checkbox" class="chk-shop" />
+                    <span class="shop-name">@shop.TenCuaHang</span>
+                </div>
+
+                @foreach (var item in shop.Items)
+                {
+                    <div class="cart-item-row product-row"
+                         data-id="@item.MaCTGH"
+                         data-price="@item.DonGia"
+                         data-variant="@item.MaBienThe"
+                         data-variants='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(item.BienTheList))'>
+
+                        <div class="cart-col-check">
+                            <input type="checkbox" class="chk-item" />
+                        </div>
+
+                        <div class="cart-col-product">
+                            <img src="/assets/@item.HinhAnh" />
+                            <div class="product-info">
+                                <div class="product-name">@item.TenSanPham</div>
+                            </div>
+                        </div>
+
+                        <div class="cart-col-variant">
+                            Phân loại: <strong>@item.TenBienThe</strong>
+                            <span class="variant-change">▼</span>
+                        </div>
+
+                        <div class="cart-col-price">
+                            <span class="current-price">@item.DonGia.ToString("N0") đ</span>
+                        </div>
+
+                        <div class="cart-col-qty">
+                            <div class="qty-box">
+                                <button class="btn-minus">-</button>
+                                <input class="qty-input" value="@item.SoLuong" />
+                                <button class="btn-plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="product-subtotal">0 đ</div>
+
+                        <div style="cursor:pointer;color:#007bff;" class="btn-delete">Xóa</div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+
+
+    <div class="checkout-bar">
+        <div>
+            <input type="checkbox" class="chk-all" /> Chọn tất cả
+
+            <button id="btn-delete-selected"
+                    style="margin-left:16px;border:none;background:none;cursor:pointer;">
+                Xóa
+            </button>
+        </div>
+
+        <div>
+            Tổng tiền (<span id="selected-count">0</span> sản phẩm):
+            <span id="total-amount" style="color:#ee4d2d">0 đ</span>
+            <button type="submit" class="checkout-button">Mua hàng</button>
+        </div>
+    </div>
+
+</form>
+
+<!-- POPUP -->
+<div id="variant-modal">
+    <div style="background:#fff;padding:20px;width:360px;border-radius:6px;">
+        <h4 style="margin-bottom:12px;">Chọn phân loại</h4>
+
+        <div id="variant-list"></div>
+
+        <button id="variant-save"
+                style="margin-top:20px;width:100%;padding:10px;background:#ee4d2d;color:#fff;border:none;">
+            Xác nhận
+        </button>
+    </div>
+</div>
+
+
+<script>
+
+    /* ============================
+       1. TÍNH TIỀN
+    ============================ */
+
+    function recalcRowSubtotal(row) {
+        var price = parseFloat(row.data("price"));
+        var qty = parseInt(row.find(".qty-input").val());
+        var subtotal = price * qty;
+
+        row.attr("data-subtotal", subtotal);
+        row.find(".product-subtotal").text(subtotal.toLocaleString("vi-VN") + " đ");
+    }
+
+    $(".product-row").each(function () { recalcRowSubtotal($(this)); });
+
+    function updateSelectedIds() {
+        var ids = $(".chk-item:checked").map(function () {
+            return $(this).closest(".product-row").data("id");
+        }).get();
+
+        $("#SelectedIds").val(ids.join(","));
+    }
+
+    function updateTotal() {
+        var total = 0, count = 0;
+
+        $(".chk-item:checked").each(function () {
+            var row = $(this).closest(".product-row");
+            total += parseFloat(row.attr("data-subtotal")) || 0;
+            count++;
+        });
+
+        $("#selected-count").text(count);
+        $("#total-amount").text(total.toLocaleString("vi-VN") + " đ");
+    }
+
+    $(".chk-item, .chk-shop, .chk-all").change(function () {
+
+        var checked = $(this).is(":checked");
+
+        if ($(this).hasClass("chk-all")) {
+            $(".chk-item, .chk-shop").prop("checked", checked);
+        }
+
+        if ($(this).hasClass("chk-shop")) {
+            $(this).closest(".shop-block")
+                .find(".chk-item").prop("checked", checked);
+        }
+
+        updateSelectedIds();
+        updateTotal();
+    });
+
+    $(document).ready(function () {
+        updateSelectedIds();
+        updateTotal();
+    });
+
+
+    /* ============================
+       2. THAY ĐỔI SỐ LƯỢNG
+    ============================ */
+
+    function saveQuantity(id, qty, row) {
+        $.post("/GioHang/UpdateQuantity", { id: id, quantity: qty }, function () {
+            recalcRowSubtotal(row);
+            updateTotal();
+        });
+    }
+
+    $(".btn-plus").click(function () {
+        var row = $(this).closest(".product-row");
+        var input = row.find(".qty-input");
+        var qty = parseInt(input.val()) + 1;
+
+        input.val(qty);
+        saveQuantity(row.data("id"), qty, row);
+    });
+
+    $(".btn-minus").click(function () {
+        var row = $(this).closest(".product-row");
+        var input = row.find(".qty-input");
+        var qty = Math.max(1, parseInt(input.val()) - 1);
+
+        input.val(qty);
+        saveQuantity(row.data("id"), qty, row);
+    });
+
+    $(".qty-input").change(function () {
+        var row = $(this).closest(".product-row");
+        var qty = Math.max(1, parseInt($(this).val()));
+        $(this).val(qty);
+
+        saveQuantity(row.data("id"), qty, row);
+    });
+
+
+    /* ============================
+       3. XÓA ITEM
+    ============================ */
+
+    $(".btn-delete").click(function () {
+        var row = $(this).closest(".product-row");
+        $.post("/GioHang/DeleteItem", { id: row.data("id") }, function () {
+            row.remove();
+            updateSelectedIds();
+            updateTotal();
+        });
+    });
+
+    $("#btn-delete-selected").click(function () {
+        var ids = $(".chk-item:checked").map(function () {
+            return $(this).closest(".product-row").data("id");
+        }).get();
+
+        if (ids.length === 0) return;
+
+        $.ajax({
+            url: "/GioHang/DeleteSelected",
+            type: "POST",
+            traditional: true,
+            data: { ids: ids },
+            success: function () {
+                $(".chk-item:checked").each(function () {
+                    $(this).closest(".product-row").remove();
+                });
+                updateSelectedIds();
+                updateTotal();
+            }
+        });
+    });
+
+
+    /* ============================
+       4. CHỌN PHÂN LOẠI (POPUP)
+    ============================ */
+
+    var selectedRow = null;
+    var selectedVariant = null;
+
+    $(".variant-change").click(function () {
+
+        selectedRow = $(this).closest(".product-row");
+        var variants = JSON.parse(selectedRow.attr("data-variants"));
+        var current = selectedRow.data("variant");
+
+        $("#variant-list").empty();
+
+        variants.forEach(v => {
+            var el = $("<div class='variant-option'></div>");
+            el.text(v.TenBienThe);
+            el.attr("data-id", v.MaBienThe);
+
+            if (v.MaBienThe === current)
+                el.addClass("active");
+
+            $("#variant-list").append(el);
+        });
+
+        $("#variant-modal").css("display", "flex");
+    });
+
+    $(document).on("click", ".variant-option", function () {
+        $(".variant-option").removeClass("active");
+        $(this).addClass("active");
+        selectedVariant = parseInt($(this).attr("data-id"));
+    });
+
+
+    $("#variant-save").click(function () {
+
+        var maCTGH = selectedRow.data("id");
+
+        $.post("/GioHang/UpdateVariant",
+            { maCTGH: maCTGH, maBienThe: selectedVariant },
+            function (res) {
+                if (res.success) {
+
+                    selectedRow.find(".cart-col-variant strong")
+                        .text($(".variant-option.active").text());
+
+                    selectedRow.attr("data-variant", selectedVariant);
+
+                    location.reload();
+                }
+            });
+
+        $("#variant-modal").hide();
+    });
+
+</script>
