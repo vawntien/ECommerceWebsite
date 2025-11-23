@@ -1,0 +1,24 @@
+﻿@model IEnumerable<ECommerceWebsiteMVC_Seller.Models.SanPham>
+@{
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+}
+
+<h2>Tất cả sản phẩm của bạn</h2>
+
+<table class="table table-striped">
+    <tr>
+        <th>Ảnh</th>
+        <th>Tên SP</th>
+        <th>Giá</th>
+        <th>Tồn kho</th>
+    </tr>
+
+    @foreach (var s in Model)
+    {
+       
+        <tr>
+            <td>@s.TenSanPham</td>
+            <td>@s.BienTheSanPhams.Sum(bt => bt.SoLuongTonKho)</td>
+        </tr>
+    }
+</table>
