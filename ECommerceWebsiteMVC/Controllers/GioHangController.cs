@@ -332,9 +332,13 @@ namespace ECommerceWebsiteMVC.Controllers
             });
         }
 
-
         [HttpPost]
-        public ActionResult OrderSuccess(string maVoucher)
+        [ValidateAntiForgeryToken]
+        public ActionResult OrderSuccess(
+            string NguoiNhan,
+            string SDT,
+            string DiaChi,
+            string maVoucher)
         {
             // ===== 0) Kiểm tra TempData =====
             if (TempData["SelectedIds"] == null)
@@ -393,9 +397,10 @@ namespace ECommerceWebsiteMVC.Controllers
                 TrangThaiDonHang = "Đang xử lý",
                 PhiVanChuyen = phiShip,
 
-                TenNguoiNhan = user.HoVaTen,
-                DiaChi = "Không có địa chỉ",
-                SDT = user.SDT,
+                // >>>>> LẤY TỪ FORM CHECKOUT NGƯỜI DÙNG NHẬP <<<<<
+                TenNguoiNhan = NguoiNhan,
+                DiaChi = DiaChi,
+                SDT = SDT,
 
                 GhiChu = "",
                 TrangThaiThanhToan = false,
