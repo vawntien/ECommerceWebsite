@@ -112,16 +112,17 @@
                     <div>@chiTiet.DonGia.ToString("N0")đ</div>
                 </div>
 
-                @Html.Action("Index", "DanhGia", new { MaChiTietDonHang = chiTiet.MaCTDH })
                 @if (Model.TrangThaiDonHang == "Đã giao")
                 {
-                   <div class="mt-3 text-end w-100">
-                       <button type="button"
-                               class="btn btn-gradient-red btn-review"
-                               onclick="openReviewModal()">
-                           Đánh giá
-                       </button>
-                   </div>
+                    @Html.Action("Index", "DanhGia", new { MaChiTietDonHang = chiTiet.MaCTDH })
+
+                    <div class="mt-3 text-end w-100">
+                        <button type="button"
+                                class="btn btn-gradient-red btn-review"
+                                onclick="openReviewModal(@chiTiet.MaCTDH)">
+                            Đánh giá
+                        </button>
+                    </div>
                 }
             </div>
             

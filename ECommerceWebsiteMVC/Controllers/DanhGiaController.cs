@@ -71,7 +71,7 @@ namespace ECommerceWebsiteMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ThemDanhGia(DanhGiaSanPham model, HttpPostedFileBase HinhAnhFile)
+        public async Task<ActionResult> ThemDanhGia(DanhGiaSanPham model, HttpPostedFileBase HinhAnhFile, string ReturnUrl)
         {
             if (!ModelState.IsValid)
             {
@@ -130,7 +130,7 @@ namespace ECommerceWebsiteMVC.Controllers
                 }
             }
 
-            return RedirectToAction("Index", "NguoiMua");
+            return Redirect(ReturnUrl);
         }
 
 
