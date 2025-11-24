@@ -93,18 +93,19 @@
                             @if (donHang.TrangThaiDonHang == "Đã giao")
                             {
                                 <a href="@Url.Action("ChiTietDonHang", "NguoiMua", new { id = donHang.MaDonHang })" class="btn btn-outline">Xem Chi Tiết và Đánh Giá</a>
-                                @*<button class="btn btn-outline">Đánh giá</button>*@
                                 <button class="btn btn-outline">Liên Hệ Người Bán</button>
                             }
                             else if (donHang.TrangThaiDonHang == "Đã hủy")
                             {
                                 <button class="btn btn-outline">Mua Lại</button>
-                                <button class="btn btn-outline">Xem Chi Tiết Hủy Đơn</button>
+                                <a href="@Url.Action("ChiTietHuyDon", "NguoiMua", new { id = donHang.MaDonHang })" class="btn btn-outline">Xem Chi Tiết Hủy Đơn</a>
                                 <button class="btn btn-outline">Liên Hệ Người Bán</button>
                             }
                             else if (donHang.TrangThaiDonHang == "Chờ xác nhận")
                             {
-                                <button class="btn btn-outline">Hủy đơn</button>
+                                <button type="button" class="btn btn-outline" onclick="openCancelModal(@donHang.MaDonHang)">
+                                    Hủy đơn
+                                </button>
                                 <a href="@Url.Action("ChiTietDonHang", "NguoiMua", new { id = donHang.MaDonHang })" class="btn btn-outline">Xem Chi Tiết</a>
                                 <button class="btn btn-outline">Liên Hệ Người Bán</button>
                             }
@@ -127,6 +128,41 @@
             </div>
         </div>
     }
+</div>
+
+<!-- Modal Hủy Đơn Hàng -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="orderIdToCancel" />
+                <div class="mb-3">
+                    <label for="cancelReason" class="form-label">Lý do hủy đơn:</label>
+                    <select class="form-select" id="cancelReason" onchange="toggleOtherReason()">
+                        <option value="">-- Chọn lý do --</option>
+                        <option value="Muốn thay đổi địa chỉ giao hàng">Muốn thay đổi địa chỉ giao hàng</option>
+                        <option value="Muốn thay đổi sản phẩm trong đơn hàng">Muốn thay đổi sản phẩm trong đơn hàng</option>
+                        <option value="Tìm được giá rẻ hơn ở chỗ khác">Tìm được giá rẻ hơn ở chỗ khác</option>
+                        <option value="Đổi ý, không muốn mua nữa">Đổi ý, không muốn mua nữa</option>
+                        <option value="Thủ tục thanh toán rắc rối">Thủ tục thanh toán rắc rối</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="otherReasonContainer" style="display: none;">
+                    <label for="otherReason" class="form-label">Lý do khác:</label>
+                    <textarea class="form-control" id="otherReason" rows="3" placeholder="Nhập lý do hủy đơn..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn" onclick="confirmCancelOrder()">Xác nhận hủy</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -302,3 +338,79 @@
         }
     }
 </style>
+
+<script type="text/javascript">
+    // Hàm mở modal hủy đơn (giống cách openReviewModal)
+    function openCancelModal(orderId) {
+        console.log('Opening cancel modal for order:', orderId);
+        
+        // Set order ID
+        document.getElementById('orderIdToCancel').value = orderId;
+        
+        // Reset form
+        document.getElementById('cancelReason').value = '';
+        document.getElementById('otherReason').value = '';
+        document.getElementById('otherReasonContainer').style.display = 'none';
+        
+        // Hiển thị modal
+        var modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+        modal.show();
+    }
+
+    // Hiện/ẩn textarea cho lý do khác
+    function toggleOtherReason() {
+        var reason = document.getElementById('cancelReason').value;
+        var otherContainer = document.getElementById('otherReasonContainer');
+        otherContainer.style.display = (reason === 'Khác') ? 'block' : 'none';
+    }
+
+    // Xác nhận hủy đơn
+    function confirmCancelOrder() {
+        var orderId = document.getElementById('orderIdToCancel').value;
+        var reason = document.getElementById('cancelReason').value;
+        
+        if (!reason) {
+            alert('Vui lòng chọn lý do hủy đơn!');
+            return;
+        }
+
+        if (reason === 'Khác') {
+            var otherReason = document.getElementById('otherReason').value.trim();
+            if (!otherReason) {
+                alert('Vui lòng nhập lý do hủy đơn!');
+                return;
+            }
+            reason = otherReason;
+        }
+
+        // Disable nút
+        var btn = document.getElementById('confirmCancelBtn');
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý...';
+
+        // Gửi AJAX request
+        jQuery.ajax({
+            url: '@Url.Action("HuyDonHang", "NguoiMua")',
+            type: 'POST',
+            data: {
+                maDonHang: orderId,
+                lyDoHuy: reason
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert(response.message);
+                    btn.disabled = false;
+                    btn.textContent = 'Xác nhận hủy';
+                }
+            },
+            error: function () {
+                alert('Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại!');
+                btn.disabled = false;
+                btn.textContent = 'Xác nhận hủy';
+            }
+        });
+    }
+</script>
