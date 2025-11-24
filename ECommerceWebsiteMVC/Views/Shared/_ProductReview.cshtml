@@ -123,6 +123,9 @@
         height: 128px;
         resize: vertical;
     }
+    .review-distance-header{
+        margin-top: 200px;
+    }
 </style>
 
 <!-- OVERLAY MODAL -->
@@ -130,7 +133,7 @@
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
 
     <div class="max-w-4xl w-full mx-4 md:mx-auto">
-        <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg relative
+        <div class="review-distance-header bg-white dark:bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg relative
                     font-display text-gray-800 dark:text-gray-200">
 
             @using (Html.BeginForm("ThemDanhGia", "DanhGia", FormMethod.Post,
@@ -201,7 +204,7 @@
                 </div>
 
                 <!-- NỘI DUNG + ẢNH -->
-                <div class="p-4 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-slate-700/50">
+                <div class="p-2 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-slate-700/50">
 
                     <!-- Nội dung -->
                     <div class="review-form-field textarea-field">
@@ -213,7 +216,7 @@
                     </div>
 
                     <!-- Upload + Preview -->
-                    <div class="mt-4 flex flex-col gap-3">
+                    <div class="mt-sm-2 flex flex-col gap-3">
 
                         <div class="flex flex-wrap items-center gap-4">
                             <input type="file"
@@ -245,10 +248,10 @@
                 </div>
 
                 <!-- FOOTER -->
-                <div class="mt-6 bg-white dark:bg-slate-800 p-4 rounded-lg flex items-center justify-between">
+                <div class="mt-sm-1 bg-white dark:bg-slate-800 p-sm-1 rounded-lg flex items-center justify-between">
                     <div></div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-5">
                         <button type="button"
                                 class="px-6 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700
                                        rounded font-medium transition-colors"
@@ -256,10 +259,15 @@
                             TRỞ LẠI
                         </button>
 
-                        <button type="submit"
+                        @*<button type="submit"
                                 class="px-8 py-2.5 bg-primaryColor text-white rounded font-medium hover:bg-orange-600 transition-colors">
                             HOÀN THÀNH
-                        </button>
+                        </button>*@
+                        <a href="@Url.Action("ChiTietDonHang", "NguoiMua", new { id = Model.ChiTietDonHang.MaDonHang })" 
+                           type="submit"
+                           class="px-8 py-2.5 bg-primaryColor text-white rounded font-medium hover:bg-orange-600 transition-colors">
+                            HOÀN THÀNH
+                        </a>
                     </div>
                 </div>
 

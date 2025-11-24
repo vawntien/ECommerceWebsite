@@ -1,0 +1,312 @@
+@model ECommerceWebsiteMVC.Models.DonHang
+
+@{
+    ViewBag.Title = "Chi Tiết Đơn Hàng Đã Hủy";
+    Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
+}
+
+<div class="order-detail-page">
+    <div class="container">
+        
+        <!-- Thông tin lý do hủy -->
+        <div class="info-card mb-3">
+            <div class="info-card-header">
+                <i class="fas fa-info-circle"></i> Thông tin hủy đơn
+            </div>
+            <div class="info-card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Mã đơn hàng:</strong> @Model.MaDonHang</p>
+                        <p><strong>Trạng thái:</strong> <span class="badge bg-danger">@Model.TrangThaiDonHang</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Thời gian đặt hàng:</strong> @Model.ThoiGianDat.ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+                </div>
+                <div class="cancellation-reason">
+                    <p class="mb-1"><strong>Lý do hủy đơn:</strong></p>
+                    <div class="reason-content">
+                        @(Model.GhiChu ?? "Không có thông tin lý do hủy")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Địa chỉ nhận hàng -->
+        <div class="info-card mb-3">
+            <div class="info-card-header">
+                <i class="fas fa-map-marker-alt"></i> Địa chỉ nhận hàng
+            </div>
+            <div class="info-card-body">
+                <p><strong>Người nhận:</strong> @Model.TenNguoiNhan</p>
+                <p><strong>Số điện thoại:</strong> @Model.SDT</p>
+                <p><strong>Địa chỉ:</strong> @Model.DiaChi</p>
+            </div>
+        </div>
+
+        <!-- Thông tin sản phẩm -->
+        @{
+            var chiTietTheoShop = Model.ChiTietDonHangs
+                .GroupBy(ct => ct.BienTheSanPham.SanPham.CuaHang)
+                .ToList();
+        }
+
+        @foreach (var shopGroup in chiTietTheoShop)
+        {
+            var cuaHang = shopGroup.Key;
+            var chiTietList = shopGroup.ToList();
+
+            <div class="info-card mb-3">
+                <div class="info-card-header">
+                    <i class="fas fa-store"></i> @cuaHang.TenCuaHang
+                </div>
+                <div class="info-card-body">
+                    @foreach (var chiTiet in chiTietList)
+                    {
+                        var sanPham = chiTiet.BienTheSanPham.SanPham;
+                        var anhDaiDien = sanPham.AnhSanPhams.FirstOrDefault(a => a.MacDinh == true) ?? sanPham.AnhSanPhams.FirstOrDefault();
+                        var imageUrl = anhDaiDien != null
+                            ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{sanPham.MaSanPham}/{anhDaiDien.HinhAnh}"
+                            : "https://via.placeholder.com/100";
+
+                        <div class="product-item">
+                            <img src="@imageUrl" alt="@sanPham.TenSanPham" />
+                            <div class="product-info">
+                                <h6>@sanPham.TenSanPham</h6>
+                                <p>Phân loại hàng: @chiTiet.BienTheSanPham.TenBienThe</p>
+                                <p>Số lượng: @chiTiet.SoLuong</p>
+                            </div>
+                            <div class="product-price">
+                                @chiTiet.DonGia.ToString("N0")đ
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Thông tin thanh toán -->
+        <div class="info-card mb-3">
+            <div class="info-card-header">
+                <i class="fas fa-file-invoice-dollar"></i> Thông tin thanh toán
+            </div>
+            <div class="info-card-body">
+                <div class="payment-summary">
+                    <div class="payment-row">
+                        <span>Thành tiền:</span>
+                        <span>@((Model.TongTien - Model.PhiVanChuyen).ToString("N0"))đ</span>
+                    </div>
+                    <div class="payment-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>@Model.PhiVanChuyen.ToString("N0")đ</span>
+                    </div>
+                    @if (Model.MaGiamGia.HasValue && Model.GiamGia != null)
+                    {
+                        <div class="payment-row">
+                            <span>Giảm giá:</span>
+                            <span class="text-success">-@Model.GiamGia.GiaTriGiam đ</span>
+                        </div>
+                        <div class="payment-row">
+                            <span>Tổng tiền:</span>
+                            <span class="product-price">-@Model.TongTien.ToString("N0")đ</span>
+                        </div>
+                    }
+
+                    <div class="payment-row">
+                        <span>Trạng thái thanh toán:</span>
+                        <span class="@(Model.TrangThaiThanhToan ? "text-success" : "text-warning")">
+                            @(Model.TrangThaiThanhToan ? "Đã thanh toán" : "Chưa thanh toán")
+                        </span>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+
+
+        <!-- Các nút hành động -->
+        <div class="action-buttons text-center mb-4">
+            <a href="@Url.Action("DonHang", "NguoiMua")" class="btn btn-outline-success">Xem Đơn Hàng Khác</a>
+            <button class="btn btn-outline-primary">Mua Lại</button>
+            <button class="btn btn-outline-secondary">Liên Hệ Người Bán</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .order-detail-page {
+        padding-top: 140px;
+        background-color: #f5f5f5;
+        min-height: 100vh;
+        padding-bottom: 40px;
+    }
+
+    .order-detail-header {
+        margin-bottom: 20px;
+    }
+
+        .order-detail-header h4 {
+            font-weight: 600;
+            color: #333;
+        }
+
+    .order-status-banner {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 18px;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+        .order-status-banner i {
+            margin-right: 10px;
+            font-size: 22px;
+        }
+
+    .info-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .info-card-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 600;
+        color: #333;
+    }
+
+        .info-card-header i {
+            margin-right: 8px;
+            color: #ee4d2d;
+        }
+
+    .info-card-body {
+        padding: 20px;
+    }
+
+        .info-card-body p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+            .info-card-body p strong {
+                color: #333;
+                margin-right: 5px;
+            }
+
+    .cancellation-reason {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .reason-content {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px 15px;
+        border-radius: 4px;
+        color: #856404;
+        margin-top: 8px;
+    }
+
+    .product-item {
+        display: flex;
+        gap: 16px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+    .product-info {
+        flex: 1;
+    }
+
+        .product-info h6 {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .product-info p {
+            margin-bottom: 4px;
+            color: #777;
+            font-size: 13px;
+        }
+
+    .product-price {
+        text-align: right;
+        font-size: 16px;
+        font-weight: 600;
+        color: #ee4d2d;
+    }
+
+    .payment-summary {
+        border-top: 1px solid #e9ecef;
+        padding-top: 15px;
+    }
+
+    .payment-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: #555;
+    }
+
+        .payment-row.total {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            padding-top: 10px;
+            border-top: 2px solid #e9ecef;
+            margin-top: 10px;
+        }
+
+            .payment-row.total span:last-child {
+                color: #ee4d2d;
+                font-size: 20px;
+            }
+
+    .action-buttons {
+        margin-top: 30px;
+    }
+
+        .action-buttons .btn {
+            min-width: 180px;
+            margin: 5px;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+    @@media (max-width: 767.98px) {
+        .product-item {
+            flex-direction: column;
+        }
+
+        .product-price {
+            text-align: left;
+        }
+
+        .action-buttons .btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+        }
+    }
+</style>
