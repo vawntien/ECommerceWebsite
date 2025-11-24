@@ -36,7 +36,7 @@ namespace ECommerceWebsiteMVC.Controllers
 
         //themdonhang
 
-        public ActionResult Index(int MaChiTietDonHang = 1)
+        public ActionResult Index(int MaChiTietDonHang)
         {
             // 1. Load ChiTietDonHang + sản phẩm + ảnh sản phẩm
             var ct = db.ChiTietDonHangs
