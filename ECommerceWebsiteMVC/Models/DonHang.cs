@@ -38,8 +38,10 @@ namespace ECommerceWebsiteMVC.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public virtual ChiTietDonHang ChiTietDonHang { get; set; }
         public virtual DonViVanChuyen DonViVanChuyen { get; set; }
         public virtual GiamGia GiamGia { get; set; }
+        public virtual NguoiDung NguoiDung { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<KhieuNai> KhieuNais { get; set; }
         public virtual ChiTietDonHang ChiTietDonHang { get; set; }

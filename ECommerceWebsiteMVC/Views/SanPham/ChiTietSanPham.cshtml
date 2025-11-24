@@ -16,15 +16,15 @@
 @*<link href="~/Content/style_chitietsanpham.css" rel="stylesheet" />*@
 <body>
 
-        <div class="container py-4">
+    <div class="container py-4">
 
         <div class="row" style="margin-top:150px">
             <div class="col-md-5">
                 <div class="product-gallery">
 
                     @*<img id="main-img" style="height: 500px;width: 500px"
-        src="~/Images/Products/@Model.MaSanPham/@Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh"
-        class="img-fluid shadow" />*@
+                        src="~/Images/Products/@Model.MaSanPham/@Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh"
+                        class="img-fluid shadow" />*@
                     <img id="main-img" style="height: 500px;width: 500px"
                          src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
                          class="img-fluid shadow" />
@@ -34,13 +34,13 @@
                         @foreach (var img in Model.AnhSanPhams)
                         {
                             @*<img class="thumb-img" style="height: 60px;width: 60px" src="~/Images/Products/@Model.MaSanPham/@img.HinhAnh"
-                onclick="document.getElementById('main-img').src=this.src;" />*@
+                                onclick="document.getElementById('main-img').src=this.src;" />*@
                             <img class="thumb-img"
                                  style="height: 60px;width: 60px"
                                  src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}")"
                                  onclick="document.getElementById('main-img').src=this.src;" />
 
-                                 //
+                            //
                         }
                     </div>
 
@@ -78,22 +78,30 @@
 
 
                 @*<div class="mt-3">
-                    <label>Số lượng:</label>
-                    <div class="d-flex align-items-center mt-1">
-                        <button class="btn btn-light" onclick="changeQty(-1)">-</button>
-                        <input type="text" id="qty" value="1"
-                               class="form-control mx-2"
-                               style="width:60px; text-align:center" />
-                        <button class="btn btn-light" onclick="changeQty(1)">+</button>
-                    </div>
-                </div>*@
+                        <label>Số lượng:</label>
+                        <div class="d-flex align-items-center mt-1">
+                            <button class="btn btn-light" onclick="changeQty(-1)">-</button>
+                            <input type="text" id="qty" value="1"
+                                   class="form-control mx-2"
+                                   style="width:60px; text-align:center" />
+                            <button class="btn btn-light" onclick="changeQty(1)">+</button>
+                        </div>
+                    </div>*@
 
                 <hr />
 
                 <div class="mt-3">
-                    <button class="btn btn-danger btn-lg me-2">Mua Ngay</button>
-                    <button class="btn btn-outline-danger btn-lg">Thêm vào Giỏ</button>
-                    
+                    <button id="btnMuaNgay"
+                            class="btn btn-danger btn-lg me-2"
+                            data-id="">
+                        Mua Ngay
+                    </button>
+
+                    <button id="btnAddToCart"
+                            class="btn btn-outline-danger btn-lg"
+                            data-id="">
+                        Thêm vào Giỏ
+                    </button>
                 </div>
 
             </div>
@@ -104,7 +112,7 @@
 
 
     <!-- ================= SCRIPTS ================= -->
-        <script>
+    <script>
         const mainImg = document.getElementById("main-img");
         const priceBox = document.getElementById("price");
         const stockBox = document.getElementById("stock");
@@ -142,7 +150,50 @@ function changeQty(val) {
     if (qty < 1) qty = 1;
     qtyInput.value = qty;
 }
-        </script>
+    </script>
+
+    <script>
+        // Khi chọn biến thể → gán vào cả 2 nút
+        document.querySelectorAll(".variant-btn").forEach(btn => {
+
+            btn.addEventListener("click", function () {
+
+                let id = this.dataset.id;
+
+                // Gán ID biến thể cho cả 2 nút
+                document.getElementById("btnAddToCart").setAttribute("data-id", id);
+                document.getElementById("btnMuaNgay").setAttribute("data-id", id);
+            });
+
+        });
+
+        // Thêm vào giỏ
+        document.getElementById("btnAddToCart").addEventListener("click", function () {
+
+            let idBienThe = this.getAttribute("data-id");
+
+            if (!idBienThe || idBienThe === "") {
+                alert("Vui lòng chọn phân loại sản phẩm!");
+                return;
+            }
+
+            window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe;
+        });
+
+        // Mua Ngay
+        document.getElementById("btnMuaNgay").addEventListener("click", function () {
+
+            let idBienThe = this.getAttribute("data-id");
+
+            if (!idBienThe || idBienThe === "") {
+                alert("Vui lòng chọn phân loại sản phẩm!");
+                return;
+            }
+
+            window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe;
+        });
+    </script>
+
 
 </body>
 

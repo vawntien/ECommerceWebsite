@@ -18,6 +18,7 @@ namespace ECommerceWebsiteMVC.Models
         public NguoiDung()
         {
             this.CuaHangs = new HashSet<CuaHang>();
+            this.DonHangs = new HashSet<DonHang>();
             this.GioHangs = new HashSet<GioHang>();
             this.DonHangs = new HashSet<DonHang>();
         }
@@ -35,6 +36,8 @@ namespace ECommerceWebsiteMVC.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CuaHang> CuaHangs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DonHang> DonHangs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GioHang> GioHangs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

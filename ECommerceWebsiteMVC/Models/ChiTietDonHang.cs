@@ -29,6 +29,7 @@ namespace ECommerceWebsiteMVC.Models
     
         public virtual BienTheSanPham BienTheSanPham { get; set; }
         public virtual DonHang DonHang { get; set; }
+        public virtual DonHang DonHang1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
         public virtual DonHang DonHang1 { get; set; }
