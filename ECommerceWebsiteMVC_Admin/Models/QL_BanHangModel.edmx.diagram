@@ -34,6 +34,7 @@
         <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_GiamGia" ManuallyRouted="false" />
         <AssociationConnector Association="ECommerceWebsiteModel.FK_KhieuNai_DonHang" ManuallyRouted="false" />
         <AssociationConnector Association="ECommerceWebsiteModel.FK_GioHang_NguoiDung" ManuallyRouted="false" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_NguoiDung" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
