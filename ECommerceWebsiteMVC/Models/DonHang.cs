@@ -44,5 +44,7 @@ namespace ECommerceWebsiteMVC.Models
         public virtual NguoiDung NguoiDung { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<KhieuNai> KhieuNais { get; set; }
+        public virtual ChiTietDonHang ChiTietDonHang { get; set; }
+        public virtual NguoiDung NguoiDung { get; set; }
     }
 }
