@@ -56,7 +56,7 @@ namespace ECommerceWebsiteMVC.Controllers
                 danhGia.ChiTietDonHang = ct;
 
                 // → trả model đánh giá cũ để user sửa
-                return View(danhGia);
+                return PartialView("_ProductReview", danhGia);
             }
 
             // 3. CHƯA có đánh giá → tạo model mới
@@ -65,8 +65,8 @@ namespace ECommerceWebsiteMVC.Controllers
                 MaCTDH = MaChiTietDonHang,
                 ChiTietDonHang = ct
             };
-
-            return View(model);
+            
+            return PartialView("_ProductReview", model);
         }
 
         [HttpPost]

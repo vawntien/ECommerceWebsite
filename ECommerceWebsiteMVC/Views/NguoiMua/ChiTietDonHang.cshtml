@@ -93,7 +93,7 @@
         @foreach (var chiTiet in Model.ChiTietDonHangs)
         {
             var sanPham = chiTiet.BienTheSanPham.SanPham;
-            var bienThe = chiTiet.BienTheSanPham;          
+            var bienThe = chiTiet.BienTheSanPham;
             var hinhAnh = sanPham.AnhSanPhams.FirstOrDefault(a => a.MacDinh == true) ?? sanPham.AnhSanPhams.FirstOrDefault();
             var imageUrl = hinhAnh != null
                 ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{sanPham.MaSanPham}/{hinhAnh.HinhAnh}"
@@ -113,7 +113,15 @@
                     <div>@chiTiet.DonGia.ToString("N0")đ</div>
                 </div>
             </div>
-            @*<button class="btn btn-outline">Đánh giá</button>*@
+
+
+            @*@Html.ActionLink(null, "DanhGia", "Index", new { id = chiTiet.MaCTDH })*@
+            @Html.Action("Index", "DanhGia", new { MaChiTietDonHang =  chiTiet.MaCTDH});
+            <button type="button"
+                    class="btn btn-warning"
+                    onclick="openReviewModal()">
+                Đánh giá
+            </button>
         }
 
         <div class="order-summary ms-auto">
