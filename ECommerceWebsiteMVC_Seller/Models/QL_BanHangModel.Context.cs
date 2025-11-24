@@ -39,5 +39,6 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public virtual DbSet<KhieuNai> KhieuNais { get; set; }
         public virtual DbSet<NguoiDung> NguoiDungs { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
     }
 }
