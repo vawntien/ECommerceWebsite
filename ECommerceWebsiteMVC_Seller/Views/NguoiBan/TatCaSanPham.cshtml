@@ -1,24 +1,273 @@
 ﻿@model IEnumerable<ECommerceWebsiteMVC_Seller.Models.SanPham>
 @{
     Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+    var productSales = ViewBag.ProductSales as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
-<h2>Tất cả sản phẩm của bạn</h2>
+<link rel="stylesheet" href="~/Content/seller-products.css" />
 
-<table class="table table-striped">
-    <tr>
-        <th>Ảnh</th>
-        <th>Tên SP</th>
-        <th>Giá</th>
-        <th>Tồn kho</th>
-    </tr>
+<div class="products-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <h1 class="page-title">Sản phẩm</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary btn-sm">
+                <i class="bi bi-gear"></i> Cài đặt sản phẩm
+            </button>
+            <button class="btn btn-secondary btn-sm">
+                <i class="bi bi-three-dots"></i> Công cụ xử lý hàng loạt
+            </button>
+            <button class="btn btn-danger btn-sm">
+                <i class="bi bi-plus-lg"></i> Thêm 1 sản phẩm mới
+            </button>
+        </div>
+    </div>
 
-    @foreach (var s in Model)
+    <!-- Tabs Section -->
+    <div class="product-tabs">
+        <button class="tab-item active" data-status="all">
+            <span>Tất cả</span>
+            <span class="badge">@Model.Count()</span>
+        </button>
+        <button class="tab-item" data-status="active">
+            <span>Đang hoạt động</span>
+            <span class="badge">@Model.Count()</span>
+        </button>
+        <button class="tab-item" data-status="violated">
+            <span>Vi phạm</span>
+            <span class="badge">0</span>
+        </button>
+        <button class="tab-item" data-status="pending">
+            <span>Chờ duyệt</span>
+            <span class="badge">0</span>
+        </button>
+        <button class="tab-item" data-status="draft">
+            <span>Chưa được đăng</span>
+            <span class="badge">0</span>
+        </button>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" placeholder="Tìm Tên sản phẩm, SKU sản phẩm, SKU phân loại, Mã sản phẩm" id="searchInput">
+        </div>
+        <select class="form-select">
+            <option>Category</option>
+        </select>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-pencil"></i>
+        </button>
+        <select class="form-select">
+            <option>Chương trình Shopee</option>
+        </select>
+        <button class="btn btn-primary">Áp dụng</button>
+        <button class="btn btn-outline-secondary">Đặt lại</button>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm">
+                <option>Sort By Recommend</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Count and Info -->
+    <div class="product-info-bar">
+        <span class="product-count">@Model.Count() Sản Phẩm</span>
+        <span class="product-limit">
+            <i class="bi bi-question-circle"></i> Hạn mức đăng bán: 1000
+        </span>
+    </div>
+
+    <!-- Products Table -->
+    <div class="products-table-container">
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th width="50">
+                        <input type="checkbox" class="form-check-input" id="selectAll">
+                    </th>
+                    <th>Tên sản phẩm</th>
+                    <th width="120">
+                        <div class="sortable-header">
+                            Doanh số
+                            <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="Tổng số lượng đã bán"></i>
+                            <div class="sort-icons">
+                                <i class="bi bi-chevron-up"></i>
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                        </div>
+                    </th>
+                    <th width="140">
+                        <div class="sortable-header">
+                            Giá
+                            <div class="sort-icons">
+                                <i class="bi bi-chevron-up"></i>
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                        </div>
+                    </th>
+                    <th width="120">
+                        <div class="sortable-header">
+                            Kho hàng
+                            <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="Số lượng tồn kho"></i>
+                            <div class="sort-icons">
+                                <i class="bi bi-chevron-up"></i>
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                        </div>
+                    </th>
+                    <th width="180">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    var anh = s.AnhSanPhams?.FirstOrDefault(a => a.MacDinh == true);
+                    var img = anh == null
+                        ? Url.Content("~/Content/images/no-image.png")
+                        : $"https://ecommerceshopstorage.blob.core.windows.net/products/{s.MaSanPham}/{anh.HinhAnh}";
+                    
+                    var giaMin = s.BienTheSanPhams?.Any() == true 
+                        ? s.BienTheSanPhams.Min(bt => bt.GiaBan) 
+                        : 0;
+                    var giaMax = s.BienTheSanPhams?.Any() == true 
+                        ? s.BienTheSanPhams.Max(bt => bt.GiaBan) 
+                        : 0;
+                    
+                    var tongKho = s.BienTheSanPhams?.Sum(bt => bt.SoLuongTonKho) ?? 0;
+                    var soLuongBan = productSales.ContainsKey(s.MaSanPham) ? productSales[s.MaSanPham] : 0;
+                    
+                    var giaHienThi = giaMin == giaMax 
+                        ? String.Format("{0:N0}", giaMin) 
+                        : $"{String.Format("{0:N0}", giaMin)} - {String.Format("{0:N0}", giaMax)}";
+
+                    <tr class="product-row">
+                        <td>
+                            <input type="checkbox" class="form-check-input product-checkbox" value="@s.MaSanPham">
+                        </td>
+                        <td>
+                            <div class="product-info-cell">
+                                <div class="product-image-wrapper">
+                                    <img src="@img" alt="@s.TenSanPham" class="product-image">
+                                    @if (s.BienTheSanPhams?.Count > 1)
+                                    {
+                                        <span class="variant-badge">@s.BienTheSanPhams.Count biến thể</span>
+                                    }
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-name">@s.TenSanPham</div>
+                                    <div class="product-meta">
+                                        <span>SKU sản phẩm: -</span>
+                                        <span>ID Sản phẩm: @s.MaSanPham</span>
+                                        @if (s.BienTheSanPhams?.Any() == true)
+                                        {
+                                            <span>Model ID: @s.BienTheSanPhams.First().MaBienThe</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="sales-cell">@soLuongBan</div>
+                        </td>
+                        <td>
+                            <div class="price-cell">₫@giaHienThi</div>
+                        </td>
+                        <td>
+                            <div class="stock-cell @(tongKho > 0 ? "in-stock" : "out-of-stock")">
+                                @tongKho
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="@Url.Action("CapNhatSanPham", "NguoiBan", new { id = s.MaSanPham })" class="btn btn-sm btn-outline-primary" title="Cập nhật">
+                                    <i class="bi bi-pencil"></i> Cập nhật
+                                </a>
+                                <button class="btn btn-sm btn-outline-warning" title="Quảng cáo">
+                                    <i class="bi bi-fire"></i> Quảng cáo
+                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                        Xem thêm
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-eye"></i> Xem chi tiết</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-copy"></i> Nhân bản</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash"></i> Xóa</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
     {
-       
-        <tr>
-            <td>@s.TenSanPham</td>
-            <td>@s.BienTheSanPhams.Sum(bt => bt.SoLuongTonKho)</td>
-        </tr>
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h3>Chưa có sản phẩm nào</h3>
+            <p>Hãy thêm sản phẩm đầu tiên của bạn để bắt đầu bán hàng!</p>
+            <button class="btn btn-danger">
+                <i class="bi bi-plus-lg"></i> Thêm sản phẩm mới
+            </button>
+        </div>
     }
-</table>
+</div>
+
+<script>
+    // Tab switching
+    document.querySelectorAll('.tab-item').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Select all checkbox
+    document.getElementById('selectAll')?.addEventListener('change', function() {
+        document.querySelectorAll('.product-checkbox, .variant-checkbox').forEach(cb => {
+            cb.checked = this.checked;
+        });
+    });
+
+    // Search functionality
+    document.getElementById('searchInput')?.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('.product-row').forEach(row => {
+            const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
+            const productId = row.querySelector('.product-meta')?.textContent.toLowerCase() || '';
+            const isVisible = productName.includes(searchTerm) || productId.includes(searchTerm);
+            row.style.display = isVisible ? '' : 'none';
+            
+            // Hide variant rows if parent is hidden
+            let nextRow = row.nextElementSibling;
+            while (nextRow && nextRow.classList.contains('variant-row')) {
+                nextRow.style.display = isVisible ? '' : 'none';
+                nextRow = nextRow.nextElementSibling;
+            }
+        });
+    });
+
+    // Expand variants
+    document.querySelectorAll('.expand-variants').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            // Implementation for expanding variants would go here
+            alert('Tính năng mở rộng biến thể sẽ được triển khai');
+        });
+    });
+
+    // Initialize Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>

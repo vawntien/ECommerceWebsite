@@ -218,6 +218,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\seller-products.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\style.css" />
     <Content Include="Content\StyleSheet1.css" />
@@ -343,6 +344,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\TaiKhoan\DangNhapNguoiBan.cshtml" />
     <Content Include="Views\NguoiBan\TatCaSanPham.cshtml" />
+    <Content Include="Views\NguoiBan\CapNhatSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

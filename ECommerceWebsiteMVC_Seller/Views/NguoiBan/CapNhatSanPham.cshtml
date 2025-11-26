@@ -1,0 +1,613 @@
+﻿@model ECommerceWebsiteMVC_Seller.Models.SanPham
+@{
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+    var danhMucs = ViewBag.DanhMucs as IEnumerable<ECommerceWebsiteMVC_Seller.Models.DanhMuc> ?? new List<ECommerceWebsiteMVC_Seller.Models.DanhMuc>();
+    var images = Model?.AnhSanPhams?.OrderBy(a => a.MaHinhAnh).ToList() ?? new List<ECommerceWebsiteMVC_Seller.Models.AnhSanPham>();
+    var anhBia = images.FirstOrDefault(a => a.MacDinh == true) ?? images.FirstOrDefault();
+    var variants = Model?.BienTheSanPhams?.ToList() ?? new List<ECommerceWebsiteMVC_Seller.Models.BienTheSanPham>();
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/Content/seller-edit-product.css" />
+
+<style>
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    .edit-product-page,
+    .edit-product-page * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+</style>
+
+<div class="edit-product-page">
+    <div class="edit-product-container">
+
+        <!-- Left Sidebar: Content Level & Tasks -->
+        <aside class="content-sidebar">
+            <div class="content-level-card">
+                <h3>Cấp độ Nội dung</h3>
+                <div class="level-status">
+                    <span class="level-badge standard">Đạt chuẩn</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tasks-card">
+                <h4>Nhiệm vụ để đạt mức Xuất sắc</h4>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" id="task1" disabled>
+                        <label for="task1">Thêm video sản phẩm</label>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" id="task2" disabled>
+                        <label for="task2">Tên sản phẩm có ít nhất 25~100 kí tự</label>
+                    </li>
+                    <li class="task-item checked">
+                        <input type="checkbox" id="task3" checked disabled>
+                        <label for="task3">Thêm ít nhất 100 kí tự hoặc 1 hình ảnh trong mô tả sản phẩm</label>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" id="task4" disabled>
+                        <label for="task4">Thêm thương hiệu</label>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" id="task5" disabled>
+                        <label for="task5">Thêm ít nhất 3 thuộc tính sản phẩm</label>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content: Edit Form -->
+        <main class="edit-form-section">
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/NguoiBan/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="/NguoiBan/TatCaSanPham">Sản phẩm</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Chi tiết sản phẩm</li>
+                </ol>
+            </nav>
+
+            <form id="editProductForm" action="@Url.Action("CapNhatSanPham", "NguoiBan")" method="post" enctype="multipart/form-data">
+                @Html.HiddenFor(m => m.MaSanPham)
+                
+                <!-- Tabs Navigation -->
+                <div class="form-tabs">
+                    <button type="button" class="tab-btn active" data-tab="basic">Thông tin cơ bản</button>
+                    <button type="button" class="tab-btn" data-tab="details">Thông tin chi tiết</button>
+                    <button type="button" class="tab-btn" data-tab="description">Mô tả</button>
+                    <button type="button" class="tab-btn" data-tab="sales">Thông tin bán hàng</button>
+                    <button type="button" class="tab-btn" data-tab="shipping">Vận chuyển</button>
+                    <button type="button" class="tab-btn" data-tab="other">Thông tin khác</button>
+                </div>
+
+                <!-- Tab Content: Basic Information -->
+                <div class="tab-content active" id="tab-basic">
+
+                    <!-- Product Images -->
+                    <div class="form-section">
+                        <h3>Hình ảnh sản phẩm</h3>
+                        <div class="image-ratio-options">
+                            <label class="ratio-option active">
+                                <input type="radio" name="imageRatio" value="1:1" checked>
+                                <span>Hình ảnh tỷ lệ 1:1</span>
+                            </label>
+                            <label class="ratio-option">
+                                <input type="radio" name="imageRatio" value="3:4">
+                                <span>Hình ảnh tỷ lệ 3:4</span>
+                            </label>
+                            <span class="example-link">Ví dụ</span>
+                        </div>
+
+                        <div class="product-images-grid">
+                            @for (int i = 0; i < 9; i++)
+                            {
+                                var image = i < images.Count ? images[i] : null;
+                                var imageUrl = image != null
+                                    ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{image.HinhAnh}"
+                                    : "";
+
+                                <div class="image-upload-item @(image == null ? "empty" : "")" data-index="@i">
+                                    @if (image != null)
+                                    {
+                                        <img src="@imageUrl" alt="Product image @(i+1)">
+                                        <button type="button" class="remove-image" data-image-id="@image.MaHinhAnh">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <div class="image-placeholder">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </div>
+                                    }
+                                    <input type="file" class="image-input" accept="image/*" style="display: none;" data-index="@i">
+                                </div>
+                            }
+                            <button type="button" class="add-image-btn">
+                                <i class="bi bi-plus-lg"></i>
+                                Thêm hình ảnh (<span id="imageCount">@images.Count</span>/9)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cover Image -->
+                    <div class="form-section">
+                        <h3>Ảnh bìa</h3>
+                        <div class="cover-image-container">
+                            @if (anhBia != null)
+                            {
+                                var coverUrl = $"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{anhBia.HinhAnh}";
+                                <div class="cover-image-preview">
+                                    <img src="@coverUrl" alt="Cover">
+                                    <button type="button" class="change-cover-btn">Thay đổi</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="cover-image-placeholder">
+                                    <i class="bi bi-image"></i>
+                                    <p>Tải lên hình ảnh 1:1</p>
+                                    <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('coverImageInput').click()">Chọn ảnh</button>
+                                </div>
+                            }
+                        </div>
+                        <p class="help-text">
+                            Ảnh bìa sẽ được hiển thị tại các trang Kết quả tìm kiếm, Gợi ý hôm nay....
+                            Việc sử dụng ảnh bìa đẹp sẽ thu hút thêm lượt truy cập vào sản phẩm của bạn
+                        </p>
+                    </div>
+
+                    <!-- Product Video -->
+                    <div class="form-section">
+                        <h3>Video sản phẩm</h3>
+                        <div class="video-upload-section">
+                            <button type="button" class="btn btn-outline-primary add-video-btn">
+                                <i class="bi bi-play-circle"></i> Thêm video
+                            </button>
+                            <input type="file" id="videoInput" accept="video/mp4" style="display: none;">
+                            <ul class="video-requirements">
+                                <li>Kích thước tối đa 30Mb, độ phân giải không vượt quá 1280x1280px</li>
+                                <li>Độ dài: 10s-60s</li>
+                                <li>Định dạng: MP4</li>
+                                <li>Lưu ý: sản phẩm có thể hiển thị trong khi video đang được xử lý. Video sẽ tự động hiển thị sau khi đã xử lý thành công.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Product Name -->
+                    <div class="form-section">
+                        <h3>Tên sản phẩm <span class="required">*</span></h3>
+                        <div class="input-with-counter">
+                            @Html.TextBoxFor(m => m.TenSanPham, new { @class = "form-control", maxlength = "120", placeholder = "Nhập tên sản phẩm" })
+                            <span class="char-counter"><span id="nameLength">@(Model.TenSanPham?.Length ?? 0)</span>/120</span>
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-section">
+                        <h3>Ngành hàng <span class="required">*</span></h3>
+                        <div class="category-breadcrumb">
+                            <span>@(Model.DanhMuc?.TenDanhMuc ?? "Chưa chọn")</span>
+                            <button type="button" class="btn-edit-category">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                        @Html.HiddenFor(m => m.MaDanhMuc)
+                    </div>
+
+                    <!-- GTIN -->
+                    <div class="form-section">
+                        <h3>GTIN</h3>
+                        <div class="gtin-section">
+                            <input type="text" class="form-control" placeholder="Nhập vào" style="max-width: 300px;">
+                            <label class="checkbox-label">
+                                <input type="checkbox"> Item without GTIN
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab Content: Detailed Information -->
+                <div class="tab-content" id="tab-details">
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3>Thông tin chi tiết</h3>
+                            <span class="completion-status">Hoàn thành: 2/10</span>
+                        </div>
+                        <p class="help-text">
+                            Điền thông tin thuộc tính để tăng mức độ hiển thị cho sản phẩm
+                            <a href="#" class="link">Xem hướng dẫn bổ sung thuộc tính</a>.
+                        </p>
+
+                        <div class="detail-fields">
+                            <div class="form-group">
+                                <label>Thương hiệu</label>
+                                <input type="text" class="form-control" placeholder="Nhập thương hiệu">
+                            </div>
+                            <div class="form-group">
+                                <label>Giới tính</label>
+                                <select class="form-control">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="nam">Nam</option>
+                                    <option value="nu">Nữ</option>
+                                    <option value="unisex">Unisex</option>
+                                </select>
+                            </div>
+                            <!-- Add more fields as needed -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Description -->
+                <div class="tab-content" id="tab-description">
+                    <div class="form-section">
+                        <h3>Mô tả sản phẩm</h3>
+                        <div class="editor-container">
+                            @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = "15", placeholder = "Nhập mô tả chi tiết về sản phẩm..." })
+                        </div>
+                        <p class="help-text">
+                            Thêm ít nhất 100 kí tự hoặc 1 hình ảnh trong mô tả sản phẩm
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Sales Information -->
+                <div class="tab-content" id="tab-sales">
+                    <div class="form-section">
+                        <h3>Thông tin bán hàng</h3>
+                        <div class="variants-section">
+                            <h4>Phân loại hàng</h4>
+                            <div id="variantsContainer">
+                                @if (variants.Any())
+                                {
+                                    foreach (var variant in variants)
+                                    {
+                                        <div class="variant-item">
+                                            <div class="variant-header">
+                                                <span>@variant.TenBienThe</span>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-variant">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="variant-details">
+                                                <div class="form-group">
+                                                    <label>Giá bán (₫)</label>
+                                                    <input type="number" class="form-control" value="@variant.GiaBan" step="1000">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Số lượng tồn kho</label>
+                                                    <input type="number" class="form-control" value="@variant.SoLuongTonKho" min="0">
+                                                </div>
+                                            </div>
+                                            @Html.Hidden("variantIds", variant.MaBienThe)
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Chưa có phân loại nào. Vui lòng thêm phân loại sản phẩm.</p>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-outline-primary add-variant-btn">
+                                <i class="bi bi-plus"></i> Thêm phân loại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Shipping -->
+                <div class="tab-content" id="tab-shipping">
+                    <div class="form-section">
+                        <h3>Cân nặng (Sau khi đóng gói)</h3>
+                        <div class="weight-input-group">
+                            <input type="number" class="form-control" id="packageWeight" value="200" min="0" step="1" style="max-width: 200px;">
+                            <span class="input-unit">gr</span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Kích thước đóng gói (Phí vận chuyển thực tế sẽ thay đổi nếu bạn nhập sai kích thước)</h3>
+                        <div class="dimensions-group">
+                            <div class="dimension-input">
+                                <label>R</label>
+                                <input type="number" class="form-control" id="dimensionR" min="0" step="0.1" placeholder="0">
+                                <span class="input-unit">cm</span>
+                            </div>
+                            <div class="dimension-input">
+                                <label>D</label>
+                                <input type="number" class="form-control" id="dimensionD" min="0" step="0.1" placeholder="0">
+                                <span class="input-unit">cm</span>
+                            </div>
+                            <div class="dimension-input">
+                                <label>C</label>
+                                <input type="number" class="form-control" id="dimensionC" min="0" step="0.1" placeholder="0">
+                                <span class="input-unit">cm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Phí vận chuyển</h3>
+                        <div class="shipping-options">
+                            <div class="shipping-option">
+                                <div class="shipping-option-header">
+                                    <div class="shipping-info">
+                                        <span class="shipping-name">Hỏa Tốc - 4 Giờ</span>
+                                        <span class="shipping-badge shopee-partner">ĐỐI TÁC SHOPEE</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="shipping-price">₫22.000</div>
+                            </div>
+
+                            <div class="shipping-option">
+                                <div class="shipping-option-header">
+                                    <div class="shipping-info">
+                                        <span class="shipping-name">Nhanh</span>
+                                        <span class="shipping-badge shopee-partner">ĐỐI TÁC SHOPEE</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="shipping-price">₫16.500</div>
+                            </div>
+
+                            <div class="shipping-option">
+                                <div class="shipping-option-header">
+                                    <div class="shipping-info">
+                                        <span class="shipping-name">Hàng Cồng Kềnh</span>
+                                        <span class="shipping-badge shopee-partner">ĐỐI TÁC SHOPEE</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="shipping-price">₫16.500</div>
+                            </div>
+
+                            <div class="shipping-option">
+                                <div class="shipping-option-header">
+                                    <div class="shipping-info">
+                                        <span class="shipping-name">Hoà Tốc - Trong Ngày</span>
+                                        <span class="shipping-badge shopee-partner">ĐỐI TÁC SHOPEE</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="shipping-price">₫7.000</div>
+                            </div>
+                        </div>
+                        <p class="help-text">
+                            Cài đặt đơn vị vận chuyển ở đây chỉ áp dụng cho sản phẩm này.
+                        </p>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Hàng Đặt Trước</h3>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="preOrder" value="no" checked>
+                                <span>Không</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="preOrder" value="yes">
+                                <span>Đồng ý</span>
+                            </label>
+                        </div>
+                        <p class="help-text">
+                            Sản phẩm đặt trước sẽ được giao hàng trong khoảng thời gian bạn đặt. 
+                            Khách hàng sẽ được thông báo về thời gian giao hàng dự kiến.
+                        </p>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Thông tin khác</h3>
+                        <div class="detail-fields">
+                            <div class="form-group">
+                                <label>Tình trạng</label>
+                                <select class="form-control" id="productCondition">
+                                    <option value="new" selected>Mới</option>
+                                    <option value="used">Đã sử dụng</option>
+                                    <option value="refurbished">Đã tân trang</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>SKU sản phẩm</label>
+                                <input type="text" class="form-control" id="productSKU" placeholder="Nhập SKU sản phẩm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Other Information -->
+                <div class="tab-content" id="tab-other">
+                    <div class="form-section">
+                        <h3>Thông tin khác</h3>
+                        <div class="detail-fields">
+                            <div class="form-group">
+                                <label>Tình trạng</label>
+                                <select class="form-control">
+                                    <option value="new" selected>Mới</option>
+                                    <option value="used">Đã sử dụng</option>
+                                    <option value="refurbished">Đã tân trang</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>SKU sản phẩm</label>
+                                <input type="text" class="form-control" placeholder="Nhập SKU sản phẩm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline-secondary">Hủy</button>
+                    <button type="button" class="btn btn-outline-warning">Ẩn</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </div>
+
+            </form>
+        </main>
+
+        <!-- Right Sidebar: Preview -->
+        <aside class="preview-sidebar">
+            <div class="preview-header">
+                <h3>Xem trước</h3>
+                <span class="preview-subtitle">Chi tiết sản phẩm</span>
+            </div>
+
+            <div class="preview-content">
+                <!-- Product Images Preview -->
+                <div class="preview-images">
+                    @if (images.Any())
+                    {
+                        var firstImage = images.First();
+                        var firstImageUrl = $"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{firstImage.HinhAnh}";
+                        <div class="main-preview-image">
+                            <img src="@firstImageUrl" alt="@Model.TenSanPham" id="previewMainImage">
+                            <div class="image-counter">1/@images.Count</div>
+                        </div>
+                        <div class="preview-thumbnails">
+                            @foreach (var img in images.Take(3))
+                            {
+                                var imgUrl = $"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}";
+                                <img src="@imgUrl" alt="Thumbnail" class="preview-thumb">
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="main-preview-image">
+                            <div class="no-image-placeholder">
+                                <i class="bi bi-image"></i>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Product Info Preview -->
+                <div class="preview-info">
+                    <div class="variants-preview">
+                        <span>@variants.Count phân loại có sẵn</span>
+                    </div>
+
+                    <div class="price-preview" id="previewPrice">
+                        @if (variants.Any())
+                        {
+                            var minPrice = variants.Min(v => v.GiaBan);
+                            var maxPrice = variants.Max(v => v.GiaBan);
+                            if (minPrice == maxPrice)
+                            {
+                                <span>₫@String.Format("{0:N0}", minPrice)</span>
+                            }
+                            else
+                            {
+                                <span>₫@String.Format("{0:N0}", minPrice) - ₫@String.Format("{0:N0}", maxPrice)</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>---</span>
+                        }
+                    </div>
+
+                    <h4 class="preview-product-name" id="previewProductName">@Model.TenSanPham</h4>
+
+                    <div class="store-info">
+                        <span>@(Model.CuaHang?.TenCuaHang ?? "Cửa hàng")</span>
+                        <button class="btn btn-link btn-sm">Xem</button>
+                    </div>
+
+                    <div class="preview-actions">
+                        <button class="btn btn-success btn-sm">
+                            <i class="bi bi-chat-dots"></i>
+                        </button>
+                        <button class="btn btn-warning btn-sm">
+                            <i class="bi bi-cart-plus"></i>
+                        </button>
+                        <button class="btn btn-danger btn-block">Mua Ngay</button>
+                    </div>
+
+                    <p class="preview-disclaimer">
+                        Hình ảnh có tính chất tham khảo, không phải hình ảnh cuối cùng Người mua thấy
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabName = this.dataset.tab;
+
+            // Update tabs
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+        });
+    });
+
+    // Character counter for product name
+    const nameInput = document.getElementById('TenSanPham');
+    const nameLength = document.getElementById('nameLength');
+    if (nameInput && nameLength) {
+        nameInput.addEventListener('input', function () {
+            nameLength.textContent = this.value.length;
+        });
+    }
+
+    // Image upload handling
+    document.querySelectorAll('.image-upload-item').forEach(item => {
+        item.addEventListener('click', function () {
+            if (this.classList.contains('empty')) {
+                const input = this.querySelector('.image-input');
+                if (input) input.click();
+            }
+        });
+    });
+
+    // Update preview on name change
+    if (nameInput) {
+        nameInput.addEventListener('input', function () {
+            const previewName = document.getElementById('previewProductName');
+            if (previewName) {
+                previewName.textContent = this.value || 'Tên sản phẩm';
+            }
+        });
+    }
+</script>
+
