@@ -21,7 +21,7 @@ namespace ECommerceWebsiteMVC.Controllers
         [HttpPost]
         public ActionResult DangNhap(string TaiKhoan, string MatKhau)
         {
-            var user = db.NguoiDungs
+            var user = db.NguoiMuas
                          .SingleOrDefault(x => x.TaiKhoan == TaiKhoan
                                             && x.MatKhau == MatKhau);
 
@@ -32,22 +32,22 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             //Lưu session người dùng
-            Session["MaNguoiDung"] = user.MaNguoiDung;
+            Session["MaNguoiMua"] = user.MaNguoiMua;
             Session["HoVaTen"] = user.HoVaTen;
+            Session["Email"] = user.Email;
             Session["TaiKhoan"] = user.TaiKhoan;
-            Session["VaiTro"] = user.VaiTro;
-            Session["AnhDaiDien"] = user.HinhAnh;
+            Session["SDT"] = user.SDT;
 
             return RedirectToAction("Index", "NguoiMua");
         }
 
         public ActionResult ThongTinTaiKhoan()
         {
-            if (Session["MaNguoiDung"] == null)
+            if (Session["MaNguoiMua"] == null)
                 return RedirectToAction("DangNhap");
 
-            int id = (int)Session["MaNguoiDung"];
-            var user = db.NguoiDungs.Find(id);
+            int id = (int)Session["MaNguoiMua"];
+            var user = db.NguoiMuas.Find(id);
 
             return View(user);
         }
