@@ -21,11 +21,11 @@ namespace ECommerceWebsiteMVC.Models
         }
     
         public int MaGioHang { get; set; }
-        public int MaNguoiDung { get; set; }
+        public int MaNguoiMua { get; set; }
         public int SoLuong { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
-        public virtual NguoiDung NguoiDung { get; set; }
+        public virtual NguoiMua NguoiMua { get; set; }
     }
 }

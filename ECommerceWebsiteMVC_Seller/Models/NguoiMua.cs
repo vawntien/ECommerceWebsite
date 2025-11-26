@@ -7,36 +7,26 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ECommerceWebsiteMVC.Models
+namespace ECommerceWebsiteMVC_Seller.Models
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class NguoiDung
+    public partial class NguoiMua
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public NguoiDung()
+        public NguoiMua()
         {
-            this.CuaHangs = new HashSet<CuaHang>();
-            this.DonHangs = new HashSet<DonHang>();
             this.GioHangs = new HashSet<GioHang>();
         }
     
-        public int MaNguoiDung { get; set; }
-        public string Email { get; set; }
+        public int MaNguoiMua { get; set; }
         public string HoVaTen { get; set; }
-        public string SDT { get; set; }
+        public string Email { get; set; }
         public string TaiKhoan { get; set; }
         public string MatKhau { get; set; }
-        public string CCCD { get; set; }
-        public Nullable<System.DateTime> NgayDangKy { get; set; }
-        public string HinhAnh { get; set; }
-        public bool VaiTro { get; set; }
+        public string SDT { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CuaHang> CuaHangs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DonHang> DonHangs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GioHang> GioHangs { get; set; }
     }

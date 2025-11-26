@@ -12,24 +12,22 @@ namespace ECommerceWebsiteMVC.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class CuaHang
+    public partial class NguoiMua
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CuaHang()
+        public NguoiMua()
         {
-            this.SanPhams = new HashSet<SanPham>();
+            this.GioHangs = new HashSet<GioHang>();
         }
     
-        public int MaCuaHang { get; set; }
-        public int MaNguoiBan { get; set; }
-        public string TenCuaHang { get; set; }
-        public string HinhAnh { get; set; }
-        public string DiaChi { get; set; }
-        public Nullable<System.DateTime> NgayDangKy { get; set; }
-        public string MaSoThue { get; set; }
+        public int MaNguoiMua { get; set; }
+        public string HoVaTen { get; set; }
+        public string Email { get; set; }
+        public string TaiKhoan { get; set; }
+        public string MatKhau { get; set; }
+        public string SDT { get; set; }
     
-        public virtual NguoiBan NguoiBan { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SanPham> SanPhams { get; set; }
+        public virtual ICollection<GioHang> GioHangs { get; set; }
     }
 }

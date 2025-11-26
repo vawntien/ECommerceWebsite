@@ -279,7 +279,10 @@
     <Compile Include="Models\KhieuNai.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NguoiDung.cs">
+    <Compile Include="Models\NguoiBan.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NguoiMua.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\QL_BanHangModel.Context.cs">

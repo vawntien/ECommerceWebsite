@@ -23,13 +23,13 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult TatCaSanPham()
         {
-            if (Session["MaNguoiDung"] == null)
+            if (Session["MaNguoiBan"] == null)
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
 
-            int maNguoiDung = (int)Session["MaNguoiDung"];
+            int maNguoiBan = (int)Session["MaNguoiBan"];
 
             // 1. Lấy cửa hàng của người bán
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiDung == maNguoiDung);
+            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
 
             if (cuaHang == null)
                 return Content("Bạn chưa tạo cửa hàng.");
