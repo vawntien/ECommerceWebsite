@@ -1,4 +1,4 @@
-﻿@model ECommerceWebsiteMVC.Models.NguoiDung
+﻿@model ECommerceWebsiteMVC.Models.NguoiMua
 @{
     ViewBag.Title = "Hồ Sơ Tài Khoản";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
@@ -120,7 +120,7 @@
             color: #c5321d !important;
         }
 </style>
-
+http://localhost:59750/TaiKhoan/DangKy
 <div class="profile-page">
     <div class="profile-wrapper">
         <div class="profile-container">
@@ -141,7 +141,7 @@
 
                 <div class="mb-3">
                     <label class="text-muted">Họ và tên</label>
-                    <input type="text" class="form-control" name="HoVaTen" value="@Model.HoVaTen" />
+                    <div class="form-control-plaintext">@Model.HoVaTen</div>
                 </div>
 
                 <div class="mb-3">
@@ -158,29 +158,6 @@
                         @MaskPhone(Model.SDT)
                         <a href="#" class="ms-2">Thay Đổi</a>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="text-muted">CCCD</label>
-                    <div class="form-control-plaintext">@Model.CCCD</div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="text-muted">Ngày đăng ký</label>
-                    <div class="form-control-plaintext">
-                        @(Model.NgayDangKy.HasValue ? Model.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")
-                    </div>
-                </div>
-
-                <div class="mb-3 profile-avatar">
-                    <label class="text-muted">Ảnh đại diện</label><br />
-
-                    <img src="@Url.Content(string.IsNullOrEmpty(Model.HinhAnh)
-                                      ? "~/assets/default-user.png"
-                                      : Model.HinhAnh)"
-                         width="80" class="rounded-circle" />
-
-                    <a class="ms-2" href="#">Thay Ảnh</a>
                 </div>
 
                 <center>

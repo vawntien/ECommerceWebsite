@@ -32,10 +32,10 @@ namespace ECommerceWebsiteMVC.Controllers
                 .AsQueryable();
 
             // LỌC THEO NGƯỜI DÙNG - Chỉ hiển thị đơn hàng của người dùng hiện tại
-            if (maNguoiDung.HasValue)
-            {
-                query = query.Where(d => d.MaNguoiDung == maNguoiDung.Value);
-            }
+            //if (maNguoiDung.HasValue)
+            //{
+            //    query = query.Where(d => d.MaNguoiDung == maNguoiDung.Value);
+            //}
 
             // Lọc theo trạng thái nếu có
             if (!string.IsNullOrEmpty(trangThai))
@@ -68,10 +68,10 @@ namespace ECommerceWebsiteMVC.Controllers
 
             // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
             int? maNguoiDung = Session["MaNguoiDung"] as int?;
-            if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
-            {
-                return new HttpUnauthorizedResult();
-            }
+            //if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
+            //{
+            //    return new HttpUnauthorizedResult();
+            //}
 
             return View(donHang);
         }
@@ -97,10 +97,10 @@ namespace ECommerceWebsiteMVC.Controllers
                 }
 
                 // Kiểm tra quyền sở hữu
-                if (donHang.MaNguoiDung != maNguoiDung.Value)
-                {
-                    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
-                }
+                //if (donHang.MaNguoiDung != maNguoiDung.Value)
+                //{
+                //    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
+                //}
 
                 // Chỉ cho phép hủy đơn hàng có trạng thái "Chờ xác nhận"
                 if (donHang.TrangThaiDonHang != "Chờ xác nhận")
@@ -139,11 +139,11 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
-            int? maNguoiDung = Session["MaNguoiDung"] as int?;
-            if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
-            {
-                return new HttpUnauthorizedResult();
-            }
+            //int? maNguoiDung = Session["MaNguoiDung"] as int?;
+            //if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
+            //{
+            //    return new HttpUnauthorizedResult();
+            //}
 
             // Kiểm tra xem đơn hàng có bị hủy không
             if (donHang.TrangThaiDonHang != "Đã hủy")
