@@ -17,9 +17,9 @@
             <button class="btn btn-secondary btn-sm">
                 <i class="bi bi-three-dots"></i> Công cụ xử lý hàng loạt
             </button>
-            <button class="btn btn-danger btn-sm">
+            <a class="btn btn-danger btn-sm" href="@Url.Action("ThemSanPham", "NguoiBan")">
                 <i class="bi bi-plus-lg"></i> Thêm 1 sản phẩm mới
-            </button>
+            </a>
         </div>
     </div>
 
@@ -215,9 +215,9 @@
             <i class="bi bi-inbox"></i>
             <h3>Chưa có sản phẩm nào</h3>
             <p>Hãy thêm sản phẩm đầu tiên của bạn để bắt đầu bán hàng!</p>
-            <button class="btn btn-danger">
+            <a class="btn btn-danger" href="@Url.Action("ThemSanPham", "NguoiBan")">
                 <i class="bi bi-plus-lg"></i> Thêm sản phẩm mới
-            </button>
+            </a>
         </div>
     }
 </div>

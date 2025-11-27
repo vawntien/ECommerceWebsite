@@ -43,6 +43,10 @@
 }
 
 .edit-product-container {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr) 360px;
+    gap: 24px;
+    align-items: flex-start;
     font-family: inherit !important;
 }
 

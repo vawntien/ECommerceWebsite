@@ -76,18 +76,6 @@
                     Còn @(Model.BienTheSanPhams.First().SoLuongTonKho) sản phẩm
                 </div>
 
-
-                @*<div class="mt-3">
-                        <label>Số lượng:</label>
-                        <div class="d-flex align-items-center mt-1">
-                            <button class="btn btn-light" onclick="changeQty(-1)">-</button>
-                            <input type="text" id="qty" value="1"
-                                   class="form-control mx-2"
-                                   style="width:60px; text-align:center" />
-                            <button class="btn btn-light" onclick="changeQty(1)">+</button>
-                        </div>
-                    </div>*@
-
                 <hr />
 
                 <div class="mt-3">
@@ -134,7 +122,7 @@ document.querySelectorAll(".variant-btn").forEach(btn => {
         // Đổi ảnh nếu biến thể có ảnh riêng
         if (this.dataset.img) {
             @*mainImg.src = "/Images/Products/@Model.MaSanPham/" + this.dataset.img;*@
-            mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/products/@Model.MaSanPham/" + this.dataset.img;
+            mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/products/variants/" + this.dataset.img;
 
         }
 

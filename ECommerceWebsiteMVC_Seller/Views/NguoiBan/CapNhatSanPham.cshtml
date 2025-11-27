@@ -28,6 +28,18 @@
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     }
+
+    .edit-product-container {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr) 360px;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    .preview-sidebar {
+        position: sticky;
+        top: 90px;
+    }
 </style>
 
 <div class="edit-product-page">
@@ -45,47 +57,26 @@
                 </div>
             </div>
 
-            <div class="tasks-card">
-                <h4>Nhiệm vụ để đạt mức Xuất sắc</h4>
-                <ul class="task-list">
-                    <li class="task-item">
-                        <input type="checkbox" id="task1" disabled>
-                        <label for="task1">Thêm video sản phẩm</label>
-                    </li>
-                    <li class="task-item">
-                        <input type="checkbox" id="task2" disabled>
-                        <label for="task2">Tên sản phẩm có ít nhất 25~100 kí tự</label>
-                    </li>
-                    <li class="task-item checked">
-                        <input type="checkbox" id="task3" checked disabled>
-                        <label for="task3">Thêm ít nhất 100 kí tự hoặc 1 hình ảnh trong mô tả sản phẩm</label>
-                    </li>
-                    <li class="task-item">
-                        <input type="checkbox" id="task4" disabled>
-                        <label for="task4">Thêm thương hiệu</label>
-                    </li>
-                    <li class="task-item">
-                        <input type="checkbox" id="task5" disabled>
-                        <label for="task5">Thêm ít nhất 3 thuộc tính sản phẩm</label>
-                    </li>
-                </ul>
-            </div>
+            
         </aside>
 
         <!-- Main Content: Edit Form -->
         <main class="edit-form-section">
             <!-- Breadcrumb Navigation -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/NguoiBan/Index">Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="/NguoiBan/TatCaSanPham">Sản phẩm</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Chi tiết sản phẩm</li>
-                </ol>
-            </nav>
+            
 
             <form id="editProductForm" action="@Url.Action("CapNhatSanPham", "NguoiBan")" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
                 @Html.HiddenFor(m => m.MaSanPham)
-                
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @if (TempData["UpdateSuccess"] != null)
+                {
+                    <div class="alert alert-success update-alert">
+                        <i class="bi bi-check-circle-fill"></i> @TempData["UpdateSuccess"]
+                    </div>
+                }
+
                 <!-- Tabs Navigation -->
                 <div class="form-tabs">
                     <button type="button" class="tab-btn active" data-tab="basic">Thông tin cơ bản</button>
@@ -93,7 +84,6 @@
                     <button type="button" class="tab-btn" data-tab="description">Mô tả</button>
                     <button type="button" class="tab-btn" data-tab="sales">Thông tin bán hàng</button>
                     <button type="button" class="tab-btn" data-tab="shipping">Vận chuyển</button>
-                    <button type="button" class="tab-btn" data-tab="other">Thông tin khác</button>
                 </div>
 
                 <!-- Tab Content: Basic Information -->
@@ -102,18 +92,7 @@
                     <!-- Product Images -->
                     <div class="form-section">
                         <h3>Hình ảnh sản phẩm</h3>
-                        <div class="image-ratio-options">
-                            <label class="ratio-option active">
-                                <input type="radio" name="imageRatio" value="1:1" checked>
-                                <span>Hình ảnh tỷ lệ 1:1</span>
-                            </label>
-                            <label class="ratio-option">
-                                <input type="radio" name="imageRatio" value="3:4">
-                                <span>Hình ảnh tỷ lệ 3:4</span>
-                            </label>
-                            <span class="example-link">Ví dụ</span>
-                        </div>
-
+                        
                         <div class="product-images-grid">
                             @for (int i = 0; i < 9; i++)
                             {
@@ -168,29 +147,9 @@
                                 </div>
                             }
                         </div>
-                        <p class="help-text">
-                            Ảnh bìa sẽ được hiển thị tại các trang Kết quả tìm kiếm, Gợi ý hôm nay....
-                            Việc sử dụng ảnh bìa đẹp sẽ thu hút thêm lượt truy cập vào sản phẩm của bạn
-                        </p>
                     </div>
 
-                    <!-- Product Video -->
-                    <div class="form-section">
-                        <h3>Video sản phẩm</h3>
-                        <div class="video-upload-section">
-                            <button type="button" class="btn btn-outline-primary add-video-btn">
-                                <i class="bi bi-play-circle"></i> Thêm video
-                            </button>
-                            <input type="file" id="videoInput" accept="video/mp4" style="display: none;">
-                            <ul class="video-requirements">
-                                <li>Kích thước tối đa 30Mb, độ phân giải không vượt quá 1280x1280px</li>
-                                <li>Độ dài: 10s-60s</li>
-                                <li>Định dạng: MP4</li>
-                                <li>Lưu ý: sản phẩm có thể hiển thị trong khi video đang được xử lý. Video sẽ tự động hiển thị sau khi đã xử lý thành công.</li>
-                            </ul>
-                        </div>
-                    </div>
-
+                   
                     <!-- Product Name -->
                     <div class="form-section">
                         <h3>Tên sản phẩm <span class="required">*</span></h3>
@@ -212,17 +171,6 @@
                         @Html.HiddenFor(m => m.MaDanhMuc)
                     </div>
 
-                    <!-- GTIN -->
-                    <div class="form-section">
-                        <h3>GTIN</h3>
-                        <div class="gtin-section">
-                            <input type="text" class="form-control" placeholder="Nhập vào" style="max-width: 300px;">
-                            <label class="checkbox-label">
-                                <input type="checkbox"> Item without GTIN
-                            </label>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- Tab Content: Detailed Information -->
@@ -232,11 +180,7 @@
                             <h3>Thông tin chi tiết</h3>
                             <span class="completion-status">Hoàn thành: 2/10</span>
                         </div>
-                        <p class="help-text">
-                            Điền thông tin thuộc tính để tăng mức độ hiển thị cho sản phẩm
-                            <a href="#" class="link">Xem hướng dẫn bổ sung thuộc tính</a>.
-                        </p>
-
+                        
                         <div class="detail-fields">
                             <div class="form-group">
                                 <label>Thương hiệu</label>
@@ -287,17 +231,17 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
-                                            <div class="variant-details">
+                                                <div class="variant-details">
                                                 <div class="form-group">
                                                     <label>Giá bán (₫)</label>
-                                                    <input type="number" class="form-control" value="@variant.GiaBan" step="1000">
+                                                        <input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan" step="1000" min="0" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Số lượng tồn kho</label>
-                                                    <input type="number" class="form-control" value="@variant.SoLuongTonKho" min="0">
+                                                        <input type="number" class="form-control" name="VariantSoLuong[]" value="@variant.SoLuongTonKho" min="0" required>
                                                 </div>
                                             </div>
-                                            @Html.Hidden("variantIds", variant.MaBienThe)
+                                                <input type="hidden" name="VariantIds[]" value="@variant.MaBienThe" />
                                         </div>
                                     }
                                 }
@@ -426,45 +370,10 @@
                         </p>
                     </div>
 
-                    <div class="form-section">
-                        <h3>Thông tin khác</h3>
-                        <div class="detail-fields">
-                            <div class="form-group">
-                                <label>Tình trạng</label>
-                                <select class="form-control" id="productCondition">
-                                    <option value="new" selected>Mới</option>
-                                    <option value="used">Đã sử dụng</option>
-                                    <option value="refurbished">Đã tân trang</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>SKU sản phẩm</label>
-                                <input type="text" class="form-control" id="productSKU" placeholder="Nhập SKU sản phẩm">
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Tab Content: Other Information -->
-                <div class="tab-content" id="tab-other">
-                    <div class="form-section">
-                        <h3>Thông tin khác</h3>
-                        <div class="detail-fields">
-                            <div class="form-group">
-                                <label>Tình trạng</label>
-                                <select class="form-control">
-                                    <option value="new" selected>Mới</option>
-                                    <option value="used">Đã sử dụng</option>
-                                    <option value="refurbished">Đã tân trang</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>SKU sản phẩm</label>
-                                <input type="text" class="form-control" placeholder="Nhập SKU sản phẩm">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- Form Actions -->
                 <div class="form-actions">

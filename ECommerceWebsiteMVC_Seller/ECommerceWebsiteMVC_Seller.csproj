@@ -259,6 +259,7 @@
     <Compile Include="Models\CuaHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CreateProductViewModel.cs" />
     <Compile Include="Models\DanhGiaSanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -329,6 +330,7 @@
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.rtl.css.map" />
     <Content Include="Content\bootstrap.rtl.min.css.map" />
+    <Content Include="Content\seller-create-product.css" />
     <EntityDeploy Include="Models\QL_BanHangModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>QL_BanHangModel.Designer.cs</LastGenOutput>
@@ -345,6 +347,7 @@
     <Content Include="Views\TaiKhoan\DangNhapNguoiBan.cshtml" />
     <Content Include="Views\NguoiBan\TatCaSanPham.cshtml" />
     <Content Include="Views\NguoiBan\CapNhatSanPham.cshtml" />
+    <Content Include="Views\NguoiBan\ThemSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
