@@ -29,22 +29,6 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                 ViewBag.Error = "Sai tài khoản hoặc mật khẩu!";
                 return View();
             }
-
-            // Nếu vai trò = true → tài khoản đã đăng ký bán hàng
-            //if (user.VaiTro)
-            //{
-            //    // Lưu session
-            //    Session["MaNguoiDung"] = user.MaNguoiDung;
-            //    Session["HoVaTen"] = user.HoVaTen;
-            //    Session["TaiKhoan"] = user.TaiKhoan;
-            //    Session["VaiTro"] = user.VaiTro;
-            //    Session["AnhDaiDien"] = user.HinhAnh;
-
-            //    return RedirectToAction("Index", "NguoiBan");
-            //}
-
-            // Nếu vai trò = false → chuyển sang trang đăng ký người bán
-            //return RedirectToAction("DangKyNguoiBan", "TaiKhoan");
             Session["MaNguoiBan"] = user.MaNguoiBan;
             Session["HoVaTen"] = user.HoVaTen;
             Session["TaiKhoan"] = user.TaiKhoan;

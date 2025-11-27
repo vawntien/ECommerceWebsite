@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -346,6 +346,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="sp_GetSanPhamByNguoiBan" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MaNguoiBan" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
@@ -420,8 +423,7 @@
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -867,7 +869,18 @@
             <End Role="NguoiMua" EntitySet="NguoiMuas" />
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
+          <FunctionImport Name="sp_GetSanPhamByNguoiBan" ReturnType="Collection(ECommerceWebsiteModel.sp_GetSanPhamByNguoiBan_Result)">
+            <Parameter Name="MaNguoiBan" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
+        <ComplexType Name="sp_GetSanPhamByNguoiBan_Result">
+          <Property Type="Int32" Name="MaSanPham" Nullable="false" />
+          <Property Type="Int32" Name="MaDanhMuc" Nullable="false" />
+          <Property Type="Int32" Name="MaCuaHang" Nullable="false" />
+          <Property Type="String" Name="TenSanPham" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="MoTa" Nullable="true" />
+          <Property Type="String" Name="LoaiPhanLoai" Nullable="false" MaxLength="300" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1063,6 +1076,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetSanPhamByNguoiBan" FunctionName="ECommerceWebsiteModel.Store.sp_GetSanPhamByNguoiBan">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ECommerceWebsiteModel.sp_GetSanPhamByNguoiBan_Result">
+                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
+                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
+                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
+                <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="LoaiPhanLoai" ColumnName="LoaiPhanLoai" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

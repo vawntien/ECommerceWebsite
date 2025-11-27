@@ -12,6 +12,8 @@ namespace ECommerceWebsiteMVC_Seller.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class ECommerceWebsiteEntities : DbContext
     {
@@ -41,5 +43,14 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public virtual DbSet<NguoiMua> NguoiMuas { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+    
+        public virtual ObjectResult<sp_GetSanPhamByNguoiBan_Result> sp_GetSanPhamByNguoiBan(Nullable<int> maNguoiBan)
+        {
+            var maNguoiBanParameter = maNguoiBan.HasValue ?
+                new ObjectParameter("MaNguoiBan", maNguoiBan) :
+                new ObjectParameter("MaNguoiBan", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetSanPhamByNguoiBan_Result>("sp_GetSanPhamByNguoiBan", maNguoiBanParameter);
+        }
     }
 }

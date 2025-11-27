@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Threading.Tasks;
 
 namespace ECommerceWebsiteMVC.Controllers
 {
@@ -27,6 +28,21 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult TatCaSanPham()
         {
+            //csdl
+
+            //if (Session["MaNguoiBan"] == null)
+            //    return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+
+            //int maNguoiBan = (int)Session["MaNguoiBan"];
+            //var dsSanPham = db.Database.SqlQuery<SanPham>(
+            //    "EXEC sp_GetSanPhamByNguoiBan @MaNguoiBan",
+            //    new SqlParameter("@MaNguoiBan", maNguoiBan)
+            //).ToList();
+
+            //return View(dsSanPham);
+
+
+            //entity
             if (Session["MaNguoiBan"] == null)
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
 
@@ -50,17 +66,17 @@ namespace ECommerceWebsiteMVC.Controllers
 
             // 3. Tính doanh số cho mỗi sản phẩm
             var productSales = new Dictionary<int, int>();
-            
+
             if (dsSanPham.Any())
             {
                 var allBienTheIds = dsSanPham.SelectMany(sp => sp.BienTheSanPhams?.Select(bt => bt.MaBienThe) ?? new List<int>()).ToList();
-                
+
                 if (allBienTheIds.Any())
                 {
                     var salesData = db.ChiTietDonHangs
                         .Include("DonHang")
                         .Include("BienTheSanPham")
-                        .Where(ct => allBienTheIds.Contains(ct.MaBienThe) 
+                        .Where(ct => allBienTheIds.Contains(ct.MaBienThe)
                             && ct.DonHang != null
                             && (ct.DonHang.TrangThaiDonHang == "Đã giao" || ct.DonHang.TrangThaiDonHang == "Đang giao"))
                         .ToList()
