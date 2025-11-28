@@ -19,5 +19,6 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public string TenSanPham { get; set; }
         public string MoTa { get; set; }
         public string LoaiPhanLoai { get; set; }
+        public Nullable<decimal> SoSaoTrungBinh { get; set; }
     }
 }

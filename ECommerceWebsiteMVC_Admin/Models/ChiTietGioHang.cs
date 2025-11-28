@@ -14,12 +14,21 @@ namespace ECommerceWebsiteMVC_Admin.Models
     
     public partial class ChiTietGioHang
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ChiTietGioHang()
+        {
+            this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+        }
+    
         public int MaCTGH { get; set; }
         public int MaGioHang { get; set; }
         public int MaBienThe { get; set; }
         public int SoLuong { get; set; }
+        public Nullable<bool> TrangThai { get; set; }
     
         public virtual BienTheSanPham BienTheSanPham { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public virtual GioHang GioHang { get; set; }
     }
 }

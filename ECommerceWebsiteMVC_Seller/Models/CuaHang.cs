@@ -27,6 +27,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public string DiaChi { get; set; }
         public Nullable<System.DateTime> NgayDangKy { get; set; }
         public string MaSoThue { get; set; }
+        public bool TrangThai { get; set; }
     
         public virtual NguoiBan NguoiBan { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

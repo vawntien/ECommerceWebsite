@@ -65,32 +65,32 @@ namespace ECommerceWebsiteMVC.Controllers
                               .ToList();
 
             // 3. Tính doanh số cho mỗi sản phẩm
-            var productSales = new Dictionary<int, int>();
+            //var productSales = new Dictionary<int, int>();
 
-            if (dsSanPham.Any())
-            {
-                var allBienTheIds = dsSanPham.SelectMany(sp => sp.BienTheSanPhams?.Select(bt => bt.MaBienThe) ?? new List<int>()).ToList();
+            //if (dsSanPham.Any())
+            //{
+            //    var allBienTheIds = dsSanPham.SelectMany(sp => sp.BienTheSanPhams?.Select(bt => bt.MaBienThe) ?? new List<int>()).ToList();
 
-                if (allBienTheIds.Any())
-                {
-                    var salesData = db.ChiTietDonHangs
-                        .Include("DonHang")
-                        .Include("BienTheSanPham")
-                        .Where(ct => allBienTheIds.Contains(ct.MaBienThe)
-                            && ct.DonHang != null
-                            && (ct.DonHang.TrangThaiDonHang == "Đã giao" || ct.DonHang.TrangThaiDonHang == "Đang giao"))
-                        .ToList()
-                        .GroupBy(ct => ct.BienTheSanPham?.MaSanPham ?? 0)
-                        .Where(g => g.Key > 0)
-                        .Select(g => new { MaSanPham = g.Key, SoLuongBan = g.Sum(x => x.SoLuong) })
-                        .ToList();
+            //    if (allBienTheIds.Any())
+            //    {
+            //        var salesData = db.ChiTietDonHangs
+            //            .Include("DonHang")
+            //            .Include("BienTheSanPham")
+            //            .Where(ct => allBienTheIds.Contains(ct.MaBienThe)
+            //                && ct.DonHang != null
+            //                && (ct.DonHang.TrangThaiDonHang == "Đã giao" || ct.DonHang.TrangThaiDonHang == "Đang giao"))
+            //            .ToList()
+            //            .GroupBy(ct => ct.BienTheSanPham?.MaSanPham ?? 0)
+            //            .Where(g => g.Key > 0)
+            //            .Select(g => new { MaSanPham = g.Key, SoLuongBan = g.Sum(x => x.SoLuong) })
+            //            .ToList();
 
-                    foreach (var sale in salesData)
-                    {
-                        productSales[sale.MaSanPham] = sale.SoLuongBan;
-                    }
-                }
-            }
+            //        foreach (var sale in salesData)
+            //        {
+            //            productSales[sale.MaSanPham] = sale.SoLuongBan;
+            //        }
+            //    }
+            //}
             //
             var tonk = new Dictionary<int, int>();
 
@@ -101,7 +101,7 @@ namespace ECommerceWebsiteMVC.Controllers
             }
             ViewBag.TonKho = tonk;
 
-            ViewBag.ProductSales = productSales;
+            //ViewBag.ProductSales = productSales;
 
             return View(dsSanPham);
         }

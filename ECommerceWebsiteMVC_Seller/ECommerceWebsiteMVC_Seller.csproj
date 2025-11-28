@@ -256,10 +256,10 @@
     <Compile Include="Models\ChiTietGioHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CreateProductViewModel.cs" />
     <Compile Include="Models\CuaHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CreateProductViewModel.cs" />
     <Compile Include="Models\DanhGiaSanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>

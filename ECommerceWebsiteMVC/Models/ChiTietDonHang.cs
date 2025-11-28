@@ -25,9 +25,9 @@ namespace ECommerceWebsiteMVC.Models
         public decimal ThanhTien { get; set; }
         public int SoLuong { get; set; }
         public decimal DonGia { get; set; }
-        public int MaBienThe { get; set; }
+        public int MaCTGH { get; set; }
     
-        public virtual BienTheSanPham BienTheSanPham { get; set; }
+        public virtual ChiTietGioHang ChiTietGioHang { get; set; }
         public virtual DonHang DonHang { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
