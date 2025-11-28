@@ -2,6 +2,7 @@
 @{
     Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
     var productSales = ViewBag.ProductSales as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var tonKho = ViewBag.TonKho as Dictionary<int, int>;
 }
 
 <link rel="stylesheet" href="~/Content/seller-products.css" />
@@ -138,7 +139,7 @@
                         ? s.BienTheSanPhams.Max(bt => bt.GiaBan) 
                         : 0;
                     
-                    var tongKho = s.BienTheSanPhams?.Sum(bt => bt.SoLuongTonKho) ?? 0;
+                    //var tongKho = s.BienTheSanPhams?.Sum(bt => bt.SoLuongTonKho) ?? 0;
                     var soLuongBan = productSales.ContainsKey(s.MaSanPham) ? productSales[s.MaSanPham] : 0;
                     
                     var giaHienThi = giaMin == giaMax 
@@ -178,8 +179,11 @@
                             <div class="price-cell">₫@giaHienThi</div>
                         </td>
                         <td>
-                            <div class="stock-cell @(tongKho > 0 ? "in-stock" : "out-of-stock")">
+                            @*<div class="stock-cell @(tongKho > 0 ? "in-stock" : "out-of-stock")">
                                 @tongKho
+                            </div>*@
+                            <div class="stock-cell @(tonKho[s.MaSanPham] > 0 ? "in-stock" : "out-of-stock")">
+                                @tonKho[s.MaSanPham]
                             </div>
                         </td>
                         <td>

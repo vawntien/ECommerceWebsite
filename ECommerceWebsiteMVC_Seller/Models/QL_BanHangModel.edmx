@@ -346,6 +346,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="fn_TongTonKho" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int">
+          <Parameter Name="MaSanPham" Type="int" Mode="In" />
+        </Function>
         <Function Name="sp_GetSanPhamByNguoiBan" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MaNguoiBan" Type="int" Mode="In" />
         </Function>
@@ -870,7 +873,7 @@
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
           <FunctionImport Name="sp_GetSanPhamByNguoiBan" ReturnType="Collection(ECommerceWebsiteModel.sp_GetSanPhamByNguoiBan_Result)">
-            <Parameter Name="MaNguoiBan" Mode="In" Type="Int32" />
+          <Parameter Name="MaNguoiBan" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="sp_GetSanPhamByNguoiBan_Result">

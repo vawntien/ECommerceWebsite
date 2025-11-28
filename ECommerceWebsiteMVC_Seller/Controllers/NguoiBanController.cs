@@ -91,6 +91,15 @@ namespace ECommerceWebsiteMVC.Controllers
                     }
                 }
             }
+            //
+            var tonk = new Dictionary<int, int>();
+
+            foreach (var sp in dsSanPham)
+            {
+                int tonKho = db.Database.SqlQuery<int>("SELECT dbo.fn_TongTonKho(@MaSanPham)",new SqlParameter("@MaSanPham", sp.MaSanPham)).FirstOrDefault();
+                tonk[sp.MaSanPham] = tonKho;
+            }
+            ViewBag.TonKho = tonk;
 
             ViewBag.ProductSales = productSales;
 
