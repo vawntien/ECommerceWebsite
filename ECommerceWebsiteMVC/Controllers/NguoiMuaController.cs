@@ -22,12 +22,12 @@ namespace ECommerceWebsiteMVC.Controllers
         public ActionResult DonHang(string trangThai = null)
         {
             // Lấy MaNguoiDung từ Session (người dùng đã đăng nhập)
-            int? maNguoiDung = Session["MaNguoiDung"] as int?;
+            int? maNguoiDung = Session["MaNguoiMua"] as int?;
             
             // Lấy tất cả đơn hàng của người dùng với các thông tin liên quan
             var query = ql.DonHangs
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.AnhSanPhams")
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.CuaHang")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.CuaHang")
                 .Include("DonViVanChuyen")
                 .AsQueryable();
 
@@ -54,11 +54,11 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             // Lấy thông tin chi tiết đơn hàng với tất cả dữ liệu liên quan
             var donHang = ql.DonHangs
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.AnhSanPhams")
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.CuaHang")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.CuaHang")
                 .Include("DonViVanChuyen")
                 .Include("GiamGia")
-                .Include("NguoiDung")
+                .Include("ChiTietDonHangs.ChiTietGioHang.GioHang.NguoiMua")
                 .FirstOrDefault(d => d.MaDonHang == id);
 
             if (donHang == null)
@@ -67,7 +67,7 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
-            int? maNguoiDung = Session["MaNguoiDung"] as int?;
+            int? maNguoiDung = Session["MaNguoiMua"] as int?;
             //if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
             //{
             //    return new HttpUnauthorizedResult();
@@ -82,8 +82,8 @@ namespace ECommerceWebsiteMVC.Controllers
             try
             {
                 // Lấy MaNguoiDung từ Session
-                int? maNguoiDung = Session["MaNguoiDung"] as int?;
-                if (!maNguoiDung.HasValue)
+                int? maNguoiMua = Session["MaNguoiMua"] as int?;
+                if (!maNguoiMua.HasValue)
                 {
                     return Json(new { success = false, message = "Vui lòng đăng nhập để thực hiện thao tác này." });
                 }
@@ -126,11 +126,11 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             // Lấy thông tin chi tiết đơn hàng đã hủy
             var donHang = ql.DonHangs
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.AnhSanPhams")
-                .Include("ChiTietDonHangs.BienTheSanPham.SanPham.CuaHang")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
+                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.CuaHang")
                 .Include("DonViVanChuyen")
                 .Include("GiamGia")
-                .Include("NguoiDung")
+                .Include("ChiTietDonHangs.ChiTietGioHang.GioHang.NguoiMua")
                 .FirstOrDefault(d => d.MaDonHang == id);
 
             if (donHang == null)
