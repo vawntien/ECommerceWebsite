@@ -3,11 +3,11 @@
 @{
     Layout = null;
     // Ảnh sản phẩm mặc định
-    var macdinh = Model.ChiTietDonHang.BienTheSanPham.SanPham.AnhSanPhams
+    var macdinh = Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams
         .Where(x => x.MacDinh == true)
         .Select(x => x.HinhAnh)
         .FirstOrDefault()
-        ?? Model.ChiTietDonHang.BienTheSanPham.SanPham.AnhSanPhams
+        ?? Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams
             .Select(x => x.HinhAnh)
             .FirstOrDefault();
 
@@ -158,10 +158,10 @@
                 <div class="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
                     <img alt="Ảnh sản phẩm"
                          class="w-12 h-12 object-cover rounded"
-                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.ChiTietDonHang.BienTheSanPham.MaSanPham}/{macdinh}")" />
+                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.MaSanPham}/{macdinh}")" />
                     <div>
                         <h2 class="font-medium text-gray-900 dark:text-white">
-                            @Model.ChiTietDonHang.BienTheSanPham.SanPham.TenSanPham
+                            @Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.TenSanPham
                         </h2>
                     </div>
                 </div>

@@ -37,7 +37,7 @@
         {
             // Nhóm sản phẩm theo cửa hàng
             var chiTietTheoShop = donHang.ChiTietDonHangs
-                .GroupBy(ct => ct.BienTheSanPham.SanPham.CuaHang)
+                .GroupBy(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham.CuaHang)
                 .ToList();
 
             foreach (var shopGroup in chiTietTheoShop)
@@ -60,7 +60,7 @@
                     <div class="order-body">
                         @foreach (var chiTiet in chiTietList)
                         {
-                            var sanPham = chiTiet.BienTheSanPham.SanPham;
+                            var sanPham = chiTiet.ChiTietGioHang.BienTheSanPham.SanPham;
                             var anhDaiDien = sanPham.AnhSanPhams.FirstOrDefault(a => a.MacDinh == true) ?? sanPham.AnhSanPhams.FirstOrDefault();
                             var imageUrl = anhDaiDien != null 
                                 ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{sanPham.MaSanPham}/{anhDaiDien.HinhAnh}" 
@@ -71,7 +71,7 @@
                                 <div class="flex-grow-1 d-flex justify-content-between">
                                     <div class="order-product-info">
                                         <h6>@sanPham.TenSanPham</h6>
-                                        <p>Phân loại hàng: @chiTiet.BienTheSanPham.TenBienThe</p>
+                                        <p>Phân loại hàng: @chiTiet.ChiTietGioHang.BienTheSanPham.TenBienThe</p>
                                         <p>Số lượng: @chiTiet.SoLuong</p>
                                     </div>
                                     <div class="order-price">@chiTiet.DonGia.ToString("N0")đ</div>

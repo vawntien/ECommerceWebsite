@@ -40,7 +40,7 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             // 1. Load ChiTietDonHang + sản phẩm + ảnh sản phẩm
             var ct = db.ChiTietDonHangs
-                       .Include("BienTheSanPham.SanPham.AnhSanPhams")
+                       .Include("ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
                        .FirstOrDefault(x => x.MaCTDH == MaChiTietDonHang);
 
             if (ct == null)

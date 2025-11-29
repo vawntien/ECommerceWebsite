@@ -4,14 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="fce3a1c8d9a14b348316e0425d36ac45" Name="Diagram1">
+      <Diagram DiagramId="fce3a1c8d9a14b348316e0425d36ac45" Name="Diagram1" ZoomLevel="42">
         <EntityTypeShape EntityType="ECommerceWebsiteModel.AnhSanPham" Width="1.5" PointX="7.5" PointY="1.25" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.BienTheSanPham" Width="1.5" PointX="7.5" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietDonHang" Width="1.5" PointX="12" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.ChiTietGioHang" Width="1.5" PointX="9.75" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.CuaHang" Width="1.5" PointX="3" PointY="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhGiaSanPham" Width="1.5" PointX="14.25" PointY="3.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhMuc" Width="1.5" PointX="3" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.DanhMuc" Width="1.5" PointX="3" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.DonHang" Width="1.5" PointX="9.75" PointY="12" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.DonViVanChuyen" Width="1.5" PointX="7.5" PointY="11.625" IsExpanded="true" />
         <EntityTypeShape EntityType="ECommerceWebsiteModel.GiamGia" Width="1.5" PointX="7.5" PointY="14" IsExpanded="true" />
