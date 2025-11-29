@@ -44,6 +44,16 @@
 
 <div class="edit-product-page">
     <div class="edit-product-container">
+        @if (ViewBag.Warnings != null)
+        {
+            foreach (var w in ViewBag.Warnings as List<ECommerceWebsiteMVC_Seller.Models.WarningViewModel>)
+            {
+                <div class="alert alert-warning" style="font-size:16px;">
+                    ⚠ @w.ThongBao
+                </div>
+            }
+        }
+
 
         <!-- Left Sidebar: Content Level & Tasks -->
         <aside class="content-sidebar">
@@ -57,13 +67,13 @@
                 </div>
             </div>
 
-            
+
         </aside>
 
         <!-- Main Content: Edit Form -->
         <main class="edit-form-section">
             <!-- Breadcrumb Navigation -->
-            
+
 
             <form id="editProductForm" action="@Url.Action("CapNhatSanPham", "NguoiBan")" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
@@ -92,7 +102,7 @@
                     <!-- Product Images -->
                     <div class="form-section">
                         <h3>Hình ảnh sản phẩm</h3>
-                        
+
                         <div class="product-images-grid">
                             @for (int i = 0; i < 9; i++)
                             {
@@ -149,7 +159,7 @@
                         </div>
                     </div>
 
-                   
+
                     <!-- Product Name -->
                     <div class="form-section">
                         <h3>Tên sản phẩm <span class="required">*</span></h3>
@@ -180,7 +190,7 @@
                             <h3>Thông tin chi tiết</h3>
                             <span class="completion-status">Hoàn thành: 2/10</span>
                         </div>
-                        
+
                         <div class="detail-fields">
                             <div class="form-group">
                                 <label>Thương hiệu</label>
@@ -231,17 +241,17 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
-                                                <div class="variant-details">
+                                            <div class="variant-details">
                                                 <div class="form-group">
                                                     <label>Giá bán (₫)</label>
-                                                        <input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan" step="1000" min="0" required>
+                                                    <input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan" step="1000" min="0" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Số lượng tồn kho</label>
-                                                        <input type="number" class="form-control" name="VariantSoLuong[]" value="@variant.SoLuongTonKho" min="0" required>
+                                                    <input type="number" class="form-control" name="VariantSoLuong[]" value="@variant.SoLuongTonKho" min="0" required>
                                                 </div>
                                             </div>
-                                                <input type="hidden" name="VariantIds[]" value="@variant.MaBienThe" />
+                                            <input type="hidden" name="VariantIds[]" value="@variant.MaBienThe" />
                                         </div>
                                     }
                                 }
@@ -365,7 +375,7 @@
                             </label>
                         </div>
                         <p class="help-text">
-                            Sản phẩm đặt trước sẽ được giao hàng trong khoảng thời gian bạn đặt. 
+                            Sản phẩm đặt trước sẽ được giao hàng trong khoảng thời gian bạn đặt.
                             Khách hàng sẽ được thông báo về thời gian giao hàng dự kiến.
                         </p>
                     </div>
@@ -373,8 +383,6 @@
                 </div>
 
                 <!-- Tab Content: Other Information -->
-                
-
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline-secondary">Hủy</button>

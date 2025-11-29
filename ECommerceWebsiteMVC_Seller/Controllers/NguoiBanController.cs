@@ -41,6 +41,10 @@ namespace ECommerceWebsiteMVC.Controllers
 
             //return View(dsSanPham);
 
+            
+
+
+
 
             //entity
             if (Session["MaNguoiBan"] == null)
@@ -55,6 +59,42 @@ namespace ECommerceWebsiteMVC.Controllers
                 return Content("Bạn chưa tạo cửa hàng.");
 
             int maCuaHang = cuaHang.MaCuaHang;
+
+
+
+
+            //            var rawWarnings = db.Database.SqlQuery<dynamic>(
+            //    "EXEC sp_GetLowStockWarnings"
+            //).ToList();
+
+            //            List<dynamic> filteredWarnings = new List<dynamic>();
+
+            //            foreach (var item in rawWarnings)
+            //            {
+            //                var dict = item as IDictionary<string, object>;
+
+            //                if (dict != null &&
+            //                    dict.ContainsKey("MaCuaHang") &&
+            //                    dict["MaCuaHang"] != null &&
+            //                    Convert.ToInt32(dict["MaCuaHang"]) == maCuaHang)
+            //                {
+            //                    filteredWarnings.Add(item);
+            //                }
+            //            }
+
+            //            ViewBag.Warnings = filteredWarnings;
+
+            var warnings = db.Database.SqlQuery<WarningViewModel>("EXEC sp_GetLowStockWarnings").ToList();
+            var filteredWarnings = warnings.Where(x => x.MaCuaHang == maCuaHang).ToList();
+
+            ViewBag.Warnings = filteredWarnings;
+
+
+
+
+
+
+
 
             // 2. Lấy sản phẩm thuộc cửa hàng đó với các thông tin liên quan
             var dsSanPham = db.SanPhams
@@ -161,9 +201,10 @@ namespace ECommerceWebsiteMVC.Controllers
             sanPham.MoTa = model.MoTa;
             sanPham.MaDanhMuc = model.MaDanhMuc;
 
-            var variantIds = form.GetValues("VariantIds") ?? Array.Empty<string>();
-            var variantPrices = form.GetValues("VariantGiaBan") ?? Array.Empty<string>();
-            var variantStocks = form.GetValues("VariantSoLuong") ?? Array.Empty<string>();
+            var variantIds = form.GetValues("VariantIds[]") ?? Array.Empty<string>();
+            var variantPrices = form.GetValues("VariantGiaBan[]") ?? Array.Empty<string>();
+            var variantStocks = form.GetValues("VariantSoLuong[]") ?? Array.Empty<string>();
+
 
             for (int i = 0; i < variantIds.Length; i++)
             {
@@ -183,7 +224,9 @@ namespace ECommerceWebsiteMVC.Controllers
                 if (i < variantStocks.Length && int.TryParse(variantStocks[i], out int stock))
                 {
                     variant.SoLuongTonKho = stock;
-                    db.Entry(variant).Property(v => v.SoLuongTonKho).IsModified = true;
+                    variant.SoLuongTonKho = stock;
+                    db.Entry(variant).State = EntityState.Modified;
+
                 }
             }
 

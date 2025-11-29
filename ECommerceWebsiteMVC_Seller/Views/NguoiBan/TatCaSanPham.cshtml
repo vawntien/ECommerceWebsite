@@ -6,6 +6,16 @@
 }
 
 <link rel="stylesheet" href="~/Content/seller-products.css" />
+@if (ViewBag.Warnings != null)
+{
+    foreach (var w in ViewBag.Warnings as List<ECommerceWebsiteMVC_Seller.Models.WarningViewModel>)
+    {
+        <div class="alert alert-warning" style="font-size:16px;">
+            ⚠ @w.ThongBao
+        </div>
+    }
+}
+
 
 <div class="products-page">
     <!-- Header Section -->
@@ -48,6 +58,9 @@
         </button>
     </div>
 
+
+
+
     <!-- Search and Filter Section -->
     <div class="filter-section">
         <div class="search-box">
@@ -75,6 +88,7 @@
         </div>
     </div>
 
+    <!-- Warnings Section -->
     <!-- Product Count and Info -->
     <div class="product-info-bar">
         <span class="product-count">@Model.Count() Sản Phẩm</span>
@@ -93,15 +107,15 @@
                     </th>
                     <th>Tên sản phẩm</th>
                     @*<th width="120">
-                        <div class="sortable-header">
-                            Doanh số
-                            <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="Tổng số lượng đã bán"></i>
-                            <div class="sort-icons">
-                                <i class="bi bi-chevron-up"></i>
-                                <i class="bi bi-chevron-down"></i>
+                            <div class="sortable-header">
+                                Doanh số
+                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="Tổng số lượng đã bán"></i>
+                                <div class="sort-icons">
+                                    <i class="bi bi-chevron-up"></i>
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
                             </div>
-                        </div>
-                    </th>*@
+                        </th>*@
                     <th width="140">
                         <div class="sortable-header">
                             Giá
@@ -131,19 +145,19 @@
                     var img = anh == null
                         ? Url.Content("~/Content/images/no-image.png")
                         : $"https://ecommerceshopstorage.blob.core.windows.net/products/{s.MaSanPham}/{anh.HinhAnh}";
-                    
-                    var giaMin = s.BienTheSanPhams?.Any() == true 
-                        ? s.BienTheSanPhams.Min(bt => bt.GiaBan) 
+
+                    var giaMin = s.BienTheSanPhams?.Any() == true
+                        ? s.BienTheSanPhams.Min(bt => bt.GiaBan)
                         : 0;
-                    var giaMax = s.BienTheSanPhams?.Any() == true 
-                        ? s.BienTheSanPhams.Max(bt => bt.GiaBan) 
+                    var giaMax = s.BienTheSanPhams?.Any() == true
+                        ? s.BienTheSanPhams.Max(bt => bt.GiaBan)
                         : 0;
-                    
+
                     //var tongKho = s.BienTheSanPhams?.Sum(bt => bt.SoLuongTonKho) ?? 0;
                     //var soLuongBan = productSales.ContainsKey(s.MaSanPham) ? productSales[s.MaSanPham] : 0;
-                    
-                    var giaHienThi = giaMin == giaMax 
-                        ? String.Format("{0:N0}", giaMin) 
+
+                    var giaHienThi = giaMin == giaMax
+                        ? String.Format("{0:N0}", giaMin)
                         : $"{String.Format("{0:N0}", giaMin)} - {String.Format("{0:N0}", giaMax)}";
 
                     <tr class="product-row">
@@ -173,18 +187,18 @@
                             </div>
                         </td>
                         @*<td>
-                            <div class="sales-cell">@soLuongBan</div>
-                        </td>*@
+                                <div class="sales-cell">@soLuongBan</div>
+                            </td>*@
                         <td>
                             <div class="price-cell">₫@giaHienThi</div>
                         </td>
                         <td>
                             @*<div class="stock-cell @(tongKho > 0 ? "in-stock" : "out-of-stock")">
-            @tongKho
-        </div>*@
+                                    @tongKho
+                                </div>*@
                             @*<div class="stock-cell @(tonKho[s.MaSanPham] > 0 ? "in-stock" : "out-of-stock")">
-            @tonKho[s.MaSanPham]
-        </div>*@
+                                    @tonKho[s.MaSanPham]
+                                </div>*@
                             <div class="stock-cell @(tonKho[s.MaSanPham])">
                                 @tonKho[s.MaSanPham]
                             </div>
@@ -232,28 +246,28 @@
 <script>
     // Tab switching
     document.querySelectorAll('.tab-item').forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
         });
     });
 
     // Select all checkbox
-    document.getElementById('selectAll')?.addEventListener('change', function() {
+    document.getElementById('selectAll')?.addEventListener('change', function () {
         document.querySelectorAll('.product-checkbox, .variant-checkbox').forEach(cb => {
             cb.checked = this.checked;
         });
     });
 
     // Search functionality
-    document.getElementById('searchInput')?.addEventListener('input', function(e) {
+    document.getElementById('searchInput')?.addEventListener('input', function (e) {
         const searchTerm = e.target.value.toLowerCase();
         document.querySelectorAll('.product-row').forEach(row => {
             const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
             const productId = row.querySelector('.product-meta')?.textContent.toLowerCase() || '';
             const isVisible = productName.includes(searchTerm) || productId.includes(searchTerm);
             row.style.display = isVisible ? '' : 'none';
-            
+
             // Hide variant rows if parent is hidden
             let nextRow = row.nextElementSibling;
             while (nextRow && nextRow.classList.contains('variant-row')) {
@@ -265,7 +279,7 @@
 
     // Expand variants
     document.querySelectorAll('.expand-variants').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const productId = this.dataset.productId;
             // Implementation for expanding variants would go here
             alert('Tính năng mở rộng biến thể sẽ được triển khai');

@@ -305,12 +305,16 @@
     <Compile Include="Models\SanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\sp_GetLowStockWarnings_Result.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\sp_GetSanPhamByNguoiBan_Result.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\WarningViewModel.cs" />
     <Compile Include="Models\XuLyAnhAzure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

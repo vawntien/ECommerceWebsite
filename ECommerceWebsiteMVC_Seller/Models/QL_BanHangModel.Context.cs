@@ -52,5 +52,10 @@ namespace ECommerceWebsiteMVC_Seller.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetSanPhamByNguoiBan_Result>("sp_GetSanPhamByNguoiBan", maNguoiBanParameter);
         }
+    
+        public virtual ObjectResult<sp_GetLowStockWarnings_Result> sp_GetLowStockWarnings()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetLowStockWarnings_Result>("sp_GetLowStockWarnings");
+        }
     }
 }

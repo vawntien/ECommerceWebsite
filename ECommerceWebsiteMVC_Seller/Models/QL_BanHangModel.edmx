@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -352,6 +352,7 @@
         <Function Name="fn_TongTonKho" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int">
           <Parameter Name="MaSanPham" Type="int" Mode="In" />
         </Function>
+        <Function Name="sp_GetLowStockWarnings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="sp_GetSanPhamByNguoiBan" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MaNguoiBan" Type="int" Mode="In" />
         </Function>
@@ -429,8 +430,7 @@
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -880,8 +880,9 @@
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
           <FunctionImport Name="sp_GetSanPhamByNguoiBan" ReturnType="Collection(ECommerceWebsiteModel.sp_GetSanPhamByNguoiBan_Result)">
-            <Parameter Name="MaNguoiBan" Mode="In" Type="Int32" />
+          <Parameter Name="MaNguoiBan" Mode="In" Type="Int32" />
           </FunctionImport>
+          <FunctionImport Name="sp_GetLowStockWarnings" ReturnType="Collection(ECommerceWebsiteModel.sp_GetLowStockWarnings_Result)" />
         </EntityContainer>
         <ComplexType Name="sp_GetSanPhamByNguoiBan_Result">
           <Property Type="Int32" Name="MaSanPham" Nullable="false" />
@@ -891,6 +892,14 @@
           <Property Type="String" Name="MoTa" Nullable="true" />
           <Property Type="String" Name="LoaiPhanLoai" Nullable="false" MaxLength="300" />
           <Property Type="Decimal" Name="SoSaoTrungBinh" Nullable="true" Precision="5" Scale="2" />
+        </ComplexType>
+        <ComplexType Name="sp_GetLowStockWarnings_Result">
+          <Property Type="Int32" Name="MaBienThe" Nullable="true" />
+          <Property Type="Int32" Name="MaSanPham" Nullable="true" />
+          <Property Type="String" Name="TenSanPham" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="TonKho" Nullable="true" />
+          <Property Type="Int32" Name="MaCuaHang" Nullable="true" />
+          <Property Type="String" Name="ThongBao" Nullable="true" MaxLength="300" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1100,6 +1109,18 @@
                 <ScalarProperty Name="MoTa" ColumnName="MoTa" />
                 <ScalarProperty Name="LoaiPhanLoai" ColumnName="LoaiPhanLoai" />
                 <ScalarProperty Name="SoSaoTrungBinh" ColumnName="SoSaoTrungBinh" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetLowStockWarnings" FunctionName="ECommerceWebsiteModel.Store.sp_GetLowStockWarnings">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ECommerceWebsiteModel.sp_GetLowStockWarnings_Result">
+                <ScalarProperty Name="MaBienThe" ColumnName="MaBienThe" />
+                <ScalarProperty Name="MaSanPham" ColumnName="MaSanPham" />
+                <ScalarProperty Name="TenSanPham" ColumnName="TenSanPham" />
+                <ScalarProperty Name="TonKho" ColumnName="TonKho" />
+                <ScalarProperty Name="MaCuaHang" ColumnName="MaCuaHang" />
+                <ScalarProperty Name="ThongBao" ColumnName="ThongBao" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
