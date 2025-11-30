@@ -2,9 +2,8 @@
 
 @{
     ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
     body {
@@ -14,7 +13,7 @@
 
     .cart-container {
         max-width: 1200px;
-        margin: 20px auto 120px auto;
+        margin: 130px auto 120px auto;
         background: #fff;
         border: 1px solid #e6e6e6;
         border-radius: 3px;
@@ -113,7 +112,13 @@
         border: 0;
         border-left: 1px solid #ccc;
         border-right: 1px solid #ccc;
+        outline: none;
     }
+        /* Ẩn nút tăng giảm mặc định của input number */
+        .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
     .product-subtotal {
         font-weight: bold;
@@ -144,7 +149,7 @@
         cursor: pointer;
     }
 
-    /* POPUP PHÂN LOẠI */
+    /* POPUP */
     #variant-modal {
         position: fixed;
         left: 0;
@@ -180,15 +185,10 @@
     }
 </style>
 
-
-<!-- ===================== -->
-<!--        FORM           -->
-<!-- ===================== -->
 <form id="cartForm" action="/GioHang/Checkout" method="post">
     <input type="hidden" id="SelectedIds" name="chon" />
 
     <div class="cart-container">
-
         <div class="cart-header-row">
             <div><input type="checkbox" class="chk-all" /></div>
             <div>Sản phẩm</div>
@@ -202,7 +202,6 @@
         @foreach (var shop in Model.Shops)
         {
             <div class="shop-block">
-
                 <div class="shop-header">
                     <input type="checkbox" class="chk-shop" />
                     <span class="shop-name">@shop.TenCuaHang</span>
@@ -221,7 +220,21 @@
                         </div>
 
                         <div class="cart-col-product">
-                            <img src="/assets/@item.HinhAnh" />
+                            @{
+                                // 1. Link gốc của Azure Blob Storage (lấy từ code mẫu bạn gửi)
+                                string azureBaseUrl = "https://ecommerceshopstorage.blob.core.windows.net/variants/";
+
+                                // 2. Kiểm tra ảnh:
+                                // - Nếu null hoặc rỗng -> Hiện ảnh mặc định local
+                                // - Nếu đã là link online (http...) -> Giữ nguyên
+                                // - Nếu chỉ là tên file -> Ghép với link Azure
+                                string imgSrc = string.IsNullOrEmpty(item.HinhAnh)
+                                                ? "/assets/no-image.jpg"
+                                                : (item.HinhAnh.StartsWith("http") ? item.HinhAnh : azureBaseUrl + item.HinhAnh);
+                            }
+
+                            <img src="@imgSrc" alt="@item.TenSanPham"
+                                 onerror="this.src='/assets/no-image.jpg'" />
                             <div class="product-info">
                                 <div class="product-name">@item.TenSanPham</div>
                             </div>
@@ -238,247 +251,289 @@
 
                         <div class="cart-col-qty">
                             <div class="qty-box">
-                                <button class="btn-minus">-</button>
-                                <input class="qty-input" value="@item.SoLuong" />
-                                <button class="btn-plus">+</button>
+                                <button type="button" class="btn-minus">-</button>
+
+                                @* === QUAN TRỌNG: INPUT SỐ LƯỢNG === *@
+                                <input type="number"
+                                       class="qty-input ajax-qty"
+                                       value="@item.SoLuong"
+                                       min="1"
+                                       max="@item.SoLuongTonKho"
+                                       data-id="@item.MaCTGH"
+                                       data-stock="@item.SoLuongTonKho" />
+
+                                <button type="button" class="btn-plus">+</button>
                             </div>
+                            <div style="font-size:11px; color:#888; margin-top:4px;">Còn @item.SoLuongTonKho</div>
                         </div>
 
-                        <div class="product-subtotal">0 đ</div>
+                        <div class="product-subtotal">@item.ThanhTien.ToString("N0") đ</div>
 
                         <div style="cursor:pointer;color:#007bff;" class="btn-delete">Xóa</div>
                     </div>
                 }
             </div>
         }
-
     </div>
-
 
     <div class="checkout-bar">
         <div>
             <input type="checkbox" class="chk-all" /> Chọn tất cả
-
-            <button id="btn-delete-selected"
-                    style="margin-left:16px;border:none;background:none;cursor:pointer;">
-                Xóa
+            <button type="button" id="btn-delete-selected" style="margin-left:16px;border:none;background:none;cursor:pointer;color:red;">
+                Xóa mục đã chọn
             </button>
         </div>
 
         <div>
             Tổng tiền (<span id="selected-count">0</span> sản phẩm):
-            <span id="total-amount" style="color:#ee4d2d">0 đ</span>
+            <span id="total-amount" style="color:#ee4d2d; font-size:18px; font-weight:bold;">0 đ</span>
             <button type="submit" class="checkout-button">Mua hàng</button>
         </div>
     </div>
-
 </form>
 
-<!-- POPUP -->
 <div id="variant-modal">
     <div style="background:#fff;padding:20px;width:360px;border-radius:6px;">
         <h4 style="margin-bottom:12px;">Chọn phân loại</h4>
-
         <div id="variant-list"></div>
-
-        <button id="variant-save"
-                style="margin-top:20px;width:100%;padding:10px;background:#ee4d2d;color:#fff;border:none;">
-            Xác nhận
-        </button>
+        <button id="variant-save" style="margin-top:20px;width:100%;padding:10px;background:#ee4d2d;color:#fff;border:none;">Xác nhận</button>
+        <button onclick="$('#variant-modal').hide()" style="margin-top:10px;width:100%;padding:10px;background:#ccc;border:none;">Đóng</button>
     </div>
 </div>
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
 
-<script>
+            // ============================================
+            // 1. XỬ LÝ CHECKBOX VÀ TÍNH TỔNG TIỀN (UI ONLY)
+            // ============================================
+            function updateSelectedIds() {
+                var ids = $(".chk-item:checked").map(function () {
+                    return $(this).closest(".product-row").data("id");
+                }).get();
+                $("#SelectedIds").val(ids.join(","));
+            }
 
-    /* ============================
-       1. TÍNH TIỀN
-    ============================ */
+            function formatCurrency(amount) {
+                return amount.toLocaleString("vi-VN") + " đ";
+            }
 
-    function recalcRowSubtotal(row) {
-        var price = parseFloat(row.data("price"));
-        var qty = parseInt(row.find(".qty-input").val());
-        var subtotal = price * qty;
-
-        row.attr("data-subtotal", subtotal);
-        row.find(".product-subtotal").text(subtotal.toLocaleString("vi-VN") + " đ");
-    }
-
-    $(".product-row").each(function () { recalcRowSubtotal($(this)); });
-
-    function updateSelectedIds() {
-        var ids = $(".chk-item:checked").map(function () {
-            return $(this).closest(".product-row").data("id");
-        }).get();
-
-        $("#SelectedIds").val(ids.join(","));
-    }
-
-    function updateTotal() {
-        var total = 0, count = 0;
-
-        $(".chk-item:checked").each(function () {
-            var row = $(this).closest(".product-row");
-            total += parseFloat(row.attr("data-subtotal")) || 0;
-            count++;
-        });
-
-        $("#selected-count").text(count);
-        $("#total-amount").text(total.toLocaleString("vi-VN") + " đ");
-    }
-
-    $(".chk-item, .chk-shop, .chk-all").change(function () {
-
-        var checked = $(this).is(":checked");
-
-        if ($(this).hasClass("chk-all")) {
-            $(".chk-item, .chk-shop").prop("checked", checked);
-        }
-
-        if ($(this).hasClass("chk-shop")) {
-            $(this).closest(".shop-block")
-                .find(".chk-item").prop("checked", checked);
-        }
-
-        updateSelectedIds();
-        updateTotal();
-    });
-
-    $(document).ready(function () {
-        updateSelectedIds();
-        updateTotal();
-    });
-
-
-    /* ============================
-       2. THAY ĐỔI SỐ LƯỢNG
-    ============================ */
-
-    function saveQuantity(id, qty, row) {
-        $.post("/GioHang/UpdateQuantity", { id: id, quantity: qty }, function () {
-            recalcRowSubtotal(row);
-            updateTotal();
-        });
-    }
-
-    $(".btn-plus").click(function () {
-        var row = $(this).closest(".product-row");
-        var input = row.find(".qty-input");
-        var qty = parseInt(input.val()) + 1;
-
-        input.val(qty);
-        saveQuantity(row.data("id"), qty, row);
-    });
-
-    $(".btn-minus").click(function () {
-        var row = $(this).closest(".product-row");
-        var input = row.find(".qty-input");
-        var qty = Math.max(1, parseInt(input.val()) - 1);
-
-        input.val(qty);
-        saveQuantity(row.data("id"), qty, row);
-    });
-
-    $(".qty-input").change(function () {
-        var row = $(this).closest(".product-row");
-        var qty = Math.max(1, parseInt($(this).val()));
-        $(this).val(qty);
-
-        saveQuantity(row.data("id"), qty, row);
-    });
-
-
-    /* ============================
-       3. XÓA ITEM
-    ============================ */
-
-    $(".btn-delete").click(function () {
-        var row = $(this).closest(".product-row");
-        $.post("/GioHang/DeleteItem", { id: row.data("id") }, function () {
-            row.remove();
-            updateSelectedIds();
-            updateTotal();
-        });
-    });
-
-    $("#btn-delete-selected").click(function () {
-        var ids = $(".chk-item:checked").map(function () {
-            return $(this).closest(".product-row").data("id");
-        }).get();
-
-        if (ids.length === 0) return;
-
-        $.ajax({
-            url: "/GioHang/DeleteSelected",
-            type: "POST",
-            traditional: true,
-            data: { ids: ids },
-            success: function () {
+            function updateTotal() {
+                var total = 0, count = 0;
                 $(".chk-item:checked").each(function () {
-                    $(this).closest(".product-row").remove();
+                    var row = $(this).closest(".product-row");
+                    // Lấy giá trị tiền từ text hiển thị (loại bỏ chữ ' đ' và dấu chấm)
+                    var subtext = row.find(".product-subtotal").text();
+                    var subval = parseFloat(subtext.replace(/\./g, '').replace(' đ', ''));
+
+                    if (!isNaN(subval)) {
+                        total += subval;
+                        count++;
+                    }
                 });
+                $("#selected-count").text(count);
+                $("#total-amount").text(formatCurrency(total));
+            }
+
+            // Sự kiện Checkbox
+            $(".chk-item, .chk-shop, .chk-all").change(function () {
+                var checked = $(this).is(":checked");
+                if ($(this).hasClass("chk-all")) $(".chk-item, .chk-shop").prop("checked", checked);
+                if ($(this).hasClass("chk-shop")) $(this).closest(".shop-block").find(".chk-item").prop("checked", checked);
                 updateSelectedIds();
                 updateTotal();
+            });
+
+
+            // ============================================
+            // 2. XỬ LÝ CẬP NHẬT SỐ LƯỢNG (QUAN TRỌNG)
+            // ============================================
+
+            // Hàm xử lý chung khi đổi số lượng (gọi AJAX)
+            function updateQuantityAjax(input) {
+                var maCTGH = input.data('id');
+                var stock = parseInt(input.data('stock'));
+                var val = parseInt(input.val());
+
+                // Validate
+                if (isNaN(val) || val < 1) {
+                    alert("Số lượng tối thiểu là 1");
+                    input.val(1);
+                    val = 1;
+                }
+                if (val > stock) {
+                    alert("Kho chỉ còn " + stock + " sản phẩm!");
+                    input.val(stock);
+                    val = stock;
+                }
+
+                // Gửi AJAX
+                $.ajax({
+                    url: '/GioHang/UpdateQuantity',
+                    type: 'POST',
+                    data: { maCTGH: maCTGH, soLuongMoi: val },
+                    success: function (res) {
+                        if (res.success) {
+                            // Cập nhật thành tiền của dòng đó
+                            var row = input.closest(".product-row");
+                            row.find(".product-subtotal").text(formatCurrency(res.thanhTien));
+
+                            // Tính lại tổng tiền cả giỏ
+                            updateTotal();
+                        } else {
+                            alert(res.message);
+                            input.val(stock); // Reset về max kho nếu lỗi
+                        }
+                    },
+                    error: function () {
+                        alert("Lỗi kết nối server!");
+                    }
+                });
             }
-        });
-    });
 
+            // Sự kiện nhập tay vào ô input
+            $('.ajax-qty').on('change', function () {
+                updateQuantityAjax($(this));
+            });
 
-    /* ============================
-       4. CHỌN PHÂN LOẠI (POPUP)
-    ============================ */
+            // Sự kiện nút CỘNG (+)
+            $(".btn-plus").click(function () {
+                var input = $(this).siblings(".qty-input");
+                var currentVal = parseInt(input.val()) || 0;
+                var max = parseInt(input.data('stock'));
 
-    var selectedRow = null;
-    var selectedVariant = null;
-
-    $(".variant-change").click(function () {
-
-        selectedRow = $(this).closest(".product-row");
-        var variants = JSON.parse(selectedRow.attr("data-variants"));
-        var current = selectedRow.data("variant");
-
-        $("#variant-list").empty();
-
-        variants.forEach(v => {
-            var el = $("<div class='variant-option'></div>");
-            el.text(v.TenBienThe);
-            el.attr("data-id", v.MaBienThe);
-
-            if (v.MaBienThe === current)
-                el.addClass("active");
-
-            $("#variant-list").append(el);
-        });
-
-        $("#variant-modal").css("display", "flex");
-    });
-
-    $(document).on("click", ".variant-option", function () {
-        $(".variant-option").removeClass("active");
-        $(this).addClass("active");
-        selectedVariant = parseInt($(this).attr("data-id"));
-    });
-
-
-    $("#variant-save").click(function () {
-
-        var maCTGH = selectedRow.data("id");
-
-        $.post("/GioHang/UpdateVariant",
-            { maCTGH: maCTGH, maBienThe: selectedVariant },
-            function (res) {
-                if (res.success) {
-
-                    selectedRow.find(".cart-col-variant strong")
-                        .text($(".variant-option.active").text());
-
-                    selectedRow.attr("data-variant", selectedVariant);
-
-                    location.reload();
+                if (currentVal < max) {
+                    input.val(currentVal + 1);
+                    // Kích hoạt sự kiện change để gọi AJAX
+                    input.trigger('change');
+                } else {
+                    alert("Đã đạt giới hạn tồn kho!");
                 }
             });
 
-        $("#variant-modal").hide();
-    });
+            // Sự kiện nút TRỪ (-)
+            $(".btn-minus").click(function () {
+                var input = $(this).siblings(".qty-input");
+                var currentVal = parseInt(input.val()) || 0;
 
-</script>
+                if (currentVal > 1) {
+                    input.val(currentVal - 1);
+                    // Kích hoạt sự kiện change để gọi AJAX
+                    input.trigger('change');
+                }
+            });
+
+
+            // ============================================
+            // 3. XÓA SẢN PHẨM
+            // ============================================
+            $(".btn-delete").click(function () {
+                if (!confirm("Bạn muốn xóa sản phẩm này?")) return;
+
+                var row = $(this).closest(".product-row");
+                var id = row.data("id");
+
+                $.post("/GioHang/DeleteItem", { id: id }, function (res) {
+                    if (res.success) {
+                        row.remove();
+                        updateSelectedIds();
+                        updateTotal();
+
+                        // Nếu shop không còn item nào thì xóa luôn block shop
+                        $(".shop-block").each(function () {
+                            if ($(this).find(".product-row").length === 0) $(this).remove();
+                        });
+                    }
+                });
+            });
+
+            $("#btn-delete-selected").click(function () {
+                var ids = $(".chk-item:checked").map(function () {
+                    return $(this).closest(".product-row").data("id");
+                }).get();
+
+                if (ids.length === 0) {
+                    alert("Chưa chọn sản phẩm nào để xóa!");
+                    return;
+                }
+
+                if (!confirm("Xóa " + ids.length + " sản phẩm đã chọn?")) return;
+
+                $.ajax({
+                    url: "/GioHang/DeleteSelected",
+                    type: "POST",
+                    traditional: true,
+                    data: { ids: ids },
+                    success: function (res) {
+                        if (res.success) {
+                            $(".chk-item:checked").closest(".product-row").remove();
+                            updateSelectedIds();
+                            updateTotal();
+                            location.reload(); // Reload cho sạch sẽ
+                        }
+                    }
+                });
+            });
+
+
+            // ============================================
+            // 4. ĐỔI BIẾN THỂ (POPUP)
+            // ============================================
+            var selectedRow = null;
+            var selectedVariantId = null;
+
+            $(".variant-change").click(function () {
+                selectedRow = $(this).closest(".product-row");
+                var variants = selectedRow.data("variants"); // Lấy JSON list biến thể
+                var currentId = selectedRow.data("variant");
+
+                $("#variant-list").empty();
+
+                if (variants && variants.length > 0) {
+                    variants.forEach(v => {
+                        var el = $("<div class='variant-option'></div>");
+
+                        // Chỉ để lại tên biến thể:
+                        el.text(v.TenBienThe);
+
+                        el.attr("data-id", v.MaBienThe);
+                        if (v.MaBienThe === currentId) el.addClass("active");
+                        $("#variant-list").append(el);
+                    });
+                    $("#variant-modal").css("display", "flex");
+                } else {
+                    alert("Sản phẩm này không có phân loại khác.");
+                }
+            });
+
+            $(document).on("click", ".variant-option", function () {
+                $(".variant-option").removeClass("active");
+                $(this).addClass("active");
+                selectedVariantId = parseInt($(this).attr("data-id"));
+            });
+
+            $("#variant-save").click(function () {
+                if (!selectedVariantId) return;
+                var maCTGH = selectedRow.data("id");
+
+                $.post("/GioHang/UpdateVariant",
+                    { maCTGH: maCTGH, maBienTheMoi: selectedVariantId }, // Khớp tên tham số Controller
+                    function (res) {
+                        if (res.success) {
+                            location.reload(); // Reload để cập nhật lại thông tin/giá mới
+                        } else {
+                            alert(res.message || "Lỗi cập nhật");
+                        }
+                    }
+                );
+                $("#variant-modal").hide();
+            });
+
+            // Khởi tạo tính tổng khi vào trang
+            updateTotal();
+        });
+    </script>
+
+}

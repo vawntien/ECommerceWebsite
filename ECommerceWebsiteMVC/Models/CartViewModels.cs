@@ -5,13 +5,7 @@ using System.Web;
 
 namespace ECommerceWebsiteMVC.Models
 {
-    public class CartPatch
-    {
-        public int MaCTGH { get; set; }
-        public int? NewBienThe { get; set; }
-        public int? NewSoLuong { get; set; }
-        public bool IsDeleted { get; set; }
-    }
+    // Bỏ CartPatch đi nhé
 
     public class BienTheSanPhamViewModel
     {
@@ -36,6 +30,10 @@ namespace ECommerceWebsiteMVC.Models
         public decimal DonGia { get; set; }
         public int SoLuong { get; set; }
 
+        public int SoLuongTonKho { get; set; }
+
+        public decimal ThanhTien => DonGia * SoLuong;
+
         public List<BienTheSanPhamViewModel> BienTheList { get; set; }
     }
 
@@ -54,6 +52,7 @@ namespace ECommerceWebsiteMVC.Models
     public class CheckoutItemVM
     {
         public int MaCTGH { get; set; }
+        public int MaBienThe { get; set; }
         public string TenSanPham { get; set; }
         public string PhanLoai { get; set; }
 
@@ -69,7 +68,6 @@ namespace ECommerceWebsiteMVC.Models
         public string TenNguoiNhan { get; set; }
         public string SDT { get; set; }
         public string DiaChi { get; set; }
-
         public string MaVoucher { get; set; }
 
         public List<GiamGia> DanhSachVoucher { get; set; }

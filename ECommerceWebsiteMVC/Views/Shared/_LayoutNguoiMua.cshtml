@@ -9,10 +9,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/Content/style.css" />
+    <style>
+        /* Thêm đoạn này vào Layout */
+        .header {
+            position: fixed; /* QUAN TRỌNG: Ghim cố định */
+            top: 0;
+            left: 0;
+            width: 100%; /* Tràn màn hình ngang */
+            z-index: 1000; /* Nổi lên trên tất cả các thành phần khác */
+            /* Nếu header chưa có màu nền, hãy thêm vào để không bị trong suốt */
+            background: linear-gradient(-180deg, #f53d2d, #f63);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-            <div class="container">
+        <div class="container">
             <!-- navbar  -->
             <div class="navbar d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -69,7 +82,7 @@
                             </ul>
                         </div>
                     }
-                    
+
                 </div>
             </div>
             <!-- input search brand -->
@@ -92,19 +105,19 @@
                     </div>
                     @*<div class="under-input d-flex mt-2">
 
-                <span class="mr-3">Danh muc 1</span>
-                <span class="mr-3">Danh muc 2</span>
-                <span class="mr-3">Danh muc3</span>
-                <span class="mr-3">Danh muc 4</span>
+                            <span class="mr-3">Danh muc 1</span>
+                            <span class="mr-3">Danh muc 2</span>
+                            <span class="mr-3">Danh muc3</span>
+                            <span class="mr-3">Danh muc 4</span>
 
-            </div>*@
+                        </div>*@
                 </div>
                 <a href="/GioHang/Index">
                     <img class="icon-shop" src="~/assets/shop.png" alt="Cart" style="cursor:pointer;" />
                 </a>
 
             </div>
-    </div>
+        </div>
     </div>
 
     <!-- BODY -->
@@ -114,12 +127,13 @@
 
     <!-- FOOTER -->
     @*<div class="footer">
-        <h1>...</h1>
-    </div>*@
+            <h1>...</h1>
+        </div>*@
 
     <!-- jQuery Full (không phải slim) để hỗ trợ AJAX -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5 Bundle (bao gồm Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

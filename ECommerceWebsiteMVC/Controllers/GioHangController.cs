@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using ECommerceWebsiteMVC.Models;
+using System.Data.Entity;
 
 namespace ECommerceWebsiteMVC.Controllers
 {
@@ -10,516 +11,540 @@ namespace ECommerceWebsiteMVC.Controllers
     {
         ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
 
-        // LẤY USER ID (tạm thời lấy đại user đầu tiên)
-        //private int GetUserId()
-        //{
-        //    //if (Session["MaNguoiDung"] != null)
-        //    //    return (int)Session["MaNguoiDung"];
-
-        //    //return db.NguoiDungs.OrderBy(u => u.MaNguoiDung).First().MaNguoiDung;
-        //}
-
-        // SESSION PATCH
-        private List<CartPatch> GetPatches()
+        private int GetUserId()
         {
-            if (Session["PATCHES"] == null)
-                Session["PATCHES"] = new List<CartPatch>();
-            return (List<CartPatch>)Session["PATCHES"];
+            if (Session["MaNguoiMua"] == null) return -1;
+            return (int)Session["MaNguoiMua"];
         }
 
-        private void SavePatches(List<CartPatch> patches)
+        // ==========================================
+        // 1. HIỂN THỊ GIỎ HÀNG
+        // ==========================================
+        public ActionResult Index()
         {
-            Session["PATCHES"] = patches;
+            int userId = GetUserId();
+            if (userId == -1) return RedirectToAction("DangNhap", "TaiKhoan");
+
+            var gioHang = db.GioHangs.FirstOrDefault(g => g.MaNguoiMua == userId);
+            if (gioHang == null)
+            {
+                gioHang = new GioHang { MaNguoiMua = userId };
+                db.GioHangs.Add(gioHang);
+                db.SaveChanges();
+            }
+
+            var dbItems = db.ChiTietGioHangs
+                            .Where(c => c.MaGioHang == gioHang.MaGioHang && c.TrangThai == true)
+                            .Include(c => c.BienTheSanPham)
+                            .Include(c => c.BienTheSanPham.SanPham)
+                            .Include(c => c.BienTheSanPham.SanPham.CuaHang)
+                            .ToList();
+
+            var items = dbItems.Select(item => new GioHangItemViewModel
+            {
+                MaCTGH = item.MaCTGH,
+                MaBienThe = (int)item.MaBienThe,
+                MaCuaHang = item.BienTheSanPham.SanPham.CuaHang.MaCuaHang,
+                TenCuaHang = item.BienTheSanPham.SanPham.CuaHang.TenCuaHang,
+                TenSanPham = item.BienTheSanPham.SanPham.TenSanPham,
+                TenBienThe = item.BienTheSanPham.TenBienThe,
+                HinhAnh = item.BienTheSanPham.HinhAnh,
+                DonGia = (decimal)item.BienTheSanPham.GiaBan,
+                SoLuong = (int)item.SoLuong,
+                SoLuongTonKho = (int)item.BienTheSanPham.SoLuongTonKho,
+                BienTheList = db.BienTheSanPhams
+                                .Where(bt => bt.MaSanPham == item.BienTheSanPham.MaSanPham)
+                                .Select(bt => new BienTheSanPhamViewModel
+                                {
+                                    MaBienThe = bt.MaBienThe,
+                                    TenBienThe = bt.TenBienThe,
+                                    GiaBan = (decimal)bt.GiaBan,
+                                    HinhAnh = bt.HinhAnh
+                                }).ToList()
+            }).ToList();
+
+            var grouped = items.GroupBy(x => x.MaCuaHang)
+                .Select(g => new ShopGroup { MaCuaHang = g.Key, TenCuaHang = g.First().TenCuaHang, Items = g.ToList() })
+                .ToList();
+
+            return View(new GioHangViewModel { Shops = grouped });
         }
 
-        // ============================
-        // HIỂN THỊ GIỎ HÀNG
-        // ============================
-        //public ActionResult Index()
-        //{
-        //    int userId = GetUserId();
-
-        //    var gioHang = db.GioHangs.FirstOrDefault(g => g.MaNguoiDung == userId);
-        //    if (gioHang == null)
-        //    {
-        //        gioHang = new GioHang { MaNguoiDung = userId };
-        //        db.GioHangs.Add(gioHang);
-        //        db.SaveChanges();
-        //    }
-
-        //    var dbItems = db.ChiTietGioHangs
-        //                    .Where(c => c.MaGioHang == gioHang.MaGioHang)
-        //                    .ToList();
-
-        //    var patches = GetPatches();
-
-        //    var items = dbItems
-        //        .Where(dbItem => !patches.Any(p => p.MaCTGH == dbItem.MaCTGH && p.IsDeleted))
-        //        .Select(dbItem =>
-        //        {
-        //            var patch = patches.FirstOrDefault(p => p.MaCTGH == dbItem.MaCTGH);
-
-        //            int maBienThe = patch?.NewBienThe ?? dbItem.MaBienThe;
-        //            int soLuong = patch?.NewSoLuong ?? dbItem.SoLuong;
-
-        //            var variant = db.BienTheSanPhams.Find(maBienThe);
-
-        //            return new GioHangItemViewModel
-        //            {
-        //                MaCTGH = dbItem.MaCTGH,
-        //                MaBienThe = maBienThe,
-        //                MaCuaHang = variant.SanPham.CuaHang.MaCuaHang,
-        //                TenCuaHang = variant.SanPham.CuaHang.TenCuaHang,
-        //                TenSanPham = variant.SanPham.TenSanPham,
-        //                TenBienThe = variant.TenBienThe,
-        //                HinhAnh = variant.HinhAnh,
-        //                DonGia = variant.GiaBan ,
-        //                SoLuong = soLuong,
-
-        //                BienTheList = db.BienTheSanPhams
-        //                    .Where(bt => bt.MaSanPham == variant.MaSanPham)
-        //                    .Select(bt => new BienTheSanPhamViewModel
-        //                    {
-        //                        MaBienThe = bt.MaBienThe,
-        //                        TenBienThe = bt.TenBienThe,
-        //                        GiaBan = bt.GiaBan,
-        //                        HinhAnh = bt.HinhAnh
-        //                    })
-        //                    .ToList()
-        //            };
-        //        })
-        //        .ToList();
-
-        //    var grouped = items
-        //        .GroupBy(x => x.MaCuaHang)
-        //        .Select(g => new ShopGroup
-        //        {
-        //            MaCuaHang = g.Key,
-        //            TenCuaHang = g.First().TenCuaHang,
-        //            Items = g.ToList()
-        //        })
-        //        .ToList();
-
-        //    return View(new GioHangViewModel { Shops = grouped });
-        //}
-
-        // ============================
-        // UPDATE SỐ LƯỢNG
-        // ============================
-        [HttpPost]
-        public ActionResult UpdateQuantity(int id, int quantity)
+        // ==========================================
+        // 2. CÁC HÀM XỬ LÝ GIỎ HÀNG (THÊM/SỬA/XÓA)
+        // ==========================================
+        public ActionResult AddToCart(int maBienThe, int soLuong = 1)
         {
-            var patches = GetPatches();
-            var patch = patches.FirstOrDefault(p => p.MaCTGH == id);
+            int userId = GetUserId();
+            if (userId == -1) return RedirectToAction("DangNhap", "TaiKhoan");
 
-            if (patch == null)
-                patches.Add(new CartPatch { MaCTGH = id, NewSoLuong = quantity });
+            var bt = db.BienTheSanPhams.Find(maBienThe);
+            if (bt == null || bt.SoLuongTonKho < soLuong)
+            {
+                TempData["Error"] = "Số lượng không đủ!";
+                return RedirectToAction("Index", "SanPham");
+            }
+
+            var gio = db.GioHangs.FirstOrDefault(x => x.MaNguoiMua == userId);
+            if (gio == null)
+            {
+                gio = new GioHang { MaNguoiMua = userId };
+                db.GioHangs.Add(gio);
+                db.SaveChanges();
+            }
+
+            var item = db.ChiTietGioHangs.FirstOrDefault(x => x.MaGioHang == gio.MaGioHang && x.MaBienThe == maBienThe && x.TrangThai == true);
+            if (item == null)
+            {
+                item = new ChiTietGioHang { MaGioHang = gio.MaGioHang, MaBienThe = maBienThe, SoLuong = soLuong, TrangThai = true };
+                db.ChiTietGioHangs.Add(item);
+            }
             else
-                patch.NewSoLuong = quantity;
+            {
+                if (item.SoLuong + soLuong > bt.SoLuongTonKho)
+                {
+                    TempData["Error"] = "Vượt quá tồn kho!";
+                    return RedirectToAction("Index");
+                }
+                item.SoLuong += soLuong;
+            }
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
-            SavePatches(patches);
+        public ActionResult MuaNgay(int maBienThe)
+        {
+            AddToCart(maBienThe, 1);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult UpdateQuantity(int maCTGH, int soLuongMoi)
+        {
+            var ct = db.ChiTietGioHangs.Find(maCTGH);
+            if (ct == null) return HttpNotFound();
+            var bt = db.BienTheSanPhams.Find(ct.MaBienThe);
+
+            if (bt.SoLuongTonKho < soLuongMoi)
+                return Json(new { success = false, message = $"Kho chỉ còn {bt.SoLuongTonKho}!" });
+
+            ct.SoLuong = soLuongMoi;
+            db.SaveChanges();
+            return Json(new { success = true, thanhTien = (decimal)bt.GiaBan * soLuongMoi });
+        }
+
+        [HttpPost]
+        public ActionResult UpdateVariant(int maCTGH, int maBienTheMoi)
+        {
+            var currentItem = db.ChiTietGioHangs.Find(maCTGH);
+            var btMoi = db.BienTheSanPhams.Find(maBienTheMoi);
+
+            var existingItem = db.ChiTietGioHangs.FirstOrDefault(x => x.MaGioHang == currentItem.MaGioHang && x.MaBienThe == maBienTheMoi && x.TrangThai == true && x.MaCTGH != maCTGH);
+
+            if (existingItem != null)
+            {
+                if ((existingItem.SoLuong + currentItem.SoLuong) > btMoi.SoLuongTonKho) return Json(new { success = false, message = "Không đủ hàng!" });
+                existingItem.SoLuong += currentItem.SoLuong;
+                db.ChiTietGioHangs.Remove(currentItem);
+            }
+            else
+            {
+                if (currentItem.SoLuong > btMoi.SoLuongTonKho) return Json(new { success = false, message = "Không đủ hàng!" });
+                currentItem.MaBienThe = maBienTheMoi;
+            }
+            db.SaveChanges();
             return Json(new { success = true });
         }
 
-        // ============================
-        // UPDATE BIẾN THỂ
-        // ============================
-        [HttpPost]
-        public ActionResult UpdateVariant(int maCTGH, int maBienThe)
-        {
-            var patches = GetPatches();
-            var patch = patches.FirstOrDefault(p => p.MaCTGH == maCTGH);
-
-            if (patch == null)
-                patches.Add(new CartPatch { MaCTGH = maCTGH, NewBienThe = maBienThe });
-            else
-                patch.NewBienThe = maBienThe;
-
-            SavePatches(patches);
-            return Json(new { success = true });
-        }
-
-        // ============================
-        // XÓA ITEM
-        // ============================
         [HttpPost]
         public ActionResult DeleteItem(int id)
         {
-            var patches = GetPatches();
-            var p = patches.FirstOrDefault(x => x.MaCTGH == id);
-
-            if (p == null)
-                patches.Add(new CartPatch { MaCTGH = id, IsDeleted = true });
-            else
-                p.IsDeleted = true;
-
-            SavePatches(patches);
+            var item = db.ChiTietGioHangs.Find(id);
+            if (item != null) { item.TrangThai = false; db.SaveChanges(); }
             return Json(new { success = true });
         }
 
-        // ============================
-        // XÓA NHIỀU ITEM
-        // ============================
         [HttpPost]
         public ActionResult DeleteSelected(int[] ids)
         {
-            var patches = GetPatches();
-
-            foreach (var id in ids)
+            if (ids != null)
             {
-                var p = patches.FirstOrDefault(x => x.MaCTGH == id);
-                if (p == null)
-                    patches.Add(new CartPatch { MaCTGH = id, IsDeleted = true });
-                else
-                    p.IsDeleted = true;
+                var items = db.ChiTietGioHangs.Where(x => ids.Contains(x.MaCTGH)).ToList();
+                foreach (var item in items) item.TrangThai = false;
+                db.SaveChanges();
             }
-
-            SavePatches(patches);
             return Json(new { success = true });
         }
 
-        // ============================
-        // CHUYỂN QUA CHECKOUT
-        // ============================
+        // ==========================================
+        // 3. CHECKOUT & THANH TOÁN
+        // ==========================================
         [HttpPost]
         public ActionResult Checkout(string chon)
         {
             if (string.IsNullOrEmpty(chon))
             {
-                TempData["Error"] = "Bạn chưa chọn sản phẩm nào.";
+                TempData["Error"] = "Chưa chọn sản phẩm!";
                 return RedirectToAction("Index");
             }
-
             TempData["SelectedIds"] = chon;
             return RedirectToAction("CheckoutConfirm");
         }
 
-        // ============================
-        // HIỂN THỊ CHECKOUT
-        // ============================
         public ActionResult CheckoutConfirm()
         {
-            if (TempData["SelectedIds"] == null)
-                return RedirectToAction("Index");
+            if (TempData["SelectedIds"] == null) return RedirectToAction("Index");
 
-            var ids = TempData["SelectedIds"].ToString()
-                        .Split(',')
-                        .Select(int.Parse)
-                        .ToList();
-
+            var ids = TempData["SelectedIds"].ToString().Split(',').Select(int.Parse).ToList();
             TempData.Keep("SelectedIds");
 
-            //int userId = GetUserId();
-            //var user = db.NguoiDungs.Find(userId);
+            int userId = GetUserId();
+            var user = db.NguoiMuas.Find(userId);
 
-            var dbItems = db.ChiTietGioHangs.Where(c => ids.Contains(c.MaCTGH)).ToList();
-            var patches = GetPatches();
+            var dbItems = db.ChiTietGioHangs
+                            .Where(c => ids.Contains(c.MaCTGH))
+                            .Include(c => c.BienTheSanPham)
+                            .Include(c => c.BienTheSanPham.SanPham)
+                            .ToList();
 
-            var items = dbItems.Select(i =>
+            var items = dbItems.Select(i => new CheckoutItemVM
             {
-                var patch = patches.FirstOrDefault(p => p.MaCTGH == i.MaCTGH);
-
-                int maBienThe = patch?.NewBienThe ?? i.MaBienThe;
-                int soLuong = patch?.NewSoLuong ?? i.SoLuong;
-
-                var variant = db.BienTheSanPhams.Find(maBienThe);
-
-                return new CheckoutItemVM
-                {
-                    MaCTGH = i.MaCTGH,
-                    TenSanPham = variant.SanPham.TenSanPham,
-                    PhanLoai = variant.TenBienThe,
-                    DonGia = variant.GiaBan ,
-                    SoLuong = soLuong,
-                    HinhAnh = variant.HinhAnh
-                };
-            })
-            .ToList();
-
-            decimal fee = 38000m;
+                MaCTGH = i.MaCTGH,
+                MaBienThe = (int)i.MaBienThe,
+                TenSanPham = i.BienTheSanPham.SanPham.TenSanPham,
+                PhanLoai = i.BienTheSanPham.TenBienThe,
+                DonGia = (decimal)i.BienTheSanPham.GiaBan,
+                SoLuong = (int)i.SoLuong,
+                HinhAnh = i.BienTheSanPham.HinhAnh
+            }).ToList();
 
             var model = new CheckoutViewModel
             {
-                //TenNguoiNhan = user.HoVaTen,
-                //SDT = user.SDT,
-                //DiaChi = "",  // Vì bảng NguoiDung KHÔNG có DiaChi
+                TenNguoiNhan = user != null ? user.HoVaTen : "",
+                SDT = user != null ? user.SDT : "",
 
-                DanhSachVoucher = db.GiamGias.ToList(),
+                // --- SỬA LỖI Ở ĐÂY: Gán chuỗi rỗng ---
+                DiaChi = "",
+
                 Items = items,
 
+                // Lấy Voucher
+                DanhSachVoucher = db.GiamGias.Where(v => v.NgayKT >= DateTime.Now).ToList(),
+
                 TongTienHang = items.Sum(x => x.ThanhTien),
-                PhiVanChuyen = fee,
+                PhiVanChuyen = 38000,
                 GiamGia = 0
             };
-
             model.TongThanhToan = model.TongTienHang + model.PhiVanChuyen;
 
             return View("Checkout", model);
         }
 
-        // ============================
-        // ÁP DỤNG VOUCHER
-        // ============================
+        // --- HÀM API CHO VOUCHER (Mới thêm) ---
         [HttpPost]
-        public ActionResult ApplyVoucher(string maVoucher, decimal tongTienHang)
+        public ActionResult ApplyVoucher(int maVoucher, decimal tongTienHang)
         {
-            decimal giamGia = 0m;
-            decimal phiShip = 38000m;
-            decimal tongThanhToan = 0m;
+            var vc = db.GiamGias.Find(maVoucher);
+            if (vc == null) return Json(new { success = false });
+            if (vc.GiaTriDonHangToiThieu > tongTienHang) return Json(new { success = false });
 
-            // ================================
-            // 1) Không chọn voucher
-            // ================================
-            if (string.IsNullOrEmpty(maVoucher))
+            decimal giam = 0;
+            if (vc.GiaTriGiam <= 1)
             {
-                tongThanhToan = tongTienHang + phiShip;
-
-                return Json(new
-                {
-                    success = true,
-                    giamGia = 0,
-                    tongThanhToan = tongThanhToan
-                });
+                giam = tongTienHang * (decimal)vc.GiaTriGiam;
+                if (vc.GiaTriGiamToiDa > 0 && giam > vc.GiaTriGiamToiDa) giam = (decimal)vc.GiaTriGiamToiDa;
             }
+            else giam = (decimal)vc.GiaTriGiam;
 
-            // ================================
-            // 2) Lấy thông tin voucher
-            // ================================
-            var vc = db.GiamGias.Find(int.Parse(maVoucher));
-            if (vc == null)
-                return Json(new { success = false });
+            decimal tong = tongTienHang + 38000 - giam;
+            if (tong < 0) tong = 0;
 
-            // ================================
-            // 3) Kiểm tra điều kiện đơn tối thiểu
-            // ================================
-            if (tongTienHang < vc.GiaTriDonHangToiThieu)
-            {
-                tongThanhToan = tongTienHang + phiShip;
-
-                return Json(new
-                {
-                    success = true,
-                    giamGia = 0,
-                    tongThanhToan = tongThanhToan
-                });
-            }
-
-            // ================================
-            // 4) Tính giảm giá
-            // ================================
-            if (vc.GiaTriGiam < 1) // giảm theo %
-            {
-                giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
-
-                if (giamGia > vc.GiaTriGiamToiDa)
-                    giamGia = vc.GiaTriGiamToiDa;
-            }
-            else
-            {
-                giamGia = (decimal)vc.GiaTriGiam;
-            }
-
-            // ================================
-            // 5) Tính tổng thanh toán
-            // ================================
-            tongThanhToan = tongTienHang + phiShip - giamGia;
-
-            return Json(new
-            {
-                success = true,
-                giamGia = giamGia,
-                tongThanhToan = tongThanhToan
-            });
+            return Json(new { success = true, giamGia = giam, tongThanhToan = tong });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult OrderSuccess(
-            string NguoiNhan,
-            string SDT,
-            string DiaChi,
-            string maVoucher)
+        //[HttpPost]
+        //public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher)
+        //{
+        //    int userId = GetUserId();
+        //    if (TempData["SelectedIds"] == null) return RedirectToAction("Index");
+        //    var idList = TempData["SelectedIds"].ToString().Split(',').Select(int.Parse).ToList();
+
+        //    using (var transaction = db.Database.BeginTransaction())
+        //    {
+        //        try
+        //        {
+        //            var cartItems = db.ChiTietGioHangs.Where(x => idList.Contains(x.MaCTGH) && x.TrangThai == true).ToList();
+        //            if (!cartItems.Any()) { transaction.Rollback(); return RedirectToAction("Index"); }
+
+        //            // Tính lại tiền
+        //            decimal tongTienHang = 0;
+        //            foreach (var item in cartItems)
+        //            {
+        //                var bt = db.BienTheSanPhams.Find(item.MaBienThe);
+        //                tongTienHang += (decimal)(bt.GiaBan * item.SoLuong);
+        //            }
+
+        //            // Tính giảm giá
+        //            decimal giamGia = 0;
+        //            int? maVoucherId = null;
+        //            if (!string.IsNullOrEmpty(MaVoucher))
+        //            {
+        //                int vId = int.Parse(MaVoucher);
+        //                var vc = db.GiamGias.Find(vId);
+        //                if (vc != null)
+        //                {
+        //                    maVoucherId = vId;
+        //                    if (vc.GiaTriGiam <= 1)
+        //                    {
+        //                        giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
+        //                        if (vc.GiaTriGiamToiDa > 0 && giamGia > vc.GiaTriGiamToiDa) giamGia = (decimal)vc.GiaTriGiamToiDa;
+        //                    }
+        //                    else giamGia = (decimal)vc.GiaTriGiam;
+        //                }
+        //            }
+
+        //            var dh = new DonHang
+        //            {
+        //                TenNguoiNhan = NguoiNhan,
+        //                SDT = SDT,
+        //                DiaChi = DiaChi,
+        //                ThoiGianDat = DateTime.Now,
+        //                TongTien = tongTienHang + 38000 - giamGia,
+        //                MaGiamGia = maVoucherId, // Lưu voucher
+        //                TrangThaiDonHang = "DangXuLy",
+        //                TrangThaiVanChuyen = "ChuaGiao",
+        //                TrangThaiThanhToan = false
+        //            };
+        //            db.DonHangs.Add(dh);
+        //            db.SaveChanges();
+
+        //            foreach (var item in cartItems)
+        //            {
+        //                var bt = db.BienTheSanPhams.Find(item.MaBienThe);
+        //                if (bt.SoLuongTonKho < item.SoLuong) { transaction.Rollback(); return RedirectToAction("Index"); }
+
+        //                bt.SoLuongTonKho -= item.SoLuong;
+
+        //                var ctdh = new ChiTietDonHang
+        //                {
+        //                    MaDonHang = dh.MaDonHang,
+        //                    MaCTGH = item.MaCTGH,
+        //                    SoLuong = item.SoLuong,
+        //                    DonGia = bt.GiaBan,
+        //                    ThanhTien = (decimal)(bt.GiaBan * item.SoLuong)
+        //                };
+        //                db.ChiTietDonHangs.Add(ctdh);
+        //                item.TrangThai = false;
+        //            }
+
+        //            db.SaveChanges();
+        //            transaction.Commit();
+        //            return View("OrderSuccess", dh);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            transaction.Rollback();
+        //            return RedirectToAction("Index");
+        //        }
+        //    }
+        //}
+        // ==========================================
+        // 9. API LẤY LỊCH SỬ ĐỊA CHỈ (Dựa trên SDT vì DonHang không có MaNguoiMua)
+        // ==========================================
+        [HttpGet]
+        public ActionResult GetDeliveryHistory()
         {
-            // ===== 0) Kiểm tra TempData =====
-            if (TempData["SelectedIds"] == null)
-                return RedirectToAction("Index", "GioHang");
+            int userId = GetUserId();
+            if (userId == -1) return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
-            var ids = TempData["SelectedIds"].ToString()
-                            .Split(',')
-                            .Select(int.Parse)
-                            .ToList();
+            // Lấy thông tin User hiện tại để lấy SDT
+            var user = db.NguoiMuas.Find(userId);
+            var list = new List<object>();
 
-            //int userId = GetUserId();
-            //var user = db.NguoiDungs.Find(userId);
+            if (user != null)
+            {
+                // 1. Thêm địa chỉ hiện tại trong hồ sơ (nếu có)
+                list.Add(new
+                {
+                    HoTen = user.HoVaTen,
+                    SDT = user.SDT,
+                    // Nếu bảng NguoiMua trong code chưa cập nhật cột DiaChi thì dòng dưới có thể lỗi
+                    // Nếu lỗi, hãy xóa đoạn "user.DiaChi" thay bằng ""
+                    DiaChi = (user.GetType().GetProperty("DiaChi") != null) ? (string)user.GetType().GetProperty("DiaChi").GetValue(user, null) : "",
+                    IsDefault = true
+                });
 
-            var cartItems = db.ChiTietGioHangs
-                                .Where(c => ids.Contains(c.MaCTGH))
+                // 2. Lấy lịch sử từ đơn hàng cũ
+                // Logic: Tìm đơn hàng có cùng SDT với người dùng hiện tại
+                var history = db.DonHangs
+                                .Where(d => d.SDT == user.SDT && d.DiaChi != null)
+                                .OrderByDescending(d => d.ThoiGianDat) // CHUẨN: ThoiGianDat
+                                .Select(d => new
+                                {
+                                    HoTen = d.TenNguoiNhan,
+                                    SDT = d.SDT,
+                                    DiaChi = d.DiaChi
+                                })
+                                .Distinct()
+                                .Take(5)
                                 .ToList();
 
-            // ===== 1) Tính tiền =====
-            decimal phiShip = 38000;
-            decimal tongTienHang = cartItems.Sum(x => x.BienTheSanPham.GiaBan * x.SoLuong);
-            decimal giamGia = 0;
-            int? maGG = null;
-
-            if (!string.IsNullOrEmpty(maVoucher))
-            {
-                var vc = db.GiamGias.Find(int.Parse(maVoucher));
-
-                if (vc != null && tongTienHang >= vc.GiaTriDonHangToiThieu)
+                // 3. Lọc trùng
+                foreach (var item in history)
                 {
-                    if (vc.GiaTriGiam < 1) // giảm theo %
-                    {
-                        giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
-                        if (giamGia > vc.GiaTriGiamToiDa)
-                            giamGia = vc.GiaTriGiamToiDa;
-                    }
-                    else // giảm tiền trực tiếp
-                    {
-                        giamGia = (decimal)vc.GiaTriGiam;
-                    }
+                    // Lấy địa chỉ user (xử lý an toàn nếu null)
+                    string userAddr = (user.GetType().GetProperty("DiaChi") != null) ? (string)user.GetType().GetProperty("DiaChi").GetValue(user, null) : "";
 
-                    maGG = vc.MaGiamGia;
+                    bool isDuplicate = (item.HoTen == user.HoVaTen && item.SDT == user.SDT && item.DiaChi == userAddr);
+
+                    if (!isDuplicate)
+                    {
+                        list.Add(new
+                        {
+                            HoTen = item.HoTen,
+                            SDT = item.SDT,
+                            DiaChi = item.DiaChi,
+                            IsDefault = false
+                        });
+                    }
                 }
             }
 
-            decimal tongThanhToan = tongTienHang + phiShip - giamGia;
+            return Json(new { success = true, data = list }, JsonRequestBehavior.AllowGet);
+        }
 
+        // ==========================================
+        // 7. THANH TOÁN (ORDER SUCCESS) - CHUẨN DB MỚI
+        // ==========================================
+        [HttpPost]
+        public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher)
+        {
+            int userId = GetUserId(); // Chỉ dùng để check đăng nhập, không lưu vào DonHang
 
-            // ===== 2) Tạo đơn hàng =====
-            DonHang dh = new DonHang
+            if (TempData["SelectedIds"] == null) return RedirectToAction("Index");
+            var idList = TempData["SelectedIds"].ToString().Split(',').Select(int.Parse).ToList();
+
+            using (var transaction = db.Database.BeginTransaction())
             {
-                //MaNguoiDung = user.MaNguoiDung,
-                MaDVVC = 1,
+                try
+                {
+                    var cartItems = db.ChiTietGioHangs
+                                      .Where(x => idList.Contains(x.MaCTGH) && x.TrangThai == true)
+                                      .ToList();
 
-                TongTien = tongTienHang,
-                TrangThaiVanChuyen = "Chưa giao",
-                TrangThaiDonHang = "Đang xử lý",
-                PhiVanChuyen = phiShip,
+                    if (!cartItems.Any())
+                    {
+                        transaction.Rollback();
+                        TempData["Error"] = "Giỏ hàng lỗi.";
+                        return RedirectToAction("Index");
+                    }
 
-                // >>>>> LẤY TỪ FORM CHECKOUT NGƯỜI DÙNG NHẬP <<<<<
-                TenNguoiNhan = NguoiNhan,
-                DiaChi = DiaChi,
-                SDT = SDT,
+                    // --- TÍNH TIỀN ---
+                    decimal tongTienHang = 0;
+                    foreach (var item in cartItems)
+                    {
+                        var bt = db.BienTheSanPhams.Find(item.MaBienThe);
+                        tongTienHang += (decimal)(bt.GiaBan * item.SoLuong);
+                    }
 
-                GhiChu = "",
-                TrangThaiThanhToan = false,
-                ThoiGianDat = DateTime.Now,
-                MaGiamGia = maGG
-            };
+                    // --- XỬ LÝ VOUCHER ---
+                    decimal giamGia = 0;
+                    int? maGiamGiaID = null;
 
-            db.DonHangs.Add(dh);
-            db.SaveChanges();  // => sinh MaDonHang
+                    if (!string.IsNullOrEmpty(MaVoucher))
+                    {
+                        int vID = int.Parse(MaVoucher);
+                        var vc = db.GiamGias.Find(vID);
+                        if (vc != null)
+                        {
+                            maGiamGiaID = vID;
+                            if (vc.GiaTriGiam <= 1)
+                            {
+                                giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
+                                if (vc.GiaTriGiamToiDa > 0 && giamGia > vc.GiaTriGiamToiDa)
+                                    giamGia = (decimal)vc.GiaTriGiamToiDa;
+                            }
+                            else
+                            {
+                                giamGia = (decimal)vc.GiaTriGiam;
+                            }
+                        }
+                    }
 
+                    // --- TẠO ĐƠN HÀNG (Khớp 100% ảnh image_b0ff7d.png) ---
+                    var dh = new DonHang
+                    {
+                        // Không gán MaNguoiMua vì bảng không có
+                        MaDVVC = 1, // Bắt buộc (int, not null) - Giả sử 1 là Giao hàng nhanh
 
-            // ===== 3) Tạo chi tiết đơn hàng — để DB tự sinh MaCTDH =====
-            // ===== 3) Chỉ XÓA GIỎ HÀNG KHÔNG LƯU CHI TIẾT =====
-            foreach (var item in cartItems)
-            {
-                // XÓA khỏi bảng ChiTietGioHang
-                db.ChiTietGioHangs.Remove(item);
+                        TenNguoiNhan = NguoiNhan,
+                        SDT = SDT,
+                        DiaChi = DiaChi,
+
+                        ThoiGianDat = DateTime.Now, // CHUẨN: ThoiGianDat
+
+                        TongTien = tongTienHang + 38000 - giamGia,
+                        PhiVanChuyen = 38000,
+
+                        MaGiamGia = maGiamGiaID, // CHUẨN: MaGiamGia (Allow Nulls)
+
+                        TrangThaiDonHang = "DangXuLy",
+                        TrangThaiVanChuyen = "ChuaGiao", // Allow Nulls nhưng nên gán
+                        TrangThaiThanhToan = false,      // CHUẨN: bit (boolean)
+
+                        GhiChu = "" // Allow Nulls
+                    };
+
+                    db.DonHangs.Add(dh);
+                    db.SaveChanges();
+
+                    // --- CHI TIẾT ĐƠN HÀNG ---
+                    foreach (var item in cartItems)
+                    {
+                        var bt = db.BienTheSanPhams.Find(item.MaBienThe);
+
+                        // Check tồn kho (SoLuongTonKho)
+                        if (bt.SoLuongTonKho < item.SoLuong)
+                        {
+                            transaction.Rollback();
+                            TempData["Error"] = $"Sản phẩm {bt.TenBienThe} hết hàng!";
+                            return RedirectToAction("Index");
+                        }
+
+                        bt.SoLuongTonKho -= item.SoLuong;
+
+                        var ctdh = new ChiTietDonHang
+                        {
+                            MaDonHang = dh.MaDonHang,
+                            MaCTGH = item.MaCTGH, // Có cột này trong ChiTietDonHang
+                            // MaBienThe = item.MaBienThe, // XÓA DÒNG NÀY nếu bảng ChiTietDonHang không có
+                            SoLuong = item.SoLuong,
+                            // DonGia = bt.GiaBan, // Nếu bảng có cột DonGia thì mở ra
+                            // ThanhTien = ... // Nếu bảng có cột ThanhTien thì mở ra
+                        };
+
+                        // Kiểm tra lại bảng ChiTietDonHang xem có cột DonGia/ThanhTien không?
+                        // Dựa vào code cũ của bạn thì có, tôi sẽ thêm vào:
+                        // Nếu báo lỗi đỏ thì xóa đi nhé.
+                        try { ctdh.GetType().GetProperty("DonGia").SetValue(ctdh, bt.GiaBan); } catch { }
+                        try { ctdh.GetType().GetProperty("ThanhTien").SetValue(ctdh, (decimal)(bt.GiaBan * item.SoLuong)); } catch { }
+
+                        db.ChiTietDonHangs.Add(ctdh);
+                        item.TrangThai = false;
+                    }
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return View("OrderSuccess", dh);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = "Lỗi: " + ex.Message;
+                    return RedirectToAction("Index");
+                }
             }
-
-            // Lưu thay đổi duy nhất: xóa giỏ hàng
-            db.SaveChanges();
-
-            return RedirectToAction("OrderSuccess", new { id = dh.MaDonHang });
-
         }
-
-
-
-        [HttpGet]
-        public ActionResult OrderSuccess(int id)
-        {
-            var don = db.DonHangs.Find(id);
-            if (don == null) return HttpNotFound();
-
-            return View(don);
-        }
-
-
-        //public ActionResult AddToCart(int maBienThe)
-        //{
-        //    int userId = 1; // test
-
-            //var gio = db.GioHangs.FirstOrDefault(g => g.MaNguoiDung == userId);
-
-            //if (gio == null)
-            //{
-            //    gio = new GioHang { MaNguoiDung = userId };
-            //    db.GioHangs.Add(gio);
-            //    db.SaveChanges();
-            //}
-
-            //var ct = db.ChiTietGioHangs
-            //            .FirstOrDefault(c => c.MaGioHang == gio.MaGioHang
-            //                              && c.MaBienThe == maBienThe);
-
-            //if (ct == null)
-            //{
-            //    ct = new ChiTietGioHang
-            //    {
-            //        MaGioHang = gio.MaGioHang,
-            //        MaBienThe = maBienThe,
-            //        SoLuong = 1
-            //    };
-            //    db.ChiTietGioHangs.Add(ct);
-            //}
-        //    else
-        //    {
-        //        ct.SoLuong++;
-        //    }
-
-        //    db.SaveChanges();
-        //    return RedirectToAction("Index", "GioHang");
-        //}
-
-
-
-        public ActionResult MuaNgay(int maBienThe)
-        {
-            //int userId = GetUserId();
-
-            //// Lấy giỏ của user
-            //var gio = db.GioHangs.FirstOrDefault(g => g.MaNguoiDung == userId);
-            //if (gio == null)
-            //{
-            //    gio = new GioHang { MaNguoiDung = userId };
-            //    db.GioHangs.Add(gio);
-            //    db.SaveChanges();
-            //}
-
-            // Kiểm tra biến thể
-            var bt = db.BienTheSanPhams.Find(maBienThe);
-            if (bt == null)
-                return RedirectToAction("Index", "SanPham");
-
-            //// Lấy dòng giỏ hàng
-            //var item = db.ChiTietGioHangs
-            //             .FirstOrDefault(c => c.MaGioHang == gio.MaGioHang &&
-            //                                  c.MaBienThe == maBienThe);
-
-            //if (item == null)
-            //{
-            //    item = new ChiTietGioHang
-            //    {
-            //        MaGioHang = gio.MaGioHang,
-            //        MaBienThe = maBienThe,
-            //        SoLuong = 1
-            //    };
-            //    db.ChiTietGioHangs.Add(item);
-            //}
-            //else
-            //{
-            //    item.SoLuong += 1;
-            //}
-
-            db.SaveChanges();
-
-            // → Mua ngay = chuyển đến giỏ hàng
-            return RedirectToAction("Index", "GioHang");
-        }
-
     }
 }
