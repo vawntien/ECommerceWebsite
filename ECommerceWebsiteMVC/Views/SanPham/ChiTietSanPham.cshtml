@@ -35,7 +35,11 @@
 
                 <div class="mt-2">
                     <span class="price-box" id="price">
-                        @*Giá sẽ hiện khi chọn biến thể*@
+                        @{
+                            // Lấy giá của biến thể đầu tiên (nếu có)
+                            var giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                        }
+                        @giaDauTien.ToString("N0") ₫
                     </span>
                 </div>
 
@@ -47,7 +51,7 @@
                     {
                         <button class="variant-btn"
                                 data-id="@bt.MaBienThe"
-                                data-price="@bt.GiaBan"
+                                data-price="@((int)bt.GiaBan)"
                                 data-img="@bt.HinhAnh"
                                 data-stock="@bt.SoLuongTonKho">
                             @bt.TenBienThe
@@ -102,8 +106,22 @@
                 document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
                 this.classList.add("active");
 
-                // Đổi giá
-                priceBox.innerText = Number(this.dataset.price).toLocaleString() + " ₫";
+                // --- BẮT ĐẦU PHẦN SỬA ĐỔI ---
+                // Lấy giá trị từ attribute data-price
+                let rawPrice = this.getAttribute("data-price");
+
+                // Chuyển đổi sang số thực (float) cho an toàn
+                let priceNumber = parseFloat(rawPrice);
+
+                // Kiểm tra nếu không phải số (NaN) thì gán mặc định là 0
+                if (isNaN(priceNumber)) {
+                    priceNumber = 0;
+                }
+
+                // Hiển thị giá đã format theo định dạng Việt Nam (ví dụ: 100.000)
+                priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
+                // --- KẾT THÚC PHẦN SỬA ĐỔI ---
+
 
                 // Đổi ảnh
                 if (this.dataset.img) {
