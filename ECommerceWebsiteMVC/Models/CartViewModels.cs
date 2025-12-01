@@ -5,10 +5,10 @@ using System.Web;
 
 namespace ECommerceWebsiteMVC.Models
 {
-    // Bỏ CartPatch đi nhé
 
     public class BienTheSanPhamViewModel
     {
+        int _MaBienThe;
         public int MaBienThe { get; set; }
         public string TenBienThe { get; set; }
         public decimal GiaBan { get; set; }
@@ -77,5 +77,6 @@ namespace ECommerceWebsiteMVC.Models
         public decimal PhiVanChuyen { get; set; }
         public decimal GiamGia { get; set; }
         public decimal TongThanhToan { get; set; }
+
     }
 }
