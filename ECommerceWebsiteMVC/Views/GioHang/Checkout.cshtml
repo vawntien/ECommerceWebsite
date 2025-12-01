@@ -2,17 +2,18 @@
 
 @{
     ViewBag.Title = "Thanh toán";
+    Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
 
 <style>
     body {
         background: #f5f5f5;
-        font-family: Arial;
+        font-family: Arial, sans-serif;
     }
 
     .checkout-container {
         max-width: 900px;
-        margin: 20px auto 120px auto;
+        margin: 130px auto 120px auto;
         background: #fff;
         padding: 20px;
         border: 1px solid #ddd;
@@ -70,14 +71,233 @@
     }
 </style>
 
+<style>
+    #popup-address {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        z-index: 9999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    .shopee-popup {
+        background: #fff;
+        width: 550px;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .popup-header {
+        padding: 20px 24px;
+        font-size: 1.125rem;
+        color: #000;
+        border-bottom: 1px solid #e8e8e8;
+        font-weight: 500;
+    }
+
+    .address-list-body {
+        padding: 0 24px;
+        overflow-y: auto;
+        flex: 1;
+        background-color: #fff;
+    }
+
+    .addr-item {
+        display: flex;
+        padding: 20px 0;
+        border-bottom: 1px solid #e8e8e8;
+        align-items: flex-start;
+    }
+
+    .addr-radio-col {
+        padding-right: 16px;
+        display: flex;
+        align-items: center;
+        padding-top: 4px;
+    }
+
+    .addr-radio {
+        width: 18px;
+        height: 18px;
+        accent-color: #ee4d2d;
+        cursor: pointer;
+    }
+
+    .addr-content-col {
+        flex: 1;
+    }
+
+    .addr-top-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        justify-content: space-between;
+    }
+
+    .addr-name-phone {
+        display: flex;
+        align-items: center;
+        color: #000;
+        font-size: 1rem;
+    }
+
+    .addr-name {
+        font-weight: 600;
+        padding-right: 8px;
+        border-right: 1px solid #e8e8e8;
+        margin-right: 8px;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .addr-phone {
+        color: #888;
+        font-size: 0.875rem;
+    }
+
+    .btn-update {
+        color: #0055aa;
+        font-size: 0.875rem;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+        background: none;
+        font-weight: 500;
+    }
+
+        .btn-update:hover {
+            color: #ee4d2d;
+        }
+
+    .addr-detail {
+        color: #555;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+
+    .addr-tags {
+        display: flex;
+        gap: 8px;
+    }
+
+    .tag-default {
+        color: #ee4d2d;
+        border: 1px solid #ee4d2d;
+        font-size: 12px;
+        padding: 2px 6px;
+        border-radius: 2px;
+    }
+
+    /* Nút thêm mới và Footer */
+    .btn-add-new-row {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-new {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        color: #555;
+        height: 40px;
+        width: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+        .btn-add-new:hover {
+            background: #f8f8f8;
+            color: #ee4d2d;
+            border-color: #ee4d2d;
+        }
+
+    .popup-footer {
+        padding: 15px 24px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        border-top: 1px solid #e8e8e8;
+        background: #fff;
+    }
+
+    .btn-cancel {
+        min-width: 140px;
+        padding: 10px 0;
+        border: none;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .btn-cancel:hover {
+            background: #f8f8f8;
+        }
+
+    .btn-confirm {
+        min-width: 140px;
+        padding: 10px 0;
+        border: none;
+        background: #ee4d2d;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 2px;
+        font-size: 14px;
+    }
+
+        .btn-confirm:hover {
+            background: #d73211;
+        }
+
+    /* Form thêm mới */
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .input-shopee {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e8e8e8;
+        border-radius: 2px;
+        outline: none;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+        .input-shopee:focus {
+            border-color: #777;
+        }
+
+    .form-row-2 {
+        display: flex;
+        gap: 16px;
+    }
+
+        .form-row-2 > * {
+            flex: 1;
+        }
+</style>
+
 <div class="checkout-container">
 
-    <!-- ĐỊA CHỈ NHẬN HÀNG -->
     <div class="section-title">
         Địa chỉ nhận hàng
-        <button id="btn-open-address"
-                style="margin-left:10px;padding:4px 10px;font-size:12px;
-            background:#fff;border:1px solid #ee4d2d;color:#ee4d2d;border-radius:3px;cursor:pointer;">
+        <button id="btn-open-address" style="margin-left:10px;padding:4px 10px;font-size:12px; background:#fff;border:1px solid #ee4d2d;color:#ee4d2d;border-radius:3px;cursor:pointer;">
             Thay Đổi
         </button>
     </div>
@@ -88,10 +308,7 @@
         <span id="diachinhan">@Model.DiaChi</span>
     </div>
 
-
-    <!-- DANH SÁCH SẢN PHẨM -->
     <div class="section-title">Sản phẩm</div>
-
     @foreach (var item in Model.Items)
     {
         <div class="item-row">
@@ -105,56 +322,42 @@
         </div>
     }
 
-    <!-- VOUCHER -->
     <div class="section-title" style="margin-top:20px;">Shopee Voucher</div>
-
     <div style="display:flex;align-items:center;">
-        <select id="voucherSelect"
-                style="width:300px;padding:6px;border:1px solid #ddd;border-radius:4px;">
-
+        <select id="voucherSelect" style="width:300px;padding:6px;border:1px solid #ddd;border-radius:4px;">
             <option value="">-- Không dùng voucher --</option>
-
             @foreach (var vc in Model.DanhSachVoucher)
             {
                 var g = Convert.ToDecimal(vc.GiaTriGiam);
-
                 <option value="@vc.MaGiamGia">
                     @vc.TenMaGG - Giảm @g.ToString("N0")đ
                 </option>
             }
         </select>
-
-        <button id="applyVoucher"
-                type="button"
-                style="margin-left:10px;padding:6px 14px;background:#ee4d2d;color:white;border:none;border-radius:4px;cursor:pointer;">
+        <button id="applyVoucher" type="button" style="margin-left:10px;padding:6px 14px;background:#ee4d2d;color:white;border:none;border-radius:4px;cursor:pointer;">
             Áp dụng
         </button>
     </div>
 
-    <!-- TÍNH TIỀN -->
     <div class="total-box">
-
         <div class="total-row">
             <span>Tổng tiền hàng:</span>
             <span id="tien-hang" data-raw="@Convert.ToInt64(Model.TongTienHang)">
                 @Model.TongTienHang.ToString("N0") đ
             </span>
         </div>
-
         <div class="total-row">
             <span>Phí vận chuyển:</span>
             <span id="phi-ship" data-raw="@Convert.ToInt64(Model.PhiVanChuyen)">
                 @Model.PhiVanChuyen.ToString("N0") đ
             </span>
         </div>
-
         <div class="total-row">
             <span>Giảm giá:</span>
             <span id="giam-gia" data-raw="@Convert.ToInt64(Model.GiamGia)">
                 @Model.GiamGia.ToString("N0") đ
             </span>
         </div>
-
         <div class="total-row" style="font-weight:bold;font-size:18px;">
             <span>Tổng thanh toán:</span>
             <span id="tong-thanh-toan" data-raw="@Convert.ToInt64(Model.TongThanhToan)" style="color:#ee4d2d;">
@@ -163,149 +366,244 @@
         </div>
     </div>
 
-    <form action="/GioHang/OrderSuccess" method="post">
+    <form id="form-checkout" action="/GioHang/OrderSuccess" method="post">
         @Html.AntiForgeryToken()
-
-        <!-- 3 hidden lưu thông tin người nhận -->
-        <input type="hidden" name="NguoiNhan" id="hidden-ten" />
-        <input type="hidden" name="SDT" id="hidden-sdt" />
-        <input type="hidden" name="DiaChi" id="hidden-diachi" />
-
-        <!-- hidden mã voucher (đã dùng từ trước) -->
+        <input type="hidden" name="NguoiNhan" id="hidden-ten" value="@Model.TenNguoiNhan" />
+        <input type="hidden" name="SDT" id="hidden-sdt" value="@Model.SDT" />
+        <input type="hidden" name="DiaChi" id="hidden-diachi" value="@Model.DiaChi" />
         <input type="hidden" name="MaVoucher" id="voucherHidden" />
-
         <button type="submit" class="confirm-button">Đặt hàng</button>
     </form>
-
 </div>
 
+<div id="popup-address">
+    <div class="shopee-popup">
+
+        <div id="view-list" style="display:flex; flex-direction:column; height:100%;">
+            <div class="popup-header">Địa Chỉ Của Tôi</div>
+
+            <div class="address-list-body">
+                <div id="address-list-container"></div>
+
+                <div class="btn-add-new-row">
+                    <button id="btn-show-add-form" class="btn-add-new">
+                        + Thêm Địa Chỉ Mới
+                    </button>
+                </div>
+            </div>
+
+            <div class="popup-footer">
+                <button class="btn-cancel" id="btn-close-popup">Huỷ</button>
+                <button class="btn-confirm" id="btn-confirm-selection">Xác nhận</button>
+            </div>
+        </div>
+
+        <div id="view-form" style="display:none; flex-direction:column; height:100%;">
+            <div class="popup-header">Địa chỉ mới</div>
+
+            <div class="address-list-body" style="padding-top: 20px;">
+                <div class="form-row-2 form-group">
+                    <input id="new-name" class="input-shopee" placeholder="Họ và tên" />
+                    <input id="new-phone" class="input-shopee" placeholder="Số điện thoại" />
+                </div>
+
+                <div class="form-group">
+                    <input id="new-city" class="input-shopee" placeholder="Tỉnh/Thành phố, Quận/Huyện, Phường/Xã, Số nhà..." />
+                </div>
+            </div>
+
+            <div class="popup-footer">
+                <button class="btn-cancel" id="btn-back-to-list">Trở Lại</button>
+                <button class="btn-confirm" id="btn-save-new">Hoàn thành</button>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 @section scripts {
     <script>
-
-        // mở popup
-        $(document).on("click", "#btn-open-address", function () {
-            $("#popup-ten").val($("#tennhan").text());
-            $("#popup-sdt").val($("#sdtnhan").text());
-            $("#popup-diachi").val($("#diachinhan").text());
-
-            $("#popup-address").css("display", "flex");
-        });
-
-        // đóng popup
-        $(document).on("click", "#btn-cancel", function () {
-            $("#popup-address").hide();
-        });
-
-        // lưu địa chỉ
-        $(document).on("click", "#btn-save-address", function () {
-
-            let ten = $("#popup-ten").val().trim();
-            let sdt = $("#popup-sdt").val().trim();
-            let diachi = $("#popup-diachi").val().trim();
-
-            if (ten == "" || sdt == "" || diachi == "") {
-                alert("Vui lòng nhập đầy đủ thông tin!");
-                return;
-            }
-
-            // cập nhật hiển thị
-            $("#tennhan").text(ten);
-            $("#sdtnhan").text(sdt);
-            $("#diachinhan").text(diachi);
-
-            // gán vào hidden để submit
-            $("#hidden-ten").val(ten);
-            $("#hidden-sdt").val(sdt);
-            $("#hidden-diachi").val(diachi);
-
-            $("#popup-address").hide();
-        });
-
-
-        // ===== ĐỌC TIỀN SẠCH TỪ data-raw =====
+        // ===== LOGIC VOUCHER =====
         function getMoney(selector) {
             let raw = $(selector).attr("data-raw");
             return parseInt(raw) || 0;
         }
 
         $(document).on("click", "#applyVoucher", function () {
-
             var maVoucher = $("#voucherSelect").val();
-
             var tongTienHang = getMoney("#tien-hang");
-
-            console.log("SEND:", maVoucher, tongTienHang);
 
             $.ajax({
                 url: "/GioHang/ApplyVoucher",
                 type: "POST",
-                data: {
-                    maVoucher: maVoucher,
-                    tongTienHang: tongTienHang
-                },
+                data: { maVoucher: maVoucher, tongTienHang: tongTienHang },
                 success: function (res) {
                     if (!res.success) {
-                        alert("Voucher không hợp lệ!");
+                        alert(res.message || "Voucher không hợp lệ!");
                         return;
                     }
-
-                    // Giảm giá
                     $("#giam-gia")
                         .attr("data-raw", res.giamGia)
                         .text(res.giamGia.toLocaleString("vi-VN") + " đ");
-
-                    // Tổng thanh toán
                     $("#tong-thanh-toan")
                         .attr("data-raw", res.tongThanhToan)
                         .text(res.tongThanhToan.toLocaleString("vi-VN") + " đ");
-
-                    // Lưu voucher
                     $("#voucherHidden").val(maVoucher);
                 },
                 error: function () {
-                    alert("AJAX ERROR – Controller không chạy!");
+                    alert("Lỗi kết nối server!");
                 }
             });
         });
+
+        // ===============================================
+        // ===== LOGIC ĐỊA CHỈ (ĐÃ CẬP NHẬT) =====
+        // ===============================================
+
+        // 1. Mở popup
+        $(document).on("click", "#btn-open-address", function (e) {
+            e.preventDefault();
+            $("#popup-address").css("display", "flex");
+            $("#view-list").show();
+            $("#view-form").hide();
+            loadAddressHistory();
+        });
+
+        // Gọi Ajax lấy lịch sử
+        function loadAddressHistory() {
+            $("#address-list-container").html('<div style="padding:20px;text-align:center;">Đang tải...</div>');
+            $.get("/GioHang/GetDeliveryHistory", function (res) {
+                if (res.success) {
+                    renderAddressList(res.data);
+                } else {
+                    $("#address-list-container").html('<div style="padding:20px;text-align:center;">Lỗi tải dữ liệu</div>');
+                }
+            });
+        }
+
+        // Vẽ danh sách địa chỉ
+        function renderAddressList(data) {
+            var html = "";
+            var currentName = $("#tennhan").text().trim();
+            var currentPhone = $("#sdtnhan").text().trim();
+
+            if (!data || data.length === 0) {
+                html = '<div style="text-align:center; padding:30px; color:#888;">Bạn chưa có lịch sử địa chỉ.</div>';
+            } else {
+                data.forEach(function (item) {
+                    var isChecked = (item.HoTen === currentName && item.SDT === currentPhone) ? "checked" : "";
+                    if (data.length === 1) isChecked = "checked";
+
+                    var tagsHtml = item.IsDefault ? `<span class="tag-default">Mặc định</span>` : "";
+
+                    html += `
+                        <div class="addr-item">
+                            <div class="addr-radio-col">
+                                <input type="radio" name="addr_radio" class="addr-radio" ${isChecked}
+                                       data-name="${item.HoTen}" data-phone="${item.SDT}" data-addr="${item.DiaChi}">
+                            </div>
+                            <div class="addr-content-col">
+                                <div class="addr-top-row">
+                                    <div class="addr-name-phone">
+                                        <span class="addr-name">${item.HoTen}</span>
+                                        <span class="addr-phone">${item.SDT}</span>
+                                    </div>
+                                    <button class="btn-update" onclick="fillFormForUpdate('${item.HoTen}', '${item.SDT}', '${item.DiaChi}')">Cập nhật</button>
+                                </div>
+                                <div class="addr-detail">${item.DiaChi}</div>
+                                <div class="addr-tags">${tagsHtml}</div>
+                            </div>
+                        </div>`;
+                });
+            }
+            $("#address-list-container").html(html);
+        }
+
+        // Chuyển màn hình & Reset form
+        $("#btn-show-add-form").click(function () {
+            $("#view-list").hide(); $("#view-form").show();
+            // Reset form (chỉ còn 1 ô địa chỉ)
+            $("#new-name").val("");
+            $("#new-phone").val("");
+            $("#new-city").val("");
+        });
+
+        $("#btn-back-to-list, #btn-close-popup").click(function () {
+            if ($(this).attr("id") === "btn-close-popup") $("#popup-address").hide();
+            else { $("#view-form").hide(); $("#view-list").show(); }
+        });
+
+        // Điền form để cập nhật (Chỉ dùng 1 ô địa chỉ)
+        window.fillFormForUpdate = function (name, phone, addr) {
+            $("#new-name").val(name);
+            $("#new-phone").val(phone);
+            $("#new-city").val(addr); // Điền toàn bộ địa chỉ vào ô này
+
+            $("#view-list").hide();
+            $("#view-form").show();
+        };
+
+        // Xác nhận chọn từ danh sách
+        $("#btn-confirm-selection").click(function () {
+            var selected = $("input[name='addr_radio']:checked");
+            if (selected.length === 0) { alert("Vui lòng chọn địa chỉ!"); return; }
+            applyAddress(selected.data("name"), selected.data("phone"), selected.data("addr"));
+            $("#popup-address").hide();
+        });
+
+        // Nút Hoàn thành (Lưu mới) - Đã sửa bỏ Textarea
+        $("#btn-save-new").click(function () {
+            var ten = $("#new-name").val().trim();
+            var sdt = $("#new-phone").val().trim();
+            var fullAddr = $("#new-city").val().trim();
+
+            if (ten === "" || sdt === "" || fullAddr === "") {
+                alert("Vui lòng điền đủ thông tin!"); return;
+            }
+
+            applyAddress(ten, sdt, fullAddr);
+            $("#popup-address").hide();
+        });
+
+        // Hàm cập nhật ra màn hình chính
+        function applyAddress(ten, sdt, diachi) {
+            $("#tennhan").text(ten);
+            $("#sdtnhan").text(sdt);
+            $("#diachinhan").text(diachi);
+            $("#hidden-ten").val(ten);
+            $("#hidden-sdt").val(sdt);
+            $("#hidden-diachi").val(diachi);
+        }
+
+        // ===============================================
+        // ===== VALIDATE TRƯỚC KHI SUBMIT FORM =====
+        // ===============================================
+        $("#form-checkout").submit(function (e) {
+            // Lấy giá trị từ các ô hidden
+            var ten = $("#hidden-ten").val().trim();
+            var sdt = $("#hidden-sdt").val().trim();
+            var diachi = $("#hidden-diachi").val().trim();
+
+            // Kiểm tra nếu thiếu 1 trong 3 thông tin
+            if (ten === "" || sdt === "" || diachi === "") {
+                e.preventDefault(); // Chặn gửi form
+
+                alert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi đặt hàng!");
+
+                // Tự động mở Popup
+                $("#popup-address").css("display", "flex");
+
+                // Nếu chưa có lịch sử thì mở thẳng form thêm mới
+                if ($("#address-list-container").children().length === 0) {
+                    $("#view-list").hide();
+                    $("#view-form").show();
+                } else {
+                    $("#view-list").show();
+                    $("#view-form").hide();
+                    loadAddressHistory();
+                }
+            }
+        });
+
     </script>
 }
-
-<!-- POPUP ĐỊA CHỈ -->
-<div id="popup-address"
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.4); z-index:9999; justify-content:center; align-items:center;">
-
-    <div style="background:white; width:500px; padding:20px; border-radius:6px;">
-
-        <h3 style="margin-bottom:20px;">Cập nhật địa chỉ</h3>
-
-        <input id="popup-ten" class="addr-input" placeholder="Họ và tên" />
-        <input id="popup-sdt" class="addr-input" placeholder="Số điện thoại" />
-
-        <textarea id="popup-diachi" class="addr-input" placeholder="Địa chỉ cụ thể"></textarea>
-
-        <div style="text-align:right; margin-top:20px;">
-            <button id="btn-cancel"
-                    style="padding:6px 12px; background:#ccc; border:none; border-radius:3px; cursor:pointer;">
-                Trở lại
-            </button>
-
-            <button id="btn-save-address"
-                    style="padding:6px 12px; background:#ee4d2d; color:white; border:none; border-radius:3px; cursor:pointer;">
-                Hoàn thành
-            </button>
-        </div>
-    </div>
-</div>
-
-<style>
-    .addr-input {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-</style>
