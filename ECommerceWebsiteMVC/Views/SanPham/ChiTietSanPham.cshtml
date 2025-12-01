@@ -1,4 +1,5 @@
-﻿@model ECommerceWebsiteMVC.Models.SanPham
+﻿@using ECommerceWebsiteMVC.Models
+@model SanPham
 @{
     ViewBag.Title = "ChiTietSanPham";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
@@ -23,8 +24,8 @@
                 <div class="product-gallery">
 
                     @*<img id="main-img" style="height: 500px;width: 500px"
-                        src="~/Images/Products/@Model.MaSanPham/@Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh"
-                        class="img-fluid shadow" />*@
+                    src="~/Images/Products/@Model.MaSanPham/@Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh"
+                    class="img-fluid shadow" />*@
                     <img id="main-img" style="height: 500px;width: 500px"
                          src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
                          class="img-fluid shadow" />
@@ -34,7 +35,7 @@
                         @foreach (var img in Model.AnhSanPhams)
                         {
                             @*<img class="thumb-img" style="height: 60px;width: 60px" src="~/Images/Products/@Model.MaSanPham/@img.HinhAnh"
-                                onclick="document.getElementById('main-img').src=this.src;" />*@
+                            onclick="document.getElementById('main-img').src=this.src;" />*@
                             <img class="thumb-img"
                                  style="height: 60px;width: 60px"
                                  src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}")"
@@ -93,6 +94,9 @@
                 </div>
 
             </div>
+        </div>
+        <div class="mt-4">
+            @Html.Action("DanhGiaSanPhamPartial", "DanhGia", new { pMaSP = Model.MaSanPham })
         </div>
     </div>
 

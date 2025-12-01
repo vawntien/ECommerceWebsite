@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -205,6 +205,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ChiTietDonHang_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Principal>
+            <Dependent Role="ChiTietDonHang">
+              <PropertyRef Name="MaDonHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CTDH_CTGH">
           <End Role="ChiTietGioHang" Type="Self.ChiTietGioHang" Multiplicity="1" />
           <End Role="ChiTietDonHang" Type="Self.ChiTietDonHang" Multiplicity="*" />
@@ -349,6 +361,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="fn_LayDanhGiaSanPham" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MaSanPham" Type="int" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="MaDG" Type="int" Nullable="false" />
+                <Property Name="SoSao" Type="int" Nullable="false" />
+                <Property Name="TieuDe" Type="nvarchar" MaxLength="100" />
+                <Property Name="NoiDung" Type="nvarchar" MaxLength="250" />
+                <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
+                <Property Name="ThoiGian" Type="datetime" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
         <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
@@ -373,6 +400,10 @@
           <AssociationSet Name="FK_BienTheSanPham_SanPham" Association="Self.FK_BienTheSanPham_SanPham">
             <End Role="SanPham" EntitySet="SanPham" />
             <End Role="BienTheSanPham" EntitySet="BienTheSanPham" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ChiTietDonHang_DonHang" Association="Self.FK_ChiTietDonHang_DonHang">
+            <End Role="DonHang" EntitySet="DonHang" />
+            <End Role="ChiTietDonHang" EntitySet="ChiTietDonHang" />
           </AssociationSet>
           <AssociationSet Name="FK_CTDH_CTGH" Association="Self.FK_CTDH_CTGH">
             <End Role="ChiTietGioHang" EntitySet="ChiTietGioHang" />
@@ -423,8 +454,7 @@
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -873,7 +903,18 @@
             <End Role="NguoiMua" EntitySet="NguoiMuas" />
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
+          <FunctionImport Name="fn_LayDanhGiaSanPham" IsComposable="true" ReturnType="Collection(ECommerceWebsiteModel.fn_LayDanhGiaSanPham_Result)">
+            <Parameter Name="MaSanPham" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
+        <ComplexType Name="fn_LayDanhGiaSanPham_Result">
+          <Property Type="Int32" Name="MaDG" Nullable="false" />
+          <Property Type="Int32" Name="SoSao" Nullable="false" />
+          <Property Type="String" Name="TieuDe" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="NoiDung" Nullable="true" MaxLength="250" />
+          <Property Type="String" Name="HinhAnh" Nullable="true" MaxLength="200" />
+          <Property Type="DateTime" Name="ThoiGian" Nullable="true" Precision="23" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1072,6 +1113,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="fn_LayDanhGiaSanPham" FunctionName="ECommerceWebsiteModel.Store.fn_LayDanhGiaSanPham">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ECommerceWebsiteModel.fn_LayDanhGiaSanPham_Result">
+                <ScalarProperty Name="MaDG" ColumnName="MaDG" />
+                <ScalarProperty Name="SoSao" ColumnName="SoSao" />
+                <ScalarProperty Name="TieuDe" ColumnName="TieuDe" />
+                <ScalarProperty Name="NoiDung" ColumnName="NoiDung" />
+                <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
+                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

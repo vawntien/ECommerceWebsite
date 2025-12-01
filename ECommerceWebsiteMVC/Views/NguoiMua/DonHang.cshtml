@@ -67,15 +67,18 @@
                                 : "https://via.placeholder.com/100";
 
                             <div class="order-product">
-                                <img src="@imageUrl" alt="@sanPham.TenSanPham" />
-                                <div class="flex-grow-1 d-flex justify-content-between">
-                                    <div class="order-product-info">
-                                        <h6>@sanPham.TenSanPham</h6>
-                                        <p>Phân loại hàng: @chiTiet.ChiTietGioHang.BienTheSanPham.TenBienThe</p>
-                                        <p>Số lượng: @chiTiet.SoLuong</p>
+                                    <a href="@Url.Action("ChiTietSanPham","SanPham", new {id = sanPham.MaSanPham})">
+                                        <img src="@imageUrl" alt="@sanPham.TenSanPham" />
+
+                                    </a>
+                                    <div class="flex-grow-1 d-flex justify-content-between">
+                                        <div class="order-product-info">
+                                            <h6>@sanPham.TenSanPham</h6>
+                                            <p>Phân loại hàng: @chiTiet.ChiTietGioHang.BienTheSanPham.TenBienThe</p>
+                                            <p>Số lượng: @chiTiet.SoLuong</p>
+                                        </div>
+                                        <div class="order-price">@chiTiet.DonGia.ToString("N0")đ</div>
                                     </div>
-                                    <div class="order-price">@chiTiet.DonGia.ToString("N0")đ</div>
-                                </div>
                             </div>
                         }
                     </div>
