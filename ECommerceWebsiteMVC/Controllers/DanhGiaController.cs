@@ -1,6 +1,7 @@
 ﻿using ECommerceWebsiteMVC.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -133,6 +134,30 @@ namespace ECommerceWebsiteMVC.Controllers
             return Redirect(ReturnUrl);
         }
 
+        public ActionResult DanhGiaSanPhamPartial(int pMaSP)
+        {
+            var param = new SqlParameter("@MaSanPham", pMaSP);
 
-    }
+            // Gọi TVF: SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)
+            List<DanhGiaSanPham> lstdg = db.Database
+                .SqlQuery<DanhGiaSanPham>(
+                    "SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)",
+                    param
+                )
+                .ToList();
+            double saoTB = 0;
+            var sp = db.SanPhams.SingleOrDefault(s => s.MaSanPham == pMaSP);
+            if (sp != null && sp.SoSaoTrungBinh.HasValue)
+            {
+                saoTB = (double)sp.SoSaoTrungBinh.Value;
+            }
+
+            ViewBag.SaoTrungBinhSP = saoTB;
+
+            return PartialView("DanhGiaSanPhamPartial", lstdg);
+        }
+
+
+
+}
 }
