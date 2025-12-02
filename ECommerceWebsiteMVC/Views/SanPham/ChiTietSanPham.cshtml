@@ -1,4 +1,5 @@
-﻿@model ECommerceWebsiteMVC.Models.SanPham
+﻿@using ECommerceWebsiteMVC.Models
+@model SanPham
 @{
     ViewBag.Title = "ChiTietSanPham";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
@@ -89,6 +90,9 @@
                 </div>
 
             </div>
+        </div>
+        <div class="mt-4">
+            @Html.Action("DanhGiaSanPhamPartial", "DanhGia", new { pMaSP = Model.MaSanPham })
         </div>
     </div>
 

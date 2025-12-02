@@ -285,6 +285,9 @@
     <Compile Include="Models\DonViVanChuyen.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\fn_LayDanhGiaSanPham_Result.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GiamGia.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -376,6 +379,7 @@
     <Content Include="Views\GioHang\Checkout.cshtml" />
     <Content Include="Views\GioHang\OrderSuccess.cshtml" />
     <Content Include="Views\NguoiMua\ChiTietHuyDon.cshtml" />
+    <Content Include="Views\DanhGia\DanhGiaSanPhamPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -386,7 +390,6 @@
   <ItemGroup>
     <Folder Include="App_Code\" />
     <Folder Include="App_Data\" />
-    <Folder Include="Views\DanhGia\" />
     <Folder Include="Views\DanhMuc\" />
   </ItemGroup>
   <ItemGroup>
