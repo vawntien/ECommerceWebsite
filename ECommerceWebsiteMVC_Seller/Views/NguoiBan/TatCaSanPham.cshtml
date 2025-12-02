@@ -22,12 +22,12 @@
     <div class="page-header">
         <h1 class="page-title">Sản phẩm</h1>
         <div class="header-actions">
-            <button class="btn btn-secondary btn-sm">
+            @*<button class="btn btn-secondary btn-sm">
                 <i class="bi bi-gear"></i> Cài đặt sản phẩm
             </button>
             <button class="btn btn-secondary btn-sm">
                 <i class="bi bi-three-dots"></i> Công cụ xử lý hàng loạt
-            </button>
+            </button>*@
             <a class="btn btn-danger btn-sm" href="@Url.Action("ThemSanPham", "NguoiBan")">
                 <i class="bi bi-plus-lg"></i> Thêm 1 sản phẩm mới
             </a>
@@ -44,7 +44,7 @@
             <span>Đang hoạt động</span>
             <span class="badge">@Model.Count()</span>
         </button>
-        <button class="tab-item" data-status="violated">
+        @*<button class="tab-item" data-status="violated">
             <span>Vi phạm</span>
             <span class="badge">0</span>
         </button>
@@ -55,7 +55,7 @@
         <button class="tab-item" data-status="draft">
             <span>Chưa được đăng</span>
             <span class="badge">0</span>
-        </button>
+        </button>*@
     </div>
 
 
@@ -70,22 +70,7 @@
         <select class="form-select">
             <option>Category</option>
         </select>
-        <button class="btn btn-outline-secondary">
-            <i class="bi bi-pencil"></i>
-        </button>
-        <select class="form-select">
-            <option>Chương trình Shopee</option>
-        </select>
-        <button class="btn btn-primary">Áp dụng</button>
-        <button class="btn btn-outline-secondary">Đặt lại</button>
-        <div class="ms-auto d-flex align-items-center gap-2">
-            <select class="form-select form-select-sm">
-                <option>Sort By Recommend</option>
-            </select>
-            <button class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-list"></i>
-            </button>
-        </div>
+        
     </div>
 
     <!-- Warnings Section -->
@@ -208,16 +193,15 @@
                                 <a href="@Url.Action("CapNhatSanPham", "NguoiBan", new { id = s.MaSanPham })" class="btn btn-sm btn-outline-primary" title="Cập nhật">
                                     <i class="bi bi-pencil"></i> Cập nhật
                                 </a>
-                                <button class="btn btn-sm btn-outline-warning" title="Quảng cáo">
+                                @*<button class="btn btn-sm btn-outline-warning" title="Quảng cáo">
                                     <i class="bi bi-fire"></i> Quảng cáo
-                                </button>
+                                </button>*@
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                                         Xem thêm
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-eye"></i> Xem chi tiết</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-copy"></i> Nhân bản</a></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("CapNhatSanPham", "NguoiBan", new { id = s.MaSanPham })"><i class="bi bi-eye"></i> Xem chi tiết</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash"></i> Xóa</a></li>
                                     </ul>

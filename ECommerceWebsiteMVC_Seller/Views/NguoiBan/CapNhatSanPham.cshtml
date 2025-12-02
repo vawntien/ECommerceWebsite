@@ -90,7 +90,7 @@
                 <!-- Tabs Navigation -->
                 <div class="form-tabs">
                     <button type="button" class="tab-btn active" data-tab="basic">Thông tin cơ bản</button>
-                    <button type="button" class="tab-btn" data-tab="details">Thông tin chi tiết</button>
+                    @*<button type="button" class="tab-btn" data-tab="details">Thông tin chi tiết</button>*@
                     <button type="button" class="tab-btn" data-tab="description">Mô tả</button>
                     <button type="button" class="tab-btn" data-tab="sales">Thông tin bán hàng</button>
                     <button type="button" class="tab-btn" data-tab="shipping">Vận chuyển</button>
@@ -184,7 +184,7 @@
                 </div>
 
                 <!-- Tab Content: Detailed Information -->
-                <div class="tab-content" id="tab-details">
+                <!--<div class="tab-content" id="tab-details">
                     <div class="form-section">
                         <div class="section-header">
                             <h3>Thông tin chi tiết</h3>
@@ -204,11 +204,11 @@
                                     <option value="nu">Nữ</option>
                                     <option value="unisex">Unisex</option>
                                 </select>
-                            </div>
+                            </div>-->
                             <!-- Add more fields as needed -->
-                        </div>
+                        <!--</div>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- Tab Content: Description -->
                 <div class="tab-content" id="tab-description">
@@ -244,7 +244,8 @@
                                             <div class="variant-details">
                                                 <div class="form-group">
                                                     <label>Giá bán (₫)</label>
-                                                    <input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan" step="1000" min="0" required>
+                                                    @*<input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan" step="1000" min="0" required>*@
+                                                    <input type="number" class="form-control" name="VariantGiaBan[]" value="@variant.GiaBan.ToString("0")" step="1000" min="0" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Số lượng tồn kho</label>
@@ -386,7 +387,6 @@
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline-secondary">Hủy</button>
-                    <button type="button" class="btn btn-outline-warning">Ẩn</button>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </div>
 
@@ -463,12 +463,12 @@
                     </div>
 
                     <div class="preview-actions">
-                        <button class="btn btn-success btn-sm">
+                        @*<button class="btn btn-success btn-sm">
                             <i class="bi bi-chat-dots"></i>
                         </button>
                         <button class="btn btn-warning btn-sm">
                             <i class="bi bi-cart-plus"></i>
-                        </button>
+                        </button>*@
                         <button class="btn btn-danger btn-block">Mua Ngay</button>
                     </div>
 
