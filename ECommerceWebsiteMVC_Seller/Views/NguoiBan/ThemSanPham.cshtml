@@ -117,7 +117,7 @@
                             @Html.ValidationMessage("AttributeOneName", null, new { @class = "text-danger" })
                             <div class="variant-tags" id="attr1ValueList"></div>
                             <input type="text" class="form-control tag-input" placeholder="Nhập giá trị và nhấn Enter" data-target="first" autocomplete="off" />
-                            <span class="helper-text">Tối đa 20 giá trị, nhấn Enter để thêm.</span>
+                            <span class="helper-text">Tối đa 20 giá trị, nhấn Enter, gõ dấu phẩy hoặc rời khỏi ô để thêm.</span>
                         </div>
 
                         <div class="variant-attribute d-none" id="attrSecondWrapper" data-attr="second">
@@ -128,7 +128,7 @@
                             <input type="text" id="attr2Name" class="form-control" placeholder="Ví dụ: Size" autocomplete="off" />
                             <div class="variant-tags" id="attr2ValueList"></div>
                             <input type="text" class="form-control tag-input" placeholder="Nhập giá trị và nhấn Enter" data-target="second" autocomplete="off" />
-                            <span class="helper-text">Tối đa 20 giá trị, nhấn Enter để thêm.</span>
+                            <span class="helper-text">Tối đa 20 giá trị, nhấn Enter, gõ dấu phẩy hoặc rời khỏi ô để thêm.</span>
                         </div>
 
                         <button type="button" class="btn btn-outline-primary btn-sm" id="addSecondAttribute">
@@ -158,7 +158,11 @@
                             <div class="variant-empty-state" id="variantEmptyState">
                                 Thêm ít nhất 1 giá trị ở phân loại 1 để tạo danh sách biến thể.
                             </div>
-                            @Html.ValidationMessage("VariantNames", null, new { @class = "text-danger d-block" })
+                            @Html.ValidationMessage("VariantNames", null, new { @class = "text-danger d-block mt-2" })
+                            @for (int i = 0; i < 20; i++)
+                            {
+                                @Html.ValidationMessage($"VariantImage_{i}", null, new { @class = "text-danger d-block" })
+                            }
                         </div>
                     </div>
                 </div>
@@ -267,6 +271,14 @@
                     this.value = '';
                 }
             });
+
+            input.addEventListener('blur', function () {
+                const value = this.value.trim();
+                if (!value) return;
+                const attrKey = this.dataset.target;
+                addAttributeValue(attrKey, value);
+                this.value = '';
+            });
         });
 
         attributeState.first.nameInput.addEventListener('input', () => syncAttributeName('first'));
@@ -278,15 +290,29 @@
             renderVariantTable();
         }
 
-        function addAttributeValue(key, value) {
+        function addAttributeValue(key, rawValue) {
             const state = attributeState[key];
             if (!state) return;
             if (!attributeState.second.enabled && key === 'second') return;
-            if (state.values.includes(value)) return;
-            state.values.push(value);
-            renderAttributeValues(key);
-            syncHiddenValues(key);
-            renderVariantTable();
+            const values = rawValue.split(',')
+                .map(v => v.trim())
+                .filter(v => v.length > 0);
+
+            if (!values.length) return;
+
+            let added = false;
+            values.forEach(value => {
+                if (state.values.includes(value)) return;
+                if (state.values.length >= 20) return;
+                state.values.push(value);
+                added = true;
+            });
+
+            if (added) {
+                renderAttributeValues(key);
+                syncHiddenValues(key);
+                renderVariantTable();
+            }
         }
 
         function removeAttributeValue(key, value) {
@@ -373,10 +399,24 @@
                         <td><input type="number" class="form-control" name="VariantStocks" min="0" placeholder="Kho" value="${existing.stock || ''}" required></td>
                         <td><input type="text" class="form-control" name="VariantSkus" placeholder="SKU" value="${existing.sku || ''}"></td>
                         <td>
-                            <label class="variant-image-label">
-                                <span>Chọn ảnh</span>
-                                <input type="file" name="VariantImage_${variantIndex}" accept="image/*">
-                            </label>
+                            <div class="variant-image-upload">
+                                <label class="variant-image-label" for="variantImage_${variantIndex}">
+                                    <span class="upload-text">Chọn ảnh <span class="required">*</span></span>
+                                    <input type="file" 
+                                           id="variantImage_${variantIndex}" 
+                                           name="VariantImage_${variantIndex}" 
+                                           accept="image/*" 
+                                           class="variant-image-input" 
+                                           data-variant-index="${variantIndex}"
+                                           required>
+                                </label>
+                                <div class="variant-image-preview" id="preview_${variantIndex}" style="display: none;">
+                                    <img src="" alt="Preview" class="preview-img">
+                                    <button type="button" class="remove-preview" data-variant-index="${variantIndex}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </td>`;
 
                     tableBody.appendChild(row);
@@ -386,7 +426,115 @@
             });
 
             previewVariantCount.textContent = combinationCount.toString();
+
+            // Attach image preview handlers to new rows
+            attachImagePreviewHandlers();
+
+            // Attach price update handlers for preview
+            attachPriceUpdateHandlers();
         }
+
+        function attachPriceUpdateHandlers() {
+            document.querySelectorAll('input[name="VariantPrices"]').forEach(input => {
+                input.addEventListener('input', function() {
+                    updatePricePreview();
+                });
+            });
+        }
+
+        function updatePricePreview() {
+            const prices = Array.from(document.querySelectorAll('input[name="VariantPrices"]'))
+                .map(input => {
+                    const val = parseFloat(input.value);
+                    return isNaN(val) ? null : val;
+                })
+                .filter(p => p !== null);
+
+            const previewPrice = document.getElementById('previewPrice');
+            if (prices.length === 0) {
+                previewPrice.textContent = '₫0';
+            } else if (prices.length === 1) {
+                previewPrice.textContent = '₫' + prices[0].toLocaleString('vi-VN');
+            } else {
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                if (minPrice === maxPrice) {
+                    previewPrice.textContent = '₫' + minPrice.toLocaleString('vi-VN');
+                } else {
+                    previewPrice.textContent = '₫' + minPrice.toLocaleString('vi-VN') + ' - ₫' + maxPrice.toLocaleString('vi-VN');
+                }
+            }
+        }
+
+        function attachImagePreviewHandlers() {
+            document.querySelectorAll('.variant-image-input').forEach(input => {
+                input.addEventListener('change', function(e) {
+                    const file = this.files[0];
+                    const variantIndex = this.dataset.variantIndex;
+                    const previewDiv = document.getElementById(`preview_${variantIndex}`);
+                    const previewImg = previewDiv?.querySelector('.preview-img');
+                    const uploadLabel = this.closest('.variant-image-upload').querySelector('.variant-image-label');
+
+                    if (file && previewDiv && previewImg) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            previewDiv.style.display = 'block';
+                            uploadLabel.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.remove-preview').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const variantIndex = this.dataset.variantIndex;
+                    const previewDiv = document.getElementById(`preview_${variantIndex}`);
+                    const input = document.getElementById(`variantImage_${variantIndex}`);
+                    const uploadLabel = input?.closest('.variant-image-upload').querySelector('.variant-image-label');
+
+                    if (previewDiv && input && uploadLabel) {
+                        previewDiv.style.display = 'none';
+                        uploadLabel.style.display = 'block';
+                        input.value = '';
+                    }
+                });
+            });
+        }
+
+        // Form validation before submit
+        const form = document.querySelector('form[action*="ThemSanPham"]');
+        form?.addEventListener('submit', function(e) {
+            const variantImages = document.querySelectorAll('.variant-image-input');
+            let hasError = false;
+            const errorMessages = [];
+
+            variantImages.forEach(input => {
+                if (!input.files || input.files.length === 0) {
+                    hasError = true;
+                    const row = input.closest('tr');
+                    if (row) {
+                        row.classList.add('variant-error');
+                        const variantName = row.querySelector('.variant-name')?.textContent.trim() || 'biến thể';
+                        if (!errorMessages.includes(variantName)) {
+                            errorMessages.push(variantName);
+                        }
+                    }
+                } else {
+                    const row = input.closest('tr');
+                    if (row) {
+                        row.classList.remove('variant-error');
+                    }
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+                alert('Vui lòng tải lên ảnh cho tất cả các biến thể:\n' + errorMessages.join('\n'));
+                return false;
+            }
+        });
     })();
 </script>
 

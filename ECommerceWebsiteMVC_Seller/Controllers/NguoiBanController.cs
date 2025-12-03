@@ -214,6 +214,17 @@ namespace ECommerceWebsiteMVC.Controllers
                 ModelState.AddModelError("VariantNames", "Vui lòng cấu hình ít nhất 1 biến thể.");
             }
 
+            // Validate variant images are required
+            for (int i = 0; i < variantNames.Length; i++)
+            {
+                var fileKey = $"VariantImage_{i}";
+                var file = Request.Files[fileKey];
+                if (file == null || file.ContentLength == 0)
+                {
+                    ModelState.AddModelError($"VariantImage_{i}", $"Vui lòng tải lên ảnh cho biến thể: {variantNames[i]}");
+                }
+            }
+
             var productImageKeys = Request.Files.AllKeys
                 .Where(k => !string.IsNullOrEmpty(k) && k.StartsWith("ProductImages", StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -246,14 +257,34 @@ namespace ECommerceWebsiteMVC.Controllers
                     : $"{model.AttributeOneName?.Trim()}|{model.AttributeTwoName?.Trim()}"
             };
 
-            db.SanPhams.Add(sanPham);
-            db.SaveChanges();
+            try
+            {
+                db.SanPhams.Add(sanPham);
+                db.SaveChanges();
 
-            await LuuAnhSanPhamAsync(sanPham.MaSanPham, productImageKeys);
-            await LuuBienTheSanPhamAsync(sanPham.MaSanPham);
+                await LuuAnhSanPhamAsync(sanPham.MaSanPham, productImageKeys);
+                await LuuBienTheSanPhamAsync(sanPham.MaSanPham);
 
-            TempData["UpdateSuccess"] = "Sản phẩm mới đã được tạo.";
-            return RedirectToAction("CapNhatSanPham", new { id = sanPham.MaSanPham });
+                TempData["UpdateSuccess"] = "Sản phẩm mới đã được tạo.";
+                return RedirectToAction("CapNhatSanPham", new { id = sanPham.MaSanPham });
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi, xóa sản phẩm đã tạo (nếu có)
+                if (sanPham.MaSanPham > 0)
+                {
+                    var productToDelete = db.SanPhams.Find(sanPham.MaSanPham);
+                    if (productToDelete != null)
+                    {
+                        db.SanPhams.Remove(productToDelete);
+                        db.SaveChanges();
+                    }
+                }
+
+                ModelState.AddModelError("", $"Lỗi khi tạo sản phẩm: {ex.Message}");
+                model.DanhMucs = GetDanhMucSelectList();
+                return View(model);
+            }
         }
 
         private List<DanhMuc> GetDanhMucSelectList()
@@ -311,20 +342,19 @@ namespace ECommerceWebsiteMVC.Controllers
                     SoLuongTonKho = ParseIntSafe(variantStocks, i)
                 };
 
-                if (variantSkus.Length > i)
-                {
-                    // SKU field chưa tồn tại trong DB nên có thể lưu vào TenBienThe hoặc bỏ qua.
-                }
-
+                // Ảnh biến thể là bắt buộc
                 var fileKey = $"VariantImage_{i}";
                 var file = Request.Files[fileKey];
-                if (file != null && file.ContentLength > 0)
+                if (file == null || file.ContentLength == 0)
                 {
-                    var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                    await azureHelper.UploadProductImageAsync(file, maSanPham.ToString(), fileName);
-                    variant.HinhAnh = fileName;
+                    throw new Exception($"Ảnh biến thể là bắt buộc cho: {variantNames[i]}");
                 }
+
+                // Upload ảnh biến thể vào Azure (cùng folder với ảnh sản phẩm: products/{maSanPham}/)
+                var fileExtension = Path.GetExtension(file.FileName);
+                var fileName = $"variant_{Guid.NewGuid()}{fileExtension}";
+                await azureHelper.UploadProductImageAsync(file, maSanPham.ToString(), fileName);
+                variant.HinhAnh = fileName;
 
                 db.BienTheSanPhams.Add(variant);
             }
@@ -350,6 +380,54 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             return 0;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> XoaSanPham(int id)
+        {
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+
+            int maNguoiBan = (int)Session["MaNguoiBan"];
+            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            if (cuaHang == null)
+                return Content("Bạn chưa tạo cửa hàng.");
+
+            var sanPham = db.SanPhams
+                .Include("AnhSanPhams")
+                .Include("BienTheSanPhams")
+                .SingleOrDefault(sp => sp.MaSanPham == id && sp.MaCuaHang == cuaHang.MaCuaHang);
+
+            if (sanPham == null)
+                return HttpNotFound("Sản phẩm không tồn tại hoặc không thuộc về bạn.");
+
+            try
+            {
+                var azureHelper = new XuLyAnhAzure();
+                await azureHelper.DeleteProductFolderAsync(sanPham.MaSanPham.ToString());
+
+                if (sanPham.AnhSanPhams?.Any() == true)
+                {
+                    db.AnhSanPhams.RemoveRange(sanPham.AnhSanPhams.ToList());
+                }
+
+                if (sanPham.BienTheSanPhams?.Any() == true)
+                {
+                    db.BienTheSanPhams.RemoveRange(sanPham.BienTheSanPhams.ToList());
+                }
+
+                db.SanPhams.Remove(sanPham);
+                db.SaveChanges();
+
+                TempData["UpdateSuccess"] = "Đã xóa sản phẩm.";
+            }
+            catch (Exception ex)
+            {
+                TempData["UpdateSuccess"] = $"Không thể xóa sản phẩm: {ex.Message}";
+            }
+
+            return RedirectToAction("TatCaSanPham");
         }
 
     }
