@@ -131,37 +131,45 @@ http://localhost:59750/TaiKhoan/DangKy
 
             <h3 class="fw-bold">Hồ Sơ Của Tôi</h3>
             <p class="text-muted">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
-
             <form method="post" action="@Url.Action("CapNhatThongTin", "TaiKhoan")">
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
 
                 <div class="mb-3">
                     <label class="text-muted">Tên đăng nhập</label>
-                    <div class="form-control-plaintext">@Model.TaiKhoan</div>
+                    <div class="form-control-plaintext fw-bold">@Model.TaiKhoan</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="text-muted">Họ và tên</label>
-                    <div class="form-control-plaintext">@Model.HoVaTen</div>
+                    <div class="form-control-plaintext fw-bold">@Model.HoVaTen</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="text-muted">Email</label>
-                    <div class="form-control-plaintext">
-                        @MaskEmail(Model.Email)
-                        <a href="#" class="ms-2">Thay Đổi</a>
+                    <div class="input-group">
+                        <input type="email" name="Email" class="form-control" value="@Model.Email" placeholder="Nhập email mới" required />
+                        <span class="input-group-text bg-white text-success"><i class="fas fa-check"></i></span>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="text-muted">Số điện thoại</label>
-                    <div class="form-control-plaintext">
-                        @MaskPhone(Model.SDT)
-                        <a href="#" class="ms-2">Thay Đổi</a>
+                    <div class="input-group">
+                        <input type="text" name="SDT" class="form-control" value="@Model.SDT" placeholder="Nhập SĐT mới" required pattern="[0-9]{10}" title="10 số" />
+                        <span class="input-group-text bg-white text-success"><i class="fas fa-check"></i></span>
                     </div>
                 </div>
 
                 <center>
-                    <button type="submit" class="btn-save">Lưu</button>
+                    <button type="submit" class="btn-save">Lưu Thay Đổi</button>
                 </center>
 
             </form>
