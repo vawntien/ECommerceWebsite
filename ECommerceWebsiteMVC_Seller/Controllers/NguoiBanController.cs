@@ -58,14 +58,6 @@ namespace ECommerceWebsiteMVC.Controllers
 
             ViewBag.Warnings = filteredWarnings;
 
-            //lay danh muc
-            //ViewBag.DanhMuc = db.SanPhams.ToList();
-
-
-
-
-
-
 
             //lay san pham thuoc cua hang do
             var dsSanPham = db.SanPhams.Include("AnhSanPhams").Include("BienTheSanPhams").Where(sp => sp.MaCuaHang == maCuaHang).OrderByDescending(sp => sp.MaSanPham).ToList();
