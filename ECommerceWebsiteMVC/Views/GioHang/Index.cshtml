@@ -300,21 +300,24 @@
         <button onclick="$('#variant-modal').hide()" style="margin-top:10px;width:100%;padding:10px;background:#ccc;border:none;">Đóng</button>
     </div>
 </div>
+<div id="delete-confirm-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:450px; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <div id="delete-modal-message" style="padding:20px 24px; font-size:16px; color:#333;">
+        </div>
+        <div style="padding:15px 24px; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #eee;">
+            <button id="btn-delete-cancel" style="padding:10px 20px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer;">TRỞ LẠI</button>
+            <button id="btn-delete-confirm" style="padding:10px 20px; background:#ee4d2d; color:#fff; border:none; border-radius:3px; cursor:pointer;">CÓ</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
 
-            // ============================================
-            // 1. XỬ LÝ CHECKBOX VÀ TÍNH TỔNG TIỀN (UI ONLY)
-            // ============================================
-            function updateSelectedIds() {
-                var ids = $(".chk-item:checked").map(function () {
-                    return $(this).closest(".product-row").data("id");
-                }).get();
-                $("#SelectedIds").val(ids.join(","));
-            }
+            // --- KHỐI ĐỊNH NGHĨA BIẾN VÀ HÀM MODAL (ĐƯỢC ĐẶT LÊN ĐẦU) ---
+            var idsToDelete = [];
 
             function formatCurrency(amount) {
                 return amount.toLocaleString("vi-VN") + " đ";
@@ -337,7 +340,55 @@
                 $("#total-amount").text(formatCurrency(total));
             }
 
-            // Sự kiện Checkbox
+            function updateSelectedIds() {
+                var ids = $(".chk-item:checked").map(function () {
+                    return $(this).closest(".product-row").data("id");
+                }).get();
+                $("#SelectedIds").val(ids.join(","));
+            }
+
+
+            // HÀM GỌI MODAL TÙY CHỈNH
+            function showCustomDeleteModal(ids, message) {
+                idsToDelete = Array.isArray(ids) ? ids : [ids];
+                $("#delete-modal-message").text(message);
+                $("#delete-confirm-modal").css("display", "flex");
+            }
+
+            // HÀM THỰC HIỆN XÓA CHÍNH (AJAX + RELOAD BẮT BUỘC)
+            function proceedDelete() {
+                $("#delete-confirm-modal").hide(); // Đóng Modal
+
+                if (idsToDelete.length === 0) return;
+
+                var isMulti = idsToDelete.length > 1;
+                var url = isMulti ? "/GioHang/DeleteSelected" : "/GioHang/DeleteItem";
+
+                var dataPayload = isMulti ? { ids: idsToDelete } : { id: idsToDelete[0] };
+
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    traditional: true,
+                    data: dataPayload,
+                    success: function (res) {
+                        if (res.success) {
+                            // Áp dụng reload cho TẤT CẢ các trường hợp xóa thành công
+                            location.reload();
+                        } else {
+                            alert(res.message || "Xảy ra lỗi trong quá trình xóa.");
+                        }
+                    }
+                });
+
+                idsToDelete = []; // Reset sau khi xử lý
+            }
+            // --- KẾT THÚC KHỐI ĐỊNH NGHĨA HÀM MODAL ---
+
+
+            // ============================================
+            // 1. XỬ LÝ CHECKBOX VÀ TÍNH TỔNG TIỀN (Giữ nguyên)
+            // ============================================
             $(".chk-item, .chk-shop, .chk-all").change(function () {
                 var checked = $(this).is(":checked");
                 if ($(this).hasClass("chk-all")) $(".chk-item, .chk-shop").prop("checked", checked);
@@ -348,7 +399,7 @@
 
 
             // ============================================
-            // 2. XỬ LÝ CẬP NHẬT SỐ LƯỢNG (QUAN TRỌNG)
+            // 2. XỬ LÝ CẬP NHẬT SỐ LƯỢNG (Giữ nguyên)
             // ============================================
 
             // Hàm xử lý chung khi đổi số lượng (gọi AJAX)
@@ -427,28 +478,17 @@
 
 
             // ============================================
-            // 3. XÓA SẢN PHẨM
+            // 3. XÓA SẢN PHẨM (ĐÃ CHUYỂN SANG MODAL TÙY CHỈNH)
             // ============================================
+
+            // 1. XỬ LÝ XÓA 1 SẢN PHẨM (.btn-delete)
             $(".btn-delete").click(function () {
-                if (!confirm("Bạn muốn xóa sản phẩm này?")) return;
-
-                var row = $(this).closest(".product-row");
-                var id = row.data("id");
-
-                $.post("/GioHang/DeleteItem", { id: id }, function (res) {
-                    if (res.success) {
-                        row.remove();
-                        updateSelectedIds();
-                        updateTotal();
-
-                        // Nếu shop không còn item nào thì xóa luôn block shop
-                        $(".shop-block").each(function () {
-                            if ($(this).find(".product-row").length === 0) $(this).remove();
-                        });
-                    }
-                });
+                var id = $(this).closest(".product-row").data("id");
+                showCustomDeleteModal(id, "Bạn muốn xóa sản phẩm này?");
             });
 
+
+            // 2. XỬ LÝ XÓA NHIỀU SẢN PHẨM (#btn-delete-selected)
             $("#btn-delete-selected").click(function () {
                 var ids = $(".chk-item:checked").map(function () {
                     return $(this).closest(".product-row").data("id");
@@ -459,81 +499,17 @@
                     return;
                 }
 
-                if (!confirm("Xóa " + ids.length + " sản phẩm đã chọn?")) return;
-
-                $.ajax({
-                    url: "/GioHang/DeleteSelected",
-                    type: "POST",
-                    traditional: true,
-                    data: { ids: ids },
-                    success: function (res) {
-                        if (res.success) {
-                            $(".chk-item:checked").closest(".product-row").remove();
-                            updateSelectedIds();
-                            updateTotal();
-                            location.reload(); // Reload cho sạch sẽ
-                        }
-                    }
-                });
+                showCustomDeleteModal(ids, "Bạn có muốn bỏ " + ids.length + " sản phẩm đã chọn?");
             });
 
-
-            // ============================================
-            // 4. ĐỔI BIẾN THỂ (POPUP)
-            // ============================================
-            var selectedRow = null;
-            var selectedVariantId = null;
-
-            $(".variant-change").click(function () {
-                selectedRow = $(this).closest(".product-row");
-                var variants = selectedRow.data("variants"); // Lấy JSON list biến thể
-                var currentId = selectedRow.data("variant");
-
-                $("#variant-list").empty();
-
-                if (variants && variants.length > 0) {
-                    variants.forEach(v => {
-                        var el = $("<div class='variant-option'></div>");
-
-                        // Chỉ để lại tên biến thể:
-                        el.text(v.TenBienThe);
-
-                        el.attr("data-id", v.MaBienThe);
-                        if (v.MaBienThe === currentId) el.addClass("active");
-                        $("#variant-list").append(el);
-                    });
-                    $("#variant-modal").css("display", "flex");
-                } else {
-                    alert("Sản phẩm này không có phân loại khác.");
-                }
-            });
-
-            $(document).on("click", ".variant-option", function () {
-                $(".variant-option").removeClass("active");
-                $(this).addClass("active");
-                selectedVariantId = parseInt($(this).attr("data-id"));
-            });
-
-            $("#variant-save").click(function () {
-                if (!selectedVariantId) return;
-                var maCTGH = selectedRow.data("id");
-
-                $.post("/GioHang/UpdateVariant",
-                    { maCTGH: maCTGH, maBienTheMoi: selectedVariantId }, // Khớp tên tham số Controller
-                    function (res) {
-                        if (res.success) {
-                            location.reload(); // Reload để cập nhật lại thông tin/giá mới
-                        } else {
-                            alert(res.message || "Lỗi cập nhật");
-                        }
-                    }
-                );
-                $("#variant-modal").hide();
-            });
+            // 3. GÁN SỰ KIỆN CHO NÚT TRONG MODAL
+            // Nút CÓ trong Modal -> Chạy hàm xóa
+            $(document).on("click", "#btn-delete-confirm", proceedDelete);
+            // Nút TRỞ LẠI/HỦY -> Đóng Modal
+            $(document).on("click", "#btn-delete-cancel", function () { $("#delete-confirm-modal").hide(); });
 
             // Khởi tạo tính tổng khi vào trang
             updateTotal();
         });
     </script>
-
 }
