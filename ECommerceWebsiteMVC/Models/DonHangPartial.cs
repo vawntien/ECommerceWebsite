@@ -12,17 +12,14 @@ namespace ECommerceWebsiteMVC.Models
     public partial class DonHang
     {
         /// <summary>
-        /// Mã người dùng (người mua) của đơn hàng
-        /// LƯU Ý: Cần thêm cột này vào database và update Entity Framework model
-        /// Xem file Database_Update_Instructions.sql để biết chi tiết
+        /// Mã người mua của đơn hàng (lấy từ giỏ hàng => người mua)
         /// </summary>
-        public int? MaNguoiDung { get; set; }
+        public int? MaNguoiMua { get; set; }
 
         /// <summary>
-        /// Navigation property đến người dùng (người mua)
-        /// Chỉ hoạt động sau khi đã update database và EF model
+        /// Navigation property đến thực thể người mua
         /// </summary>
-        public virtual NguoiDung NguoiDung { get; set; }
+        public virtual NguoiMua NguoiMua { get; set; }
     }
 }
 

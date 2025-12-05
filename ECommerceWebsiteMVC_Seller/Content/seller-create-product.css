@@ -222,6 +222,10 @@
     color: #ccc;
 }
 
+.variant-image-upload {
+    position: relative;
+}
+
 .variant-image-label {
     display: inline-flex;
     align-items: center;
@@ -233,10 +237,68 @@
     background: #fff;
     width: 120px;
     text-align: center;
+    transition: all 0.2s;
+}
+
+.variant-image-label:hover {
+    border-color: #ee4d2d;
+    background: #fff5f3;
+}
+
+.variant-image-label .required {
+    color: #ee4d2d;
+    font-weight: 600;
 }
 
 .variant-image-label input[type="file"] {
     display: none;
+}
+
+.variant-image-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.variant-image-preview .preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.variant-image-preview .remove-preview {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding: 0;
+}
+
+.variant-image-preview .remove-preview:hover {
+    background: rgba(238, 77, 45, 0.9);
+}
+
+.variant-row.variant-error {
+    background: #fff5f5;
+    border-left: 3px solid #ee4d2d;
+}
+
+.variant-row.variant-error td {
+    color: #ee4d2d;
 }
 
 .dimension-grid {
@@ -337,6 +399,8 @@
         flex: 1;
     }
 }
+
+
 
 
 

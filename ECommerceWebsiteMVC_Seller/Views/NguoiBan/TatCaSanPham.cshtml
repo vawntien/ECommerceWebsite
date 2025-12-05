@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ECommerceWebsiteMVC_Seller.Models.SanPham>
+﻿@model List<ECommerceWebsiteMVC_Seller.Models.SanPham>
 @{
     Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
     //var productSales = ViewBag.ProductSales as Dictionary<int, int> ?? new Dictionary<int, int>();
@@ -74,9 +74,18 @@
             <input type="text" class="form-control" placeholder="Tìm Tên sản phẩm, SKU sản phẩm, SKU phân loại, Mã sản phẩm" id="searchInput">
         </div>
         <select class="form-select">
-            <option>Category</option>
+            @*@foreach (var dm in ViewBag.DanhMuc)
+        {
+            <option value="@dm.MaDanhMuc">@dm.TenDanhMuc</option>
+        }*@
+           <option>danh muc</option>
+
+
         </select>
         
+     
+
+
     </div>
 
     <!-- Warnings Section -->

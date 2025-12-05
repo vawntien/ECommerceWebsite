@@ -282,6 +282,7 @@
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DonHangPartial.cs" />
     <Compile Include="Models\DonViVanChuyen.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>

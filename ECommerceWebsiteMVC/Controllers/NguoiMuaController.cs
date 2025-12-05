@@ -19,23 +19,25 @@ namespace ECommerceWebsiteMVC.Controllers
             return View(dssp);
         }
 
+
         public ActionResult DonHang(string trangThai = null)
         {
-            // Lấy MaNguoiDung từ Session (người dùng đã đăng nhập)
-            int? maNguoiDung = Session["MaNguoiMua"] as int?;
-            
-            // Lấy tất cả đơn hàng của người dùng với các thông tin liên quan
-            var query = ql.DonHangs
-                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
-                .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.CuaHang")
-                .Include("DonViVanChuyen")
-                .AsQueryable();
+            // Lấy MaNguoiMua từ Session (người dùng đã đăng nhập)
+            int? maNguoiMua = Session["MaNguoiMua"] as int?;
 
-            // LỌC THEO NGƯỜI DÙNG - Chỉ hiển thị đơn hàng của người dùng hiện tại
-            //if (maNguoiDung.HasValue)
-            //{
-            //    query = query.Where(d => d.MaNguoiDung == maNguoiDung.Value);
-            //}
+            // Lấy tất cả đơn hàng với các thông tin liên quan
+            var query = ql.DonHangs
+    .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams")
+    .Include("DonViVanChuyen")
+    .Where(d => d.ChiTietDonHangs
+                .Any(ct => ct.ChiTietGioHang.GioHang.MaNguoiMua == maNguoiMua.Value));
+
+            // Lọc theo người dùng hiện tại thông qua giỏ hàng của từng chi tiết
+            if (maNguoiMua.HasValue)
+            {
+                query = query.Where(d => d.ChiTietDonHangs
+                    .Any(ct => ct.ChiTietGioHang.GioHang.MaNguoiMua == maNguoiMua.Value));
+            }
 
             // Lọc theo trạng thái nếu có
             if (!string.IsNullOrEmpty(trangThai))
@@ -46,6 +48,14 @@ namespace ECommerceWebsiteMVC.Controllers
             var donHangs = query
                 .OrderByDescending(d => d.ThoiGianDat)
                 .ToList();
+
+            // Gán MaNguoiMua cho từng đơn hàng để dùng ở View hoặc các xử lý khác
+            foreach (var donHang in donHangs)
+            {
+                donHang.MaNguoiMua = donHang.ChiTietDonHangs
+                    .Select(ct => (int?)ct.ChiTietGioHang.GioHang.MaNguoiMua)
+                    .FirstOrDefault();
+            }
 
             ViewBag.TrangThaiHienTai = trangThai;
             return View(donHangs);
@@ -67,8 +77,8 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
-            int? maNguoiDung = Session["MaNguoiMua"] as int?;
-            //if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
+            int? maNguoiMua = Session["MaNguoiMua"] as int?;
+            //if (maNguoiMua.HasValue && donHang.MaNguoiMua != maNguoiMua.Value)
             //{
             //    return new HttpUnauthorizedResult();
             //}
@@ -81,7 +91,7 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             try
             {
-                // Lấy MaNguoiDung từ Session
+                // Lấy MaNguoiMua từ Session
                 int? maNguoiMua = Session["MaNguoiMua"] as int?;
                 if (!maNguoiMua.HasValue)
                 {
@@ -97,7 +107,7 @@ namespace ECommerceWebsiteMVC.Controllers
                 }
 
                 // Kiểm tra quyền sở hữu
-                //if (donHang.MaNguoiDung != maNguoiDung.Value)
+                //if (donHang.MaNguoiMua != maNguoiMua.Value)
                 //{
                 //    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
                 //}
@@ -139,8 +149,8 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
-            //int? maNguoiDung = Session["MaNguoiDung"] as int?;
-            //if (maNguoiDung.HasValue && donHang.MaNguoiDung != maNguoiDung.Value)
+            //int? maNguoiMua = Session["MaNguoiMua"] as int?;
+            //if (maNguoiMua.HasValue && donHang.MaNguoiMua != maNguoiMua.Value)
             //{
             //    return new HttpUnauthorizedResult();
             //}
