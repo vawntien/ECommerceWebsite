@@ -381,6 +381,7 @@
     <Content Include="Views\GioHang\OrderSuccess.cshtml" />
     <Content Include="Views\NguoiMua\ChiTietHuyDon.cshtml" />
     <Content Include="Views\DanhGia\DanhGiaSanPhamPartial.cshtml" />
+    <Content Include="Views\TaiKhoan\DangKy.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
