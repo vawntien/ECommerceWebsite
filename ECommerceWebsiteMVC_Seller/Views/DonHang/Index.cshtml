@@ -1,0 +1,243 @@
+﻿
+@model IEnumerable<ECommerceWebsiteMVC_Seller.Models.SellerOrderItemViewModel>
+@{
+    ViewBag.Title = "Đơn hàng";
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+    var donViVanChuyens = ViewBag.DonVisVanChuyen as List<ECommerceWebsiteMVC_Seller.Models.DonViVanChuyen>;
+    string currentTrangThai = ViewBag.CurrentTrangThai as string ?? "TatCa";
+    string currentSearchType = ViewBag.SearchType as string ?? "MaDonHang";
+    string currentKeyword = ViewBag.Keyword as string ?? Request["keyword"];
+}
+
+<link rel="stylesheet" href="~/Content/seller-orders.css" />
+
+<div class="orders-page">
+    <div class="page-header">
+        <h1 class="page-title">Đơn hàng</h1>
+    </div>
+
+    <!-- Tabs trạng thái đơn hàng -->
+    <div class="order-tabs">
+        <button class="order-tab-item @(currentTrangThai == "TatCa" ? "active" : "")" data-status="TatCa">
+            Tất cả
+        </button>
+        <button class="order-tab-item @(currentTrangThai == "ChoXacNhan" ? "active" : "")" data-status="ChoXacNhan">
+            Chờ xác nhận
+        </button>
+        <button class="order-tab-item @(currentTrangThai == "ChoLayHang" ? "active" : "")" data-status="ChoLayHang">
+            Chờ lấy hàng
+        </button>
+        <button class="order-tab-item @(currentTrangThai == "ChoGiaoHang" ? "active" : "")" data-status="ChoGiaoHang">
+            Đang giao
+        </button>
+        <button class="order-tab-item @(currentTrangThai == "DaGiao" ? "active" : "")" data-status="DaGiao">
+            Đã giao
+        </button>
+        <button class="order-tab-item @(currentTrangThai == "DaHuy" ? "active" : "")" data-status="DaHuy">
+            Đã hủy
+        </button>
+    </div>
+
+    <!-- Thanh filter -->
+    @using (Html.BeginForm("Index", "DonHang", FormMethod.Get, new { @class = "filter-section" }))
+    {
+        <div class="search-box search-box-advanced">
+            <select name="searchType" class="search-type-select">
+                <option value="MaDonHang" @(currentSearchType == "MaDonHang" ? "selected" : "")>Mã đơn hàng</option>
+                <option value="TenNguoiMua" @(currentSearchType == "TenNguoiMua" ? "selected" : "")>Tên người mua</option>
+                <option value="SanPham" @(currentSearchType == "SanPham" ? "selected" : "")>Sản phẩm</option>
+            </select>
+            <div class="search-input-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text"
+                       name="keyword"
+                       value="@currentKeyword"
+                       class="form-control"
+                       id="KeywordInput"
+                       placeholder="Nhập Mã đơn hàng" />
+            </div>
+        </div>
+
+        <select class="form-select" name="maDonViVanChuyen">
+            <option value="">Đơn vị vận chuyển</option>
+            @if (donViVanChuyens != null)
+            {
+                foreach (var dv in donViVanChuyens)
+                {
+                    var selected = Request["maDonViVanChuyen"] == dv.MaDVVC.ToString();
+                    <option value="@dv.MaDVVC" @(selected ? "selected" : "")>@dv.TenDVVC</option>
+                }
+            }
+        </select>
+
+        <input type="hidden" name="trangThai" id="TrangThaiInput" value="@currentTrangThai" />
+
+        <button type="submit" class="btn btn-outline-secondary ">Áp dụng</button>
+        <a href="@Url.Action("Index", "DonHang")" class="btn btn-outline-secondary">Đặt lại</a>
+    }
+
+    <!-- Header giống bảng -->
+    <div class="orders-list-wrapper">
+        <div class="orders-header-row">
+            <span>Sản phẩm</span>
+            <span>Tổng đơn hàng</span>
+            <span>Trạng thái</span>
+            <span>Đơn vị vận chuyển</span>
+            <span>Thao tác</span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="orders-empty">
+                Chưa có đơn hàng nào cho điều kiện lọc hiện tại.
+            </div>
+        }
+        else
+        {
+            foreach (var order in Model)
+            {
+                <div class="order-card">
+                    <div class="order-buyer-row">
+                        
+                        <span style="font-size: 12px; color: #999">@order.TenNguoiMua</span>
+                        <span style="margin-left:auto;font-size:12px;color:#999;">
+                            @*@order.ThoiGianDat.ToString("dd/MM/yyyy HH:mm")*@
+                            Mã đơn hàng: @order.MaDonHang.ToString()
+                        </span>
+                    </div>
+                    <div class="order-body-row">
+                        <div>
+                            <div class="order-product-info">
+                                @if (!string.IsNullOrEmpty(order.AnhSanPhamDauTien))
+                                {
+                                    <img src="@order.AnhSanPhamDauTien" alt="@order.TenSanPhamDauTien" class="order-product-image" />
+                                }
+                                else
+                                {
+                                    <div class="order-product-image" style="display:flex;align-items:center;justify-content:center;background:#f7f7f7;color:#bbb;font-size:12px;">
+                                        No image
+                                    </div>
+                                }
+                                <div>
+                                    <div class="order-product-name">@order.TenSanPhamDauTien</div>
+                                    @if (!string.IsNullOrEmpty(order.TenBienTheDauTien))
+                                    {
+                                        <div class="order-product-meta">Phân loại: @order.TenBienTheDauTien</div>
+                                    }
+                                    <div class="order-product-meta">
+                                        Mã đơn: @order.MaDonHang |
+                                        SL: @order.SoLuongSanPhamDauTien
+                                        @if (order.TongSoLuong > order.SoLuongSanPhamDauTien)
+                                        {
+                                            <span>+ @(order.TongSoLuong - order.SoLuongSanPhamDauTien) sản phẩm khác</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="order-total-amount">₫@String.Format("{0:N0}", order.TongTien)</div>
+                            <div class="order-product-meta">
+                                @order.PhuongThucThanhToanHienThi
+                            </div>
+                        </div>
+                        <div>
+                            <div class="order-status @(order.TrangThaiDonHang == "Đã hủy" ? "badge-cancelled" : "")">
+                                @order.TrangThaiDonHang
+                            </div>
+                            <div class="order-product-meta">
+                                @order.TrangThaiVanChuyen
+                            </div>
+                        </div>
+                        <div>
+                            <div class="order-product-meta">
+                                @order.DonViVanChuyen
+                            </div>
+                        </div>
+                        <div class="order-actions text-end">
+                            @if (order.TrangThaiDonHang == "Chờ xác nhận")
+                            {
+                                using (Html.BeginForm("HuyDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("id", order.MaDonHang)
+                                    <button type="submit" class="btn btn-sm btn-outline-danger me-1" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
+                                        Hủy đơn
+                                    </button>
+                                }
+                                using (Html.BeginForm("XacNhanDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("id", order.MaDonHang)
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        Xác nhận
+                                    </button>
+                                }
+                            }
+                            else if (order.TrangThaiDonHang == "Chờ lấy hàng")
+                            {
+                                using (Html.BeginForm("DaBanGiaoHang", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("id", order.MaDonHang)
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        Đã bàn giao hàng
+                                    </button>
+                                }
+                            }
+                            else if (order.TrangThaiDonHang == "Chờ giao hàng")
+                            {
+                                <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-secondary">
+                                    Thông tin vận chuyển
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="text-primary">Xem chi tiết</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    // Đổi trạng thái khi click tab và submit form filter
+    document.querySelectorAll('.order-tab-item').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            var status = this.getAttribute('data-status');
+            var input = document.getElementById('TrangThaiInput');
+            if (input) {
+                input.value = status;
+            }
+            // submit form filter gần nhất
+            var form = document.querySelector('.filter-section');
+            if (form) {
+                form.submit();
+            }
+        });
+    });
+
+    // Đổi placeholder theo loại tìm kiếm
+    (function () {
+        var select = document.querySelector('.search-type-select');
+        var input = document.getElementById('KeywordInput');
+        if (!select || !input) return;
+
+        function updatePlaceholder() {
+            var val = select.value;
+            if (val === 'TenNguoiMua') {
+                input.placeholder = 'Nhập Tên người mua';
+            } else if (val === 'SanPham') {
+                input.placeholder = 'Nhập Tên sản phẩm';
+            } else {
+                input.placeholder = 'Nhập Mã đơn hàng';
+            }
+        }
+
+        select.addEventListener('change', updatePlaceholder);
+        updatePlaceholder();
+    })();
+</script>

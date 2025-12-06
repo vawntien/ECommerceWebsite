@@ -218,6 +218,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\seller-edit-product.css" />
+    <Content Include="Content\seller-orders.css" />
     <Content Include="Content\seller-products.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\style.css" />
@@ -239,6 +241,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DonHangController.cs" />
     <Compile Include="Controllers\NguoiBanController.cs" />
     <Compile Include="Controllers\TaiKhoanController.cs" />
     <Compile Include="Global.asax.cs">
@@ -305,6 +308,7 @@
     <Compile Include="Models\SanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SellerOrderViewModel.cs" />
     <Compile Include="Models\sp_GetLowStockWarnings_Result.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -348,7 +352,6 @@
     <None Include="packages.config" />
     <Content Include="Views\Shared\_LayoutNguoiBan.cshtml" />
     <Content Include="Views\NguoiBan\Index.cshtml" />
-    <Content Include="Views\NguoiBan\DonHang.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\TaiKhoan\DangNhapNguoiBan.cshtml" />
@@ -356,6 +359,8 @@
     <Content Include="Views\NguoiBan\CapNhatSanPham.cshtml" />
     <Content Include="Views\NguoiBan\ThemSanPham.cshtml" />
     <Content Include="Views\TaiKhoan\HoanTatDangKyNguoiBan.cshtml" />
+    <Content Include="Views\DonHang\Index.cshtml" />
+    <Content Include="Views\DonHang\ChiTiet.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
