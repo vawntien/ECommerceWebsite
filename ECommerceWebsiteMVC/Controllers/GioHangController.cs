@@ -419,7 +419,7 @@ namespace ECommerceWebsiteMVC.Controllers
         [HttpPost]
         public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher)
         {
-            int userId = GetUserId(); // Chỉ dùng để check đăng nhập, không lưu vào DonHang
+            int userId = GetUserId(); 
 
             if (TempData["SelectedIds"] == null) return RedirectToAction("Index");
             var idList = TempData["SelectedIds"].ToString().Split(',').Select(int.Parse).ToList();
@@ -488,8 +488,8 @@ namespace ECommerceWebsiteMVC.Controllers
 
                         MaGiamGia = maGiamGiaID, // CHUẨN: MaGiamGia (Allow Nulls)
 
-                        TrangThaiDonHang = "DangXuLy",
-                        TrangThaiVanChuyen = "ChuaGiao", // Allow Nulls nhưng nên gán
+                        TrangThaiDonHang = "Chờ xác nhận",
+                        TrangThaiVanChuyen = "Chưa giao", // Allow Nulls nhưng nên gán
                         TrangThaiThanhToan = false,      // CHUẨN: bit (boolean)
 
                         GhiChu = "" // Allow Nulls
@@ -502,8 +502,6 @@ namespace ECommerceWebsiteMVC.Controllers
                     foreach (var item in cartItems)
                     {
                         var bt = db.BienTheSanPhams.Find(item.MaBienThe);
-
-                        // Check tồn kho (SoLuongTonKho)
                         if (bt.SoLuongTonKho < item.SoLuong)
                         {
                             transaction.Rollback();
@@ -516,16 +514,10 @@ namespace ECommerceWebsiteMVC.Controllers
                         var ctdh = new ChiTietDonHang
                         {
                             MaDonHang = dh.MaDonHang,
-                            MaCTGH = item.MaCTGH, // Có cột này trong ChiTietDonHang
-                            // MaBienThe = item.MaBienThe, // XÓA DÒNG NÀY nếu bảng ChiTietDonHang không có
+                            MaCTGH = item.MaCTGH, 
                             SoLuong = item.SoLuong,
-                            // DonGia = bt.GiaBan, // Nếu bảng có cột DonGia thì mở ra
-                            // ThanhTien = ... // Nếu bảng có cột ThanhTien thì mở ra
                         };
 
-                        // Kiểm tra lại bảng ChiTietDonHang xem có cột DonGia/ThanhTien không?
-                        // Dựa vào code cũ của bạn thì có, tôi sẽ thêm vào:
-                        // Nếu báo lỗi đỏ thì xóa đi nhé.
                         try { ctdh.GetType().GetProperty("DonGia").SetValue(ctdh, bt.GiaBan); } catch { }
                         try { ctdh.GetType().GetProperty("ThanhTien").SetValue(ctdh, (decimal)(bt.GiaBan * item.SoLuong)); } catch { }
 

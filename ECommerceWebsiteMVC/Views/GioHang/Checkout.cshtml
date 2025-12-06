@@ -312,7 +312,7 @@
     @foreach (var item in Model.Items)
     {
         <div class="item-row">
-            <img src="/assets/@item.HinhAnh" />
+           <img src="@($"https://ecommerceshopstorage.blob.core.windows.net/variants/{item.HinhAnh}")" />
             <div>
                 <div style="font-weight:bold;">@item.TenSanPham</div>
                 <div style="color:#888;">@item.PhanLoai</div>
@@ -404,7 +404,14 @@
             <div class="address-list-body" style="padding-top: 20px;">
                 <div class="form-row-2 form-group">
                     <input id="new-name" class="input-shopee" placeholder="Họ và tên" />
-                    <input id="new-phone" class="input-shopee" placeholder="Số điện thoại" />
+                   <input id="new-phone" 
+                   class="input-shopee" 
+                   placeholder="Số điện thoại" 
+                   type="tel"
+                   maxlength="10" 
+                   pattern="0[0-9]{9}" 
+                   title="SĐT phải bắt đầu bằng 0 và có 10 số" 
+                   required />
                 </div>
 
                 <div class="form-group">
@@ -519,13 +526,19 @@
             $("#address-list-container").html(html);
         }
 
-        // Chuyển màn hình & Reset form
+        // Chuyển màn hình 
         $("#btn-show-add-form").click(function () {
             $("#view-list").hide(); $("#view-form").show();
-            // Reset form (chỉ còn 1 ô địa chỉ)
-            $("#new-name").val("");
-            $("#new-phone").val("");
-            $("#new-city").val("");
+
+            // Lấy thông tin Tên & SĐT đang hiển thị trên màn hình chính (Dữ liệu đã được gán)
+            var currentName = $("#tennhan").text().trim();
+            var currentPhone = $("#sdtnhan").text().trim();
+            var currentAddr = $("#diachinhan").text().trim();
+
+            // Tự động điền các ô input mới
+            $("#new-name").val(currentName);
+            $("#new-phone").val(currentPhone);
+            $("#new-city").val(currentAddr);
         });
 
         $("#btn-back-to-list, #btn-close-popup").click(function () {
@@ -561,6 +574,15 @@
                 alert("Vui lòng điền đủ thông tin!"); return;
             }
 
+            // --- KIỂM TRA ĐỊNH DẠNG NGHIÊM NGẶT (NHƯ TRIGGER SQL) ---
+            // Kiểm tra: Phải 10 số AND bắt đầu bằng 0 AND không chứa ký tự lạ
+            if (sdt.length !== 10 || !sdt.startsWith("0") || sdt.match(/[^0-9]/)) {
+                alert("Lỗi: Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0!");
+                $("#new-phone").focus();
+                return;
+            }
+            // --------------------------------------------------------
+
             applyAddress(ten, sdt, fullAddr);
             $("#popup-address").hide();
         });
@@ -576,7 +598,7 @@
         }
 
         // ===============================================
-        // ===== VALIDATE TRƯỚC KHI SUBMIT FORM =====
+        // ===== VALIDATE TRƯỚC KHI SUBMIT FORM (ĐÃ SỬA) =====
         // ===============================================
         $("#form-checkout").submit(function (e) {
             // Lấy giá trị từ các ô hidden
@@ -586,23 +608,29 @@
 
             // Kiểm tra nếu thiếu 1 trong 3 thông tin
             if (ten === "" || sdt === "" || diachi === "") {
-                e.preventDefault(); // Chặn gửi form
+                e.preventDefault(); // <-- CHẶN gửi form
 
                 alert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi đặt hàng!");
 
-                // Tự động mở Popup
+                // 1. Mở Popup
                 $("#popup-address").css("display", "flex");
 
-                // Nếu chưa có lịch sử thì mở thẳng form thêm mới
-                if ($("#address-list-container").children().length === 0) {
-                    $("#view-list").hide();
-                    $("#view-form").show();
-                } else {
-                    $("#view-list").show();
-                    $("#view-form").hide();
-                    loadAddressHistory();
-                }
+                // 2. Chuyển thẳng sang FORM thêm mới (view-form) và ẩn danh sách lịch sử
+                $("#view-list").hide();
+                $("#view-form").show();
+
+                // 3. Tự động điền thông tin cũ vào form
+                var currentName = $("#tennhan").text().trim();
+                var currentPhone = $("#sdtnhan").text().trim();
+                var currentAddr = $("#diachinhan").text().trim();
+
+                $("#new-name").val(currentName);
+                $("#new-phone").val(currentPhone);
+
+                // Điền địa chỉ đang thiếu vào ô nhập địa chỉ mới
+                $("#new-city").val(currentAddr);
             }
+            // Nếu thông tin đầy đủ, form sẽ gửi đi bình thường.
         });
 
     </script>

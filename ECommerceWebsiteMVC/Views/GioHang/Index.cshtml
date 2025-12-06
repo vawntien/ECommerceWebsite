@@ -300,6 +300,16 @@
         <button onclick="$('#variant-modal').hide()" style="margin-top:10px;width:100%;padding:10px;background:#ccc;border:none;">Đóng</button>
     </div>
 </div>
+<div id="delete-confirm-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:450px; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <div id="delete-modal-message" style="padding:20px 24px; font-size:16px; color:#333;">
+        </div>
+        <div style="padding:15px 24px; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #eee;">
+            <button id="btn-delete-cancel" style="padding:10px 20px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer;">TRỞ LẠI</button>
+            <button id="btn-delete-confirm" style="padding:10px 20px; background:#ee4d2d; color:#fff; border:none; border-radius:3px; cursor:pointer;">CÓ</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -307,8 +317,12 @@
         $(document).ready(function () {
 
             // ============================================
-            // 1. XỬ LÝ CHECKBOX VÀ TÍNH TỔNG TIỀN (UI ONLY)
+            // 1. CÁC HÀM TIỆN ÍCH (FORMAT TIỀN, TÍNH TỔNG)
             // ============================================
+            function formatCurrency(amount) {
+                return amount.toLocaleString("vi-VN") + " đ";
+            }
+
             function updateSelectedIds() {
                 var ids = $(".chk-item:checked").map(function () {
                     return $(this).closest(".product-row").data("id");
@@ -316,15 +330,11 @@
                 $("#SelectedIds").val(ids.join(","));
             }
 
-            function formatCurrency(amount) {
-                return amount.toLocaleString("vi-VN") + " đ";
-            }
-
             function updateTotal() {
                 var total = 0, count = 0;
                 $(".chk-item:checked").each(function () {
                     var row = $(this).closest(".product-row");
-                    // Lấy giá trị tiền từ text hiển thị (loại bỏ chữ ' đ' và dấu chấm)
+                    // Lấy giá trị tiền, bỏ dấu chấm và chữ đ để tính toán
                     var subtext = row.find(".product-subtotal").text();
                     var subval = parseFloat(subtext.replace(/\./g, '').replace(' đ', ''));
 
@@ -337,115 +347,79 @@
                 $("#total-amount").text(formatCurrency(total));
             }
 
-            // Sự kiện Checkbox
+            // Sự kiện Checkbox thay đổi -> Tính lại tiền
             $(".chk-item, .chk-shop, .chk-all").change(function () {
                 var checked = $(this).is(":checked");
                 if ($(this).hasClass("chk-all")) $(".chk-item, .chk-shop").prop("checked", checked);
                 if ($(this).hasClass("chk-shop")) $(this).closest(".shop-block").find(".chk-item").prop("checked", checked);
+
                 updateSelectedIds();
                 updateTotal();
             });
 
-
             // ============================================
-            // 2. XỬ LÝ CẬP NHẬT SỐ LƯỢNG (QUAN TRỌNG)
+            // 2. XỬ LÝ CẬP NHẬT SỐ LƯỢNG (AJAX)
             // ============================================
-
-            // Hàm xử lý chung khi đổi số lượng (gọi AJAX)
             function updateQuantityAjax(input) {
                 var maCTGH = input.data('id');
                 var stock = parseInt(input.data('stock'));
                 var val = parseInt(input.val());
 
-                // Validate
-                if (isNaN(val) || val < 1) {
-                    alert("Số lượng tối thiểu là 1");
-                    input.val(1);
-                    val = 1;
-                }
-                if (val > stock) {
-                    alert("Kho chỉ còn " + stock + " sản phẩm!");
-                    input.val(stock);
-                    val = stock;
-                }
+                if (isNaN(val) || val < 1) { alert("Tối thiểu là 1"); input.val(1); val = 1; }
+                if (val > stock) { alert("Kho chỉ còn " + stock); input.val(stock); val = stock; }
 
-                // Gửi AJAX
                 $.ajax({
                     url: '/GioHang/UpdateQuantity',
                     type: 'POST',
                     data: { maCTGH: maCTGH, soLuongMoi: val },
                     success: function (res) {
                         if (res.success) {
-                            // Cập nhật thành tiền của dòng đó
                             var row = input.closest(".product-row");
                             row.find(".product-subtotal").text(formatCurrency(res.thanhTien));
-
-                            // Tính lại tổng tiền cả giỏ
                             updateTotal();
                         } else {
                             alert(res.message);
-                            input.val(stock); // Reset về max kho nếu lỗi
+                            input.val(stock); // Quay về số cũ nếu lỗi
                         }
                     },
-                    error: function () {
-                        alert("Lỗi kết nối server!");
-                    }
+                    error: function () { alert("Lỗi kết nối server!"); }
                 });
             }
 
-            // Sự kiện nhập tay vào ô input
-            $('.ajax-qty').on('change', function () {
-                updateQuantityAjax($(this));
-            });
+            $('.ajax-qty').on('change', function () { updateQuantityAjax($(this)); });
 
-            // Sự kiện nút CỘNG (+)
             $(".btn-plus").click(function () {
                 var input = $(this).siblings(".qty-input");
-                var currentVal = parseInt(input.val()) || 0;
+                var val = parseInt(input.val()) || 0;
                 var max = parseInt(input.data('stock'));
-
-                if (currentVal < max) {
-                    input.val(currentVal + 1);
-                    // Kích hoạt sự kiện change để gọi AJAX
-                    input.trigger('change');
-                } else {
-                    alert("Đã đạt giới hạn tồn kho!");
-                }
+                if (val < max) { input.val(val + 1); input.trigger('change'); }
+                else { alert("Đã đạt giới hạn tồn kho!"); }
             });
 
-            // Sự kiện nút TRỪ (-)
             $(".btn-minus").click(function () {
                 var input = $(this).siblings(".qty-input");
-                var currentVal = parseInt(input.val()) || 0;
-
-                if (currentVal > 1) {
-                    input.val(currentVal - 1);
-                    // Kích hoạt sự kiện change để gọi AJAX
-                    input.trigger('change');
-                }
+                var val = parseInt(input.val()) || 0;
+                if (val > 1) { input.val(val - 1); input.trigger('change'); }
             });
 
-
             // ============================================
-            // 3. XÓA SẢN PHẨM
+            // 3. XỬ LÝ XÓA SẢN PHẨM
             // ============================================
             $(".btn-delete").click(function () {
                 if (!confirm("Bạn muốn xóa sản phẩm này?")) return;
-
                 var row = $(this).closest(".product-row");
                 var id = row.data("id");
 
                 $.post("/GioHang/DeleteItem", { id: id }, function (res) {
                     if (res.success) {
                         row.remove();
-                        updateSelectedIds();
-                        updateTotal();
-
-                        // Nếu shop không còn item nào thì xóa luôn block shop
+                        // Kiểm tra nếu shop trống thì xóa luôn tên shop
                         $(".shop-block").each(function () {
                             if ($(this).find(".product-row").length === 0) $(this).remove();
                         });
-                    }
+                        updateSelectedIds();
+                        updateTotal();
+                    } else { alert(res.message); }
                 });
             });
 
@@ -454,11 +428,7 @@
                     return $(this).closest(".product-row").data("id");
                 }).get();
 
-                if (ids.length === 0) {
-                    alert("Chưa chọn sản phẩm nào để xóa!");
-                    return;
-                }
-
+                if (ids.length === 0) { alert("Chưa chọn sản phẩm nào!"); return; }
                 if (!confirm("Xóa " + ids.length + " sản phẩm đã chọn?")) return;
 
                 $.ajax({
@@ -468,72 +438,81 @@
                     data: { ids: ids },
                     success: function (res) {
                         if (res.success) {
-                            $(".chk-item:checked").closest(".product-row").remove();
-                            updateSelectedIds();
-                            updateTotal();
-                            location.reload(); // Reload cho sạch sẽ
-                        }
+                            location.reload(); // Reload trang cho sạch sẽ
+                        } else { alert(res.message); }
                     }
                 });
             });
 
-
             // ============================================
-            // 4. ĐỔI BIẾN THỂ (POPUP)
+            // 4. XỬ LÝ ĐỔI BIẾN THỂ (POPUP) - ĐÃ BỔ SUNG
             // ============================================
-            var selectedRow = null;
-            var selectedVariantId = null;
+            var selectedRow = null;       // Dòng đang được chọn để đổi
+            var selectedVariantId = null; // ID biến thể mới
 
+            // Khi bấm vào nút "▼" hoặc tên phân loại
             $(".variant-change").click(function () {
                 selectedRow = $(this).closest(".product-row");
-                var variants = selectedRow.data("variants"); // Lấy JSON list biến thể
-                var currentId = selectedRow.data("variant");
+                var variants = selectedRow.data("variants"); // Lấy danh sách biến thể từ HTML
+                var currentId = selectedRow.data("variant"); // Biến thể hiện tại
 
-                $("#variant-list").empty();
+                $("#variant-list").empty(); // Xóa danh sách cũ trong modal
 
                 if (variants && variants.length > 0) {
+                    // Vẽ danh sách biến thể vào Modal
                     variants.forEach(v => {
                         var el = $("<div class='variant-option'></div>");
-
-                        // Chỉ để lại tên biến thể:
-                        el.text(v.TenBienThe);
-
+                        el.text(v.TenBienThe); // Hiển thị tên
                         el.attr("data-id", v.MaBienThe);
+
+                        // Tô đậm biến thể đang dùng
                         if (v.MaBienThe === currentId) el.addClass("active");
+
                         $("#variant-list").append(el);
                     });
+
+                    // Hiển thị Modal
                     $("#variant-modal").css("display", "flex");
                 } else {
                     alert("Sản phẩm này không có phân loại khác.");
                 }
             });
 
+            // Sự kiện chọn biến thể trong Modal
             $(document).on("click", ".variant-option", function () {
                 $(".variant-option").removeClass("active");
                 $(this).addClass("active");
                 selectedVariantId = parseInt($(this).attr("data-id"));
             });
 
+            // Sự kiện bấm nút XÁC NHẬN trong Modal
             $("#variant-save").click(function () {
-                if (!selectedVariantId) return;
+                if (!selectedVariantId) {
+                    $("#variant-modal").hide();
+                    return;
+                }
+
                 var maCTGH = selectedRow.data("id");
 
+                // Gọi Server để cập nhật
                 $.post("/GioHang/UpdateVariant",
-                    { maCTGH: maCTGH, maBienTheMoi: selectedVariantId }, // Khớp tên tham số Controller
+                    {
+                        maCTGH: maCTGH,
+                        maBienTheMoi: selectedVariantId
+                    },
                     function (res) {
                         if (res.success) {
-                            location.reload(); // Reload để cập nhật lại thông tin/giá mới
+                            location.reload(); // Reload trang để cập nhật lại tên, giá, ảnh mới
                         } else {
-                            alert(res.message || "Lỗi cập nhật");
+                            alert(res.message || "Lỗi cập nhật biến thể");
                         }
                     }
                 );
                 $("#variant-modal").hide();
             });
 
-            // Khởi tạo tính tổng khi vào trang
+            // Khởi tạo tính tổng khi mới vào trang
             updateTotal();
         });
     </script>
-
 }
