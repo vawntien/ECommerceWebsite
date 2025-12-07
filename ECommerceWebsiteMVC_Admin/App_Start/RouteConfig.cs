@@ -16,7 +16,7 @@ namespace ECommerceWebsiteMVC_Admin
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "QuanLyThongKe", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "TaiKhoan", action = "DangNhap", id = UrlParameter.Optional }
             );
         }
     }

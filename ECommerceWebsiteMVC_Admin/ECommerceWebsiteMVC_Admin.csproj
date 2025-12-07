@@ -168,9 +168,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\QuanLyNguoiDungHeThongController.cs" />
+    <Compile Include="Controllers\QuanLyNhanVienController.cs" />
     <Compile Include="Controllers\QuanLyThongKeController.cs" />
+    <Compile Include="Controllers\TaiKhoanController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -196,6 +197,7 @@
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBQuanLyNguoiDungHeThong.cs" />
+    <Compile Include="Models\DBQuanLyNhanVien.cs" />
     <Compile Include="Models\DBQuanLyThongKe.cs" />
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
@@ -262,7 +264,6 @@
       <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Content>
     <None Include="packages.config" />
-    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_QuanLyNguoiDungHeThongLayout.cshtml" />
     <Content Include="Views\Shared\_QuanLyNguoiDungHeThongSidebar.cshtml" />
@@ -278,6 +279,14 @@
     <Content Include="Views\QuanLyThongKe\Index.cshtml" />
     <Content Include="Views\QuanLyThongKe\ThongKeDoanhThuNguoiBan.cshtml" />
     <Content Include="Views\QuanLyThongKe\ThongKeDoanhThuNganhHang.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNhanVienLayout.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNhanVienSidebar.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNhanVienTopNavbar.cshtml" />
+    <Content Include="Views\QuanLyNhanVien\Index.cshtml" />
+    <Content Include="Views\QuanLyNhanVien\NhanVien.cshtml" />
+    <Content Include="Views\QuanLyNhanVien\ThemNhanVien.cshtml" />
+    <Content Include="Views\QuanLyNhanVien\SuaNhanVien.cshtml" />
+    <Content Include="Views\TaiKhoan\DangNhap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

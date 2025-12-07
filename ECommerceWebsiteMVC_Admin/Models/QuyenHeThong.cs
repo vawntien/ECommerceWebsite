@@ -22,6 +22,7 @@ namespace ECommerceWebsiteMVC_Admin.Models
     
         public int MaQuyenHeThong { get; set; }
         public string TenQuyenHeThong { get; set; }
+        public string MoTa { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NhanVien> NhanViens { get; set; }
