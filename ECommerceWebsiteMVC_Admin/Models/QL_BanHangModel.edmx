@@ -179,6 +179,7 @@
           </Key>
           <Property Name="MaQuyenHeThong" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TenQuyenHeThong" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -940,6 +941,7 @@
           <Property Name="MaQuyenHeThong" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TenQuyenHeThong" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="NhanViens" Relationship="ECommerceWebsiteModel.FK_NhanVienNhomQuyen" FromRole="QuyenHeThong" ToRole="NhanVien" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_NhanVienNhomQuyen">
           <End Type="ECommerceWebsiteModel.QuyenHeThong" Role="QuyenHeThong" Multiplicity="1" />
@@ -1169,6 +1171,7 @@
           <EntitySetMapping Name="QuyenHeThongs">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.QuyenHeThong">
               <MappingFragment StoreEntitySet="QuyenHeThong">
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
                 <ScalarProperty Name="TenQuyenHeThong" ColumnName="TenQuyenHeThong" />
                 <ScalarProperty Name="MaQuyenHeThong" ColumnName="MaQuyenHeThong" />
               </MappingFragment>

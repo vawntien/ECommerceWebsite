@@ -1,0 +1,79 @@
+﻿@model List<ECommerceWebsiteMVC_Admin.Models.QuyenHeThong>
+@{
+    ViewBag.Title = "Quản lý Nhóm Quyền";
+    Layout = "~/Views/Shared/_QuanLyNhanVienLayout.cshtml";
+}
+
+<div class="relative flex h-auto w-full flex-col p-6 lg:p-8">
+
+    <div class="w-full bg-white dark:bg-gray-900 rounded-lg shadow-sm">
+        <div class="p-6">
+
+            <!-- HEADER -->
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Quản lý Nhóm Quyền</h1>
+            </div>
+
+            <!-- SEARCH (nếu sau này cần thì bạn giữ lại, còn không thì có thể xoá luôn) -->
+            <!--<div class="mb-4">
+                <div class="relative w-full max-w-xs">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2
+                                  -translate-y-1/2 text-gray-400">search</span>
+
+                    <input type="text"
+                           placeholder="Tìm kiếm nhóm quyền"
+                           class="form-input w-full h-10 pl-10 pr-4 rounded-sm border border-gray-300
+                                  dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900
+                                  dark:text-white placeholder:text-gray-400 focus:ring-primary
+                                  focus:border-primary text-sm" />
+                </div>
+            </div>-->
+
+            <!-- TABLE -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full w-full">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500
+                                       dark:text-gray-400 uppercase tracking-wider">
+                                Mã Nhóm Quyền
+                            </th>
+
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500
+                                       dark:text-gray-400 uppercase tracking-wider">
+                                Tên Nhóm Quyền
+                            </th>
+
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500
+                                       dark:text-gray-400 uppercase tracking-wider">
+                                Mô tả
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+
+                        @foreach (var it in Model)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                    @it.MaQuyenHeThong
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                    @it.TenQuyenHeThong
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    @it.MoTa
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

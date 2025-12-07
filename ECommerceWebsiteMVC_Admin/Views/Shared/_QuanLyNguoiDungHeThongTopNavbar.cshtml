@@ -1,4 +1,10 @@
-﻿<header class="flex h-16 items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-white/10 bg-white dark:bg-background-dark px-6">
+﻿@using ECommerceWebsiteMVC_Admin.Models
+@{ 
+    NhanVien nv = Session["NhanVien"] as NhanVien;
+}
+
+
+<header class="flex h-16 items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-white/10 bg-white dark:bg-background-dark px-6">
     @*<div class="flex items-center gap-8">
         <label class="relative flex w-full items-center">
             <span class="material-symbols-outlined absolute left-3 text-gray-500">search</span>
@@ -23,8 +29,8 @@
             </div>
 
             <div class="flex flex-col text-sm">
-                <p class="font-semibold text-gray-800 dark:text-white">Admin</p>
-                <p class="text-gray-500 dark:text-gray-400">admin@example.com</p>
+                <p class="font-semibold text-gray-800 dark:text-white">@nv.HoVaTen</p>
+                <p class="text-gray-500 dark:text-gray-400">@nv.Email</p>
             </div>
         </div>
     </div>

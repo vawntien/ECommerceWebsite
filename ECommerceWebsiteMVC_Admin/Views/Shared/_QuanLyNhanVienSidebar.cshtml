@@ -15,7 +15,7 @@
     <div class="flex h-16 shrink-0 items-center justify-center border-b dark:border-white/10">
         <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-primary text-3xl">store</span>
-            <h1 class="text-[#181210] dark:text-white text-xl font-bold">Quản lí người dùng</h1>
+            <h1 class="text-[#181210] dark:text-white text-xl font-bold">Quản lí nhân viên</h1>
         </div>
     </div>
 
@@ -25,24 +25,18 @@
                 <li>
                     <div class="flex flex-col gap-2">
 
-                        <a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold @ActiveSidebar("QuanLyNguoiDungHeThong", "TongQuan")"
-                           href="@Url.Action("TongQuan","QuanLyNguoiDungHeThong",null)">
+                        <a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold @ActiveSidebar("QuanLyNhanVien", "Index")"
+                           href="@Url.Action("Index","QuanLyNhanVien",null)">
                             <span class="material-symbols-outlined">dashboard</span>
-                            <span>Tổng quan</span>
+                            <span>Danh sách nhóm quyền</span>
                         </a>
 
-                        <a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold @ActiveSidebar("QuanLyNguoiDungHeThong", "QuanLyCuaHang")"
-                           href="@Url.Action("QuanLyCuaHang","QuanLyNguoiDungHeThong",null)">
+                        <a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold @ActiveSidebar("QuanLyNhanVien", "NhanVien")"
+                           href="@Url.Action("NhanVien","QuanLyNhanVien",null)">
                             <span class="material-symbols-outlined">storefront</span>
-                            <span>Quản lý cửa hàng</span>
+                            <span>Quản lí nhân viên và quyền</span>
                         </a>
 
-
-                        <a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold @ActiveSidebar("QuanLyNguoiDungHeThong", "QuanLyNguoiMua")"
-                           href="@Url.Action("QuanLyNguoiMua","QuanLyNguoiDungHeThong",null)">
-                            <span class="material-symbols-outlined">person</span>
-                            <span>Quản lý người mua</span>
-                        </a>
 
 
                         @*<a class="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold leading-6 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary" href="#">
