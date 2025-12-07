@@ -4,56 +4,78 @@
 @{
     var soDanhGia = Model?.Count ?? 0;
 
-    double saoTB = 0;
-    if (ViewBag.SaoTrungBinhSP != null)
-    {
-        saoTB = (double)ViewBag.SaoTrungBinhSP;
-    }
+    double saoTB = ViewBag.SaoTrungBinhSP != null
+        ? (double)ViewBag.SaoTrungBinhSP
+        : 0;
 
     string saoTBText = saoTB.ToString("0.0");
+
+    var fullStars = (int)Math.Floor(saoTB);
+    var hasHalf = (saoTB - fullStars) >= 0.5;
+    var emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
 }
+
 <style>
-    /* Hàng hiển thị số + sao */
-    .rating-summary {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+    /* HEADER SAO */
+    .rating-box {
+        border: 1px solid #f5e4d0;
+        background: #fff8f3;
+        padding: 20px;
+        border-radius: 4px;
     }
 
-    .rating-score {
-        font-size: 20px;
-        font-weight: 600;
-        border-bottom: 1px solid #000;
-        padding-bottom: 2px;
-        line-height: 1;
+    .rating-number {
+        font-size: 36px;
+        color: #ee4d2d;
+        font-weight: bold;
     }
 
     .rating-stars .star {
-        font-size: 18px;
-        margin-right: 2px;
+        font-size: 22px;
         color: #ddd;
     }
 
-        .rating-stars .star.filled {
-            color: #ffc107;
-        }
+    .star.filled {
+        color: #ee4d2d;
+    }
 
-        .rating-stars .star.half {
-            background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
+    .star.half {
+        background: linear-gradient(90deg, #ee4d2d 50%, #ddd 50%);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 
-    .dg-item-img {
-        max-width: 120px;
-        max-height: 120px;
+    /* REVIEW ITEM */
+    .review-card {
+        padding: 18px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .review-date {
+        font-size: 13px;
+        color: #999;
+        margin-bottom: 6px;
+    }
+
+    .review-content {
+        font-size: 14px;
+        white-space: pre-wrap;
+        margin-top: 4px;
+    }
+
+    .review-img {
+        width: 90px;
+        height: 90px;
         object-fit: cover;
-        border-radius: 6px;
+        border-radius: 4px;
+        margin-top: 10px;
+        margin-right: 6px;
     }
 </style>
 
 <div class="mt-4">
-    <h5>Đánh giá sản phẩm</h5>
+
+    <h4 class="mb-3" style="font-weight:600;">ĐÁNH GIÁ SẢN PHẨM</h4>
 
     @if (soDanhGia == 0)
     {
@@ -61,82 +83,56 @@
     }
     else
     {
-        <!-- Ô sao trung bình -->
-        <div class="d-flex align-items-center gap-3 mt-2 mb-3">
-            <div class="px-3 py-2 bg-light border rounded">
+        <!-- BOX SAO TỔNG -->
+        <div class="rating-box mb-3">
+            <div style="display:flex; gap:20px; align-items:center;">
+                <div class="rating-number">@saoTBText <span style="font-size:16px; color:#555;">trên 5</span></div>
 
-                <div class="rating-summary">
-                    <span class="rating-score">@saoTBText</span>
-
-                    <div class="rating-stars">
-                        @{
-                            var fullStars = (int)Math.Floor(saoTB);
-                            var hasHalf = (saoTB - fullStars) >= 0.5;
-                            var emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
-                        }
-
-                        @for (int i = 0; i < fullStars; i++)
-                        {
-                            <span class="star filled">★</span>
-                        }
-                        @if (hasHalf)
-                        {
-                            <span class="star half">★</span>
-                        }
-                        @for (int i = 0; i < emptyStars; i++)
-                        {
-                            <span class="star">☆</span>
-                        }
-                    </div>
+                <div class="rating-stars">
+                    @for (int i = 0; i < fullStars; i++)
+                    {<span class="star filled">★</span>}
+                    @if (hasHalf)
+                    {<span class="star half">★</span>}
+                    @for (int i = 0; i < emptyStars; i++)
+                    {<span class="star">★</span>}
                 </div>
-
-                <div class="small text-muted mt-1">@soDanhGia đánh giá</div>
             </div>
+
+            <div class="small text-muted mt-1">@soDanhGia đánh giá</div>
         </div>
 
-        <!-- Danh sách đánh giá -->
+        <!-- DANH SÁCH ĐÁNH GIÁ -->
         foreach (var dg in Model.OrderByDescending(x => x.ThoiGian ?? DateTime.MinValue))
         {
-            <div class="border rounded p-3 mb-2">
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                    <div>
-                        <div class="fw-semibold">
-                            @(string.IsNullOrEmpty(dg.TieuDe) ? "Không có tiêu đề" : dg.TieuDe)
-                        </div>
-                        <div class="rating-stars">
-                            @{
-                                int sao = dg.SoSao;
-                            }
-                            @for (int i = 0; i < sao; i++)
-                            {
-                                <span class="star filled">★</span>
-                            }
-                            @for (int i = sao; i < 5; i++)
-                            {
-                                <span class="star">☆</span>
-                            }
-                        </div>
-                    </div>
+            <div class="review-card">
 
-                    <div class="text-muted small">
-                        @(dg.ThoiGian?.ToString("dd/MM/yyyy") ?? "")
-                    </div>
+                <!-- Sao + ngày -->
+                <div class="rating-stars mb-1">
+                    @for (int i = 0; i < dg.SoSao; i++)
+                    {<span class="star filled">★</span>}
+                    @for (int i = dg.SoSao; i < 5; i++)
+                    {<span class="star">☆</span>}
                 </div>
 
+                <div class="review-date">
+                    @(dg.ThoiGian?.ToString("dd/MM/yyyy HH:mm") ?? "")
+                </div>
+
+                <!-- Nội dung -->
                 @if (!string.IsNullOrEmpty(dg.NoiDung))
                 {
-                    <div class="mb-2">
-                        @dg.NoiDung
+                    <div class="review-content">@dg.NoiDung</div>
+                }
+
+                <!-- Hình ảnh -->
+                @if (!string.IsNullOrEmpty(dg.HinhAnh))
+                {
+                    <div class="mt-2">
+                        <img src="@($"https://ecommerceshopstorage.blob.core.windows.net/reviews/{dg.HinhAnh}")"
+                             class="review-img" />
                     </div>
                 }
 
-                @if (!string.IsNullOrEmpty(dg.HinhAnh))
-                {
-                    <div class="mt-1">
-                        <img class="dg-item-img"
-                             src="@($"https://ecommerceshopstorage.blob.core.windows.net/reviews/{dg.HinhAnh}")" />
-                    </div>
-                }
             </div>
         }
     }
