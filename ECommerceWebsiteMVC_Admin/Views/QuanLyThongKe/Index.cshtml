@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "Thống kê hệ thống";
+    Layout = "~/Views/Shared/_QuanLyThongKeLayout.cshtml";
+
+    // Convert dữ liệu ViewBag sang JSON cho Chart.js
+    var doanhThu = Json.Encode(ViewBag.DoanhThu6Thang);
+    var soDon = Json.Encode(ViewBag.DonHang6Thang);
+}
+
+<main class="flex-1 p-6 lg:p-8">
+    <div class="w-full max-w-7xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+            <div class="flex flex-col gap-1">
+                <p class="text-text-light-primary dark:text-text-dark-primary text-3xl font-black tracking-tight">
+                    Phân tích tổng quan
+                </p>
+                <p class="text-text-light-secondary dark:text-text-dark-secondary text-base">
+                    Tổng quan doanh thu
+                </p>
+            </div>
+
+            <button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90 gap-2">
+                <span class="material-symbols-outlined text-base">download</span>
+                <span>Xuất báo cáo</span>
+            </button>
+        </div>
+
+        <!-- TOP CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+            <div class="flex flex-col gap-2 rounded-xl p-6 bg-card-light border">
+                <p class="text-base font-medium">Tổng doanh thu</p>
+                <p class="text-3xl font-bold">@String.Format("{0:N0}₫", ViewBag.TongDoanhThu)</p>
+            </div>
+
+            <div class="flex flex-col gap-2 rounded-xl p-6 bg-card-light border">
+                <p class="text-base font-medium">Đơn hàng thành công</p>
+                <p class="text-3xl font-bold">@ViewBag.DonHangThanhCong</p>
+            </div>
+
+            <div class="flex flex-col gap-2 rounded-xl p-6 bg-card-light border">
+                <p class="text-base font-medium">Đơn hàng thất bại</p>
+                <p class="text-3xl font-bold">@ViewBag.DonHangThatBai</p>
+            </div>
+
+        </div>
+
+        <!-- REVENUE + ORDERS CHART -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+
+            <!-- REVENUE CHART -->
+            <div class="lg:col-span-3 p-6 rounded-xl border bg-card-light">
+                <p class="text-lg font-medium">Doanh thu 6 tháng gần nhất</p>
+                <canvas id="revenueChart" class="mt-6"></canvas>
+            </div>
+
+            <!-- ORDER COUNT CHART -->
+            <div class="lg:col-span-2 p-6 rounded-xl border bg-card-light">
+                <p class="text-lg font-medium">Số đơn hàng 6 tháng gần nhất</p>
+                <canvas id="orderChart" class="mt-6"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Lấy dữ liệu từ ViewBag
+    const doanhThuData = @Html.Raw(doanhThu);
+    const soDonData = @Html.Raw(soDon);
+
+    // Tạo nhãn tháng
+    const labels = doanhThuData.map(item => item.Thang);
+
+    // === DOANH THU CHART ===
+    new Chart(document.getElementById("revenueChart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Doanh thu (VND)",
+                data: doanhThuData.map(x => x.TongTien),
+                borderColor: "#ee4b2b",
+                borderWidth: 3,
+                fill: true,
+                backgroundColor: "rgba(238,75,43,0.15)"
+            }]
+        }
+    });
+
+    // === ĐƠN HÀNG CHART ===
+    new Chart(document.getElementById("orderChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Số đơn",
+                data: soDonData.map(x => x.SoLuong),
+                backgroundColor: "rgba(238,75,43,0.6)"
+            }]
+        }
+    });
+</script>
