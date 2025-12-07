@@ -169,7 +169,8 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\QuanLyNguoiDungHeThongController.cs" />
+    <Compile Include="Controllers\QuanLyThongKeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -194,6 +195,8 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DBQuanLyNguoiDungHeThong.cs" />
+    <Compile Include="Models\DBQuanLyThongKe.cs" />
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -215,6 +218,9 @@
     <Compile Include="Models\NguoiMua.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\NhanVien.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\QL_BanHangModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -230,12 +236,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\QuyenHeThong.cs">
+      <DependentUpon>QL_BanHangModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ThongKeDoanhThuNganhHang.cs" />
+    <Compile Include="Models\ThongKeDoanhThuNguoiBan.cs" />
+    <Compile Include="Models\ThongKeDonHang.cs" />
+    <Compile Include="Models\ThongKeThang.cs" />
     <Compile Include="Models\XuLyAnhAzure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -249,8 +262,22 @@
       <DependentUpon>QL_BanHangModel.edmx</DependentUpon>
     </Content>
     <None Include="packages.config" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNguoiDungHeThongLayout.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNguoiDungHeThongSidebar.cshtml" />
+    <Content Include="Views\Shared\_QuanLyNguoiDungHeThongTopNavbar.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\TongQuan.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\QuanLyCuaHang.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietCuaHang.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\QuanLyNguoiMua.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietNguoiMua.cshtml" />
+    <Content Include="Views\Shared\_QuanLyThongKeLayout.cshtml" />
+    <Content Include="Views\Shared\_QuanLyThongKeSidebar.cshtml" />
+    <Content Include="Views\Shared\_QuanLyThongKeTopNavbar.cshtml" />
+    <Content Include="Views\QuanLyThongKe\Index.cshtml" />
+    <Content Include="Views\QuanLyThongKe\ThongKeDoanhThuNguoiBan.cshtml" />
+    <Content Include="Views\QuanLyThongKe\ThongKeDoanhThuNganhHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -261,7 +288,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Assets\" />
-    <Folder Include="Views\Report\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\SharedImages\**\*.*">

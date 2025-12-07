@@ -1,0 +1,101 @@
+﻿@model List<ECommerceWebsiteMVC_Admin.Models.ThongKeDoanhThuNganhHang>
+
+@{
+    ViewBag.Title = "Thống kê Doanh thu ngành hàng";
+    Layout = "~/Views/Shared/_QuanLyThongKeLayout.cshtml";
+}
+
+<main class="flex-1 w-full max-w-7xl mx-auto p-8">
+
+    <!-- HEADER -->
+    <div class="flex flex-wrap justify-between gap-3 mb-6 items-start">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-3xl font-bold">Thống kê Doanh thu ngành hàng</h1>
+            <p class="text-gray-500">Danh sách doanh thu theo tất cả ngành hàng.</p>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="bg-white dark:bg-[#221510] rounded-xl shadow overflow-hidden">
+
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-bold">Danh sách tất cả ngành hàng</h3>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                    <tr>
+                        <th class="px-6 py-3">STT</th>
+                        <th class="px-6 py-3">Tên Ngành hàng</th>
+                        <th class="px-6 py-3">Số lượng đã bán</th>
+                        <th class="px-6 py-3 text-right">Doanh thu (VNĐ)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var item = Model[i];
+                        int stt = ViewBag.From + i;
+
+                        <tr class="bg-white dark:bg-[#221510] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td class="px-6 py-4 font-medium">@stt</td>
+
+                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                @item.TenNganhHang
+                            </td>
+
+                            <td class="px-6 py-4">@item.SoLuongBan</td>
+
+                            <td class="px-6 py-4 text-right">
+                                @String.Format("{0:N0}", item.DoanhThu)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <nav class="flex items-center justify-end pt-4">
+        <div class="flex items-center gap-2">
+
+            <!-- PREV -->
+            <a href="@Url.Action("ThongKeDoanhThuNganhHang", new { page = ViewBag.Page - 1 })"
+               class="flex size-8 items-center justify-center text-gray-500 hover:text-primary
+                      @(ViewBag.Page == 1 ? "pointer-events-none opacity-40" : "")">
+                <span class="material-symbols-outlined text-xl">chevron_left</span>
+            </a>
+
+            <!-- PAGE NUMBERS -->
+            @for (int p = 1; p <= ViewBag.TotalPages; p++)
+            {
+                if (p == ViewBag.Page)
+                {
+                    <span class="flex size-8 items-center justify-center bg-primary text-white rounded text-sm font-medium">
+                        @p
+                    </span>
+                }
+                else
+                {
+                    <a href="@Url.Action("ThongKeDoanhThuNganhHang", new { page = p })"
+                       class="flex size-8 items-center justify-center text-gray-700 hover:bg-gray-200 rounded">
+                        @p
+                    </a>
+                }
+            }
+
+            <!-- NEXT -->
+            <a href="@Url.Action("ThongKeDoanhThuNganhHang", new { page = ViewBag.Page + 1 })"
+               class="flex size-8 items-center justify-center text-gray-500 hover:text-primary
+                      @(ViewBag.Page == ViewBag.TotalPages ? "pointer-events-none opacity-40" : "")">
+                <span class="material-symbols-outlined text-xl">chevron_right</span>
+            </a>
+
+        </div>
+    </nav>
+
+</main>
