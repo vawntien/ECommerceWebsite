@@ -321,43 +321,137 @@ namespace ECommerceWebsiteMVC.Controllers
             db.SaveChanges();
         }
 
+        //private async Task LuuBienTheSanPhamAsync(int maSanPham)
+        //{
+        //    var azureHelper = new XuLyAnhAzure();
+        //    var variantNames = Request.Form.GetValues("VariantNames") ?? Array.Empty<string>();
+        //    var variantPrices = Request.Form.GetValues("VariantPrices") ?? Array.Empty<string>();
+        //    var variantStocks = Request.Form.GetValues("VariantStocks") ?? Array.Empty<string>();
+        //    var variantSkus = Request.Form.GetValues("VariantSkus") ?? Array.Empty<string>();
+
+        //    for (int i = 0; i < variantNames.Length; i++)
+        //    {
+        //        var variant = new BienTheSanPham
+        //        {
+        //            MaSanPham = maSanPham,
+        //            TenBienThe = variantNames[i],
+        //            GiaBan = ParseDecimalSafe(variantPrices, i),
+        //            SoLuongTonKho = ParseIntSafe(variantStocks, i)
+        //        };
+
+        //        // Ảnh biến thể là bắt buộc
+        //        var fileKey = $"VariantImage_{i}";
+        //        var file = Request.Files[fileKey];
+        //        if (file == null || file.ContentLength == 0)
+        //        {
+        //            throw new Exception($"Ảnh biến thể là bắt buộc cho: {variantNames[i]}");
+        //        }
+
+        //        // Upload ảnh biến thể vào Azure (cùng folder với ảnh sản phẩm: products/{maSanPham}/)
+        //        var fileExtension = Path.GetExtension(file.FileName);
+        //        var fileName = $"variant_{Guid.NewGuid()}{fileExtension}";
+        //        await azureHelper.UploadProductImageAsync(file, maSanPham.ToString(), fileName);
+        //        variant.HinhAnh = fileName;
+
+        //        db.BienTheSanPhams.Add(variant);
+        //    }
+
+        //    db.SaveChanges();
+        //}
+
+        //private string GetSafeFileName(string input)
+        //{
+        //    if (string.IsNullOrWhiteSpace(input))
+        //        return Guid.NewGuid().ToString("N") + ".jpg";
+
+        //    // Nếu là URL → cắt lấy filename
+        //    if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+        //        return Path.GetFileName(new Uri(input).LocalPath);
+
+        //    // Nếu là path thường
+        //    return Path.GetFileName(input);
+        //}
+        //private string NormalizeVariantImage(string input)
+        //{
+        //    if (string.IsNullOrWhiteSpace(input))
+        //        return null;
+
+        //    // Nếu là URL → chỉ lấy filename
+        //    if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+        //        return Path.GetFileName(new Uri(input).LocalPath);
+
+        //    return Path.GetFileName(input);
+        //}
+        private string GetSafeFileName(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+                return Path.GetFileName(new Uri(input).LocalPath);
+
+            return Path.GetFileName(input);
+        }
+
+        private string NormalizeVariantImage(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            return GetSafeFileName(input);
+        }
+
+
+
         private async Task LuuBienTheSanPhamAsync(int maSanPham)
         {
-            var azureHelper = new XuLyAnhAzure();
-            var variantNames = Request.Form.GetValues("VariantNames") ?? Array.Empty<string>();
-            var variantPrices = Request.Form.GetValues("VariantPrices") ?? Array.Empty<string>();
-            var variantStocks = Request.Form.GetValues("VariantStocks") ?? Array.Empty<string>();
-            var variantSkus = Request.Form.GetValues("VariantSkus") ?? Array.Empty<string>();
+            var xuLyAnh = new XuLyAnhAzure();
+            var variantNames = Request.Form.GetValues("VariantNames");
 
             for (int i = 0; i < variantNames.Length; i++)
             {
-                var variant = new BienTheSanPham
+                var file = Request.Files[$"VariantImage_{i}"];
+                string variantImage = null;
+
+                if (file != null && file.ContentLength > 0)
+                {
+                    // ✅ CÓ upload ảnh mới
+                    string fileName = GetSafeFileName(file.FileName);
+
+                    await xuLyAnh.UploadProductImageAsync(
+                        file,
+                        maSanPham.ToString(),
+                        fileName
+                    );
+
+                    await xuLyAnh.CopyProductImageToVariantAsync(
+                        maSanPham.ToString(),
+                        fileName
+                    );
+
+                    variantImage = fileName; // ❗ CHỈ LƯU filename
+                }
+                else
+                {
+                    // ✅ KHÔNG upload ảnh → lấy ảnh cũ NHƯNG PHẢI CHUẨN HÓA
+                    string rawValue = Request.Form[$"VariantImageValue_{i}"];
+                    variantImage = NormalizeVariantImage(rawValue);
+                }
+
+                var bienThe = new BienTheSanPham
                 {
                     MaSanPham = maSanPham,
                     TenBienThe = variantNames[i],
-                    GiaBan = ParseDecimalSafe(variantPrices, i),
-                    SoLuongTonKho = ParseIntSafe(variantStocks, i)
+                    HinhAnh = variantImage
                 };
 
-                // Ảnh biến thể là bắt buộc
-                var fileKey = $"VariantImage_{i}";
-                var file = Request.Files[fileKey];
-                if (file == null || file.ContentLength == 0)
-                {
-                    throw new Exception($"Ảnh biến thể là bắt buộc cho: {variantNames[i]}");
-                }
-
-                // Upload ảnh biến thể vào Azure (cùng folder với ảnh sản phẩm: products/{maSanPham}/)
-                var fileExtension = Path.GetExtension(file.FileName);
-                var fileName = $"variant_{Guid.NewGuid()}{fileExtension}";
-                await azureHelper.UploadProductImageAsync(file, maSanPham.ToString(), fileName);
-                variant.HinhAnh = fileName;
-
-                db.BienTheSanPhams.Add(variant);
+                db.BienTheSanPhams.Add(bienThe);
             }
 
             db.SaveChanges();
         }
+
+
 
         private decimal ParseDecimalSafe(string[] sources, int index)
         {
