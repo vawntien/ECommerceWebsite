@@ -1,0 +1,79 @@
+﻿@model ECommerceWebsiteMVC_Admin.Models.NhanVien
+@{
+    ViewBag.Title = "Sửa nhân viên";
+    Layout = "~/Views/Shared/_QuanLyNhanVienLayout.cshtml";
+}
+
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+
+    <h2 class="text-xl font-bold mb-4">Sửa thông tin nhân viên</h2>
+
+    <!-- HIỂN THỊ LỖI TỪ ModelState -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="p-3 mb-4 bg-red-100 text-red-700 rounded">
+            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@err.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <form method="post">
+
+        <input type="hidden" name="MaNhanVien" value="@Model.MaNhanVien" />
+
+        <div class="grid grid-cols-1 gap-4">
+
+            <div>
+                <label>Họ và tên</label>
+                <input name="HoVaTen" value="@Model.HoVaTen" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input name="Email" value="@Model.Email" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Tài khoản</label>
+                <input name="TaiKhoan" value="@Model.TaiKhoan" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Mật khẩu (nhập lại nếu muốn đổi)</label>
+                <input name="MatKhau" value="@Model.MatKhau" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Số điện thoại</label>
+                <input name="SDT" value="@Model.SDT" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>CCCD</label>
+                <input name="CCCD" value="@Model.CCCD" class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Quyền hệ thống</label>
+                <select name="MaQuyenHeThong" class="border rounded p-2 w-full">
+                    @foreach (var q in ViewBag.ListQuyen)
+                    {
+                        <option value="@q.MaQuyenHeThong"
+                                @(q.MaQuyenHeThong == Model.MaQuyenHeThong ? "selected" : "")>
+                            @q.TenQuyenHeThong
+                        </option>
+                    }
+                </select>
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <a href="@Url.Action("NhanVien")" class="px-4 py-2 bg-gray-300 rounded">Hủy</a>
+            <button type="submit" class="px-4 py-2 bg-primary text-white rounded">Lưu</button>
+        </div>
+
+    </form>
+</div>

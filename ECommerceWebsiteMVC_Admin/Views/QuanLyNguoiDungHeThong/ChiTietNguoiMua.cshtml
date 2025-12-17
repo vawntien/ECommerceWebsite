@@ -1,0 +1,122 @@
+﻿@model ECommerceWebsiteMVC_Admin.Models.NguoiMua
+@{
+    ViewBag.Title = "Chi tiết người mua";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+
+    var DonHangs = ViewBag.LichSuDonHang as List<ECommerceWebsiteMVC_Admin.Models.DonHang>;
+}
+
+<div class="p-6">
+
+    <!-- THÔNG TIN NGƯỜI MUA -->
+    <div class="bg-white dark:bg-neutral-900 p-6 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700">
+
+        <div class="flex items-center gap-4">
+
+            <!-- Avatar -->
+            <div class="bg-center bg-no-repeat bg-cover rounded-full size-20"
+                 style='background-image: url("https://e7.pngegg.com/pngimages/81/570/png-clipart-profile-logo-computer-icons-user-user-blue-heroes-thumbnail.png");'>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <p class="text-xl font-bold text-neutral-900 dark:text-neutral-100">@Model.HoVaTen</p>
+                <p class="text-neutral-600 dark:text-neutral-400 text-sm">ID: #@Model.MaNguoiMua</p>
+                <p class="text-neutral-600 dark:text-neutral-400 text-sm">Email: @Model.Email</p>
+                <p class="text-neutral-600 dark:text-neutral-400 text-sm">Số điện thoại: @Model.SDT</p>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <!-- LỊCH SỬ ĐƠN HÀNG -->
+    <div class="mt-6 bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700">
+
+        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+            <p class="text-primary font-semibold text-sm">Lịch sử đơn hàng</p>
+        </div>
+
+        <!-- FORM TÌM KIẾM & LỌC -->
+        <form method="get" class="p-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+
+            <input type="hidden" name="pMaNM" value="@Model.MaNguoiMua" />
+
+            <!-- Ô tìm kiếm -->
+            <div class="relative w-full md:w-64">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    search
+                </span>
+                <input name="keyword" value="@ViewBag.Keyword"
+                       placeholder="Tìm theo mã đơn hàng"
+                       class="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600
+                              rounded-md bg-white dark:bg-neutral-800" />
+            </div>
+
+            <!-- Lọc trạng thái -->
+            <select name="trangthai"
+                    class="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-neutral-800 py-2 px-4">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Đã giao" @(ViewBag.TrangThai == "Đã giao" ? "selected" : "")>Đã giao</option>
+                <option value="Đang giao" @(ViewBag.TrangThai == "Đang giao" ? "selected" : "")>Đang giao</option>
+                <option value="Đã hủy" @(ViewBag.TrangThai == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                <option value="Chờ lấy hàng" @(ViewBag.TrangThai == "Chờ lấy hàng" ? "selected" : "")>Chờ lấy hàng</option>
+                <option value="Chờ giao hàng" @(ViewBag.TrangThai == "Chờ giao hàng" ? "selected" : "")>Chờ giao hàng</option>
+                <option value="Đang xử lý" @(ViewBag.TrangThai == "Đang xử lý" ? "selected" : "")>Đang xử lý</option>
+            </select>
+
+            <button class="px-4 py-2 bg-primary text-white rounded-md">Tìm kiếm</button>
+        </form>
+
+
+
+        <!-- BẢNG ĐƠN HÀNG -->
+        <div class="p-6 overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50 dark:bg-neutral-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs">Mã đơn hàng</th>
+                        <th class="px-6 py-3 text-left text-xs">Ngày đặt</th>
+                        <th class="px-6 py-3 text-left text-xs">Tổng tiền</th>
+                        <th class="px-6 py-3 text-left text-xs">Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+
+                    @foreach (var dh in DonHangs)
+                    {
+                        <tr>
+                            <td class="px-6 py-4">@dh.MaDonHang</td>
+                            <td class="px-6 py-4">@dh.ThoiGianDat.ToString("dd/MM/yyyy")</td>
+                            <td class="px-6 py-4">@dh.TongTien.ToString("N0") đ</td>
+                            <td class="px-6 py-4">
+                                @if (dh.TrangThaiDonHang == "Đã giao")
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                        @dh.TrangThaiDonHang
+                                    </span>
+                                }
+                                else if (dh.TrangThaiDonHang == "Đã hủy")
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                                        @dh.TrangThaiDonHang
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                        @dh.TrangThaiDonHang
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>

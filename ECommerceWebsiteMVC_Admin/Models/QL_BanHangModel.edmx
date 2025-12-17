@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ECommerceWebsiteModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnhSanPham">
           <Key>
             <PropertyRef Name="MaHinhAnh" />
@@ -158,6 +158,28 @@
           <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NhanVien">
+          <Key>
+            <PropertyRef Name="MaNhanVien" />
+          </Key>
+          <Property Name="MaNhanVien" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="HoVaTen" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="CCCD" Type="char" MaxLength="12" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
+          <Property Name="MaQuyenHeThong" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QuyenHeThong">
+          <Key>
+            <PropertyRef Name="MaQuyenHeThong" />
+          </Key>
+          <Property Name="MaQuyenHeThong" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenQuyenHeThong" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -325,6 +347,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_NhanVienNhomQuyen">
+          <End Role="QuyenHeThong" Type="Self.QuyenHeThong" Multiplicity="1" />
+          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuyenHeThong">
+              <PropertyRef Name="MaQuyenHeThong" />
+            </Principal>
+            <Dependent Role="NhanVien">
+              <PropertyRef Name="MaQuyenHeThong" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SanPham_CuaHang">
           <End Role="CuaHang" Type="Self.CuaHang" Multiplicity="1" />
           <End Role="SanPham" Type="Self.SanPham" Multiplicity="*" />
@@ -364,6 +398,8 @@
           <EntitySet Name="KhieuNai" EntityType="Self.KhieuNai" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiBan" EntityType="Self.NguoiBan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiMua" EntityType="Self.NguoiMua" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NhanVien" EntityType="Self.NhanVien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuyenHeThong" EntityType="Self.QuyenHeThong" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AnhSanPham_SanPham" Association="Self.FK_AnhSanPham_SanPham">
@@ -414,6 +450,10 @@
             <End Role="DonHang" EntitySet="DonHang" />
             <End Role="KhieuNai" EntitySet="KhieuNai" />
           </AssociationSet>
+          <AssociationSet Name="FK_NhanVienNhomQuyen" Association="Self.FK_NhanVienNhomQuyen">
+            <End Role="QuyenHeThong" EntitySet="QuyenHeThong" />
+            <End Role="NhanVien" EntitySet="NhanVien" />
+          </AssociationSet>
           <AssociationSet Name="FK_SanPham_CuaHang" Association="Self.FK_SanPham_CuaHang">
             <End Role="CuaHang" EntitySet="CuaHang" />
             <End Role="SanPham" EntitySet="SanPham" />
@@ -423,8 +463,7 @@
             <End Role="SanPham" EntitySet="SanPham" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ECommerceWebsiteModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -873,7 +912,49 @@
             <End Role="NguoiMua" EntitySet="NguoiMuas" />
             <End Role="GioHang" EntitySet="GioHangs" />
           </AssociationSet>
+          <EntitySet Name="NhanViens" EntityType="ECommerceWebsiteModel.NhanVien" />
+          <EntitySet Name="QuyenHeThongs" EntityType="ECommerceWebsiteModel.QuyenHeThong" />
+          <AssociationSet Name="FK_NhanVienNhomQuyen" Association="ECommerceWebsiteModel.FK_NhanVienNhomQuyen">
+            <End Role="QuyenHeThong" EntitySet="QuyenHeThongs" />
+            <End Role="NhanVien" EntitySet="NhanViens" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="NhanVien">
+          <Key>
+            <PropertyRef Name="MaNhanVien" />
+          </Key>
+          <Property Name="MaNhanVien" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="HoVaTen" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TaiKhoan" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="MatKhau" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="SDT" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="CCCD" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="TrangThai" Type="Boolean" Nullable="false" />
+          <Property Name="MaQuyenHeThong" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="QuyenHeThong" Relationship="ECommerceWebsiteModel.FK_NhanVienNhomQuyen" FromRole="NhanVien" ToRole="QuyenHeThong" />
+        </EntityType>
+        <EntityType Name="QuyenHeThong">
+          <Key>
+            <PropertyRef Name="MaQuyenHeThong" />
+          </Key>
+          <Property Name="MaQuyenHeThong" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenQuyenHeThong" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="NhanViens" Relationship="ECommerceWebsiteModel.FK_NhanVienNhomQuyen" FromRole="QuyenHeThong" ToRole="NhanVien" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_NhanVienNhomQuyen">
+          <End Type="ECommerceWebsiteModel.QuyenHeThong" Role="QuyenHeThong" Multiplicity="1" />
+          <End Type="ECommerceWebsiteModel.NhanVien" Role="NhanVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuyenHeThong">
+              <PropertyRef Name="MaQuyenHeThong" />
+            </Principal>
+            <Dependent Role="NhanVien">
+              <PropertyRef Name="MaQuyenHeThong" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1069,6 +1150,30 @@
                 <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
                 <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NhanViens">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.NhanVien">
+              <MappingFragment StoreEntitySet="NhanVien">
+                <ScalarProperty Name="MaQuyenHeThong" ColumnName="MaQuyenHeThong" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="CCCD" ColumnName="CCCD" />
+                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+                <ScalarProperty Name="TaiKhoan" ColumnName="TaiKhoan" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
+                <ScalarProperty Name="MaNhanVien" ColumnName="MaNhanVien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuyenHeThongs">
+            <EntityTypeMapping TypeName="ECommerceWebsiteModel.QuyenHeThong">
+              <MappingFragment StoreEntitySet="QuyenHeThong">
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="TenQuyenHeThong" ColumnName="TenQuyenHeThong" />
+                <ScalarProperty Name="MaQuyenHeThong" ColumnName="MaQuyenHeThong" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -35,6 +35,9 @@
         <AssociationConnector Association="ECommerceWebsiteModel.FK_DonHang_GiamGia" ManuallyRouted="false" />
         <AssociationConnector Association="ECommerceWebsiteModel.FK_KhieuNai_DonHang" ManuallyRouted="false" />
         <AssociationConnector Association="ECommerceWebsiteModel.FK_GIOHANG_NGUOIMUA" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.NhanVien" Width="1.5" PointX="17.625" PointY="7.375" />
+        <EntityTypeShape EntityType="ECommerceWebsiteModel.QuyenHeThong" Width="1.5" PointX="15.375" PointY="8" />
+        <AssociationConnector Association="ECommerceWebsiteModel.FK_NhanVienNhomQuyen" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

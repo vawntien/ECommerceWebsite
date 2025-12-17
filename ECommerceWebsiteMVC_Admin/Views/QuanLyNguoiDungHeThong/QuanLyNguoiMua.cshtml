@@ -1,0 +1,171 @@
+﻿@using ECommerceWebsiteMVC_Admin.Models
+@model List<NguoiMua>
+
+@{
+    ViewBag.Title = "Quản lý Người Mua";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+
+    string keyword = ViewBag.Keyword ?? "";
+    string filterType = ViewBag.FilterType ?? "email";
+}
+
+<main class="flex flex-1 flex-col p-6">
+    <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Quản lý Người Mua</h1>
+
+    <div class="bg-white dark:bg-background-dark p-6 rounded-lg shadow-sm">
+
+        <!-- 🔍 THANH TÌM KIẾM -->
+        <form method="get" action="@Url.Action("QuanLyNguoiMua")"
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+
+                <!-- Ô nhập từ khóa -->
+                <div class="relative w-full max-w-xs">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-neutral-500 dark:text-neutral-400">search</span>
+                    </div>
+                    <input name="keyword"
+                           value="@keyword"
+                           placeholder="Tìm kiếm..."
+                           class="form-input w-full pl-10 pr-4 py-2 border border-neutral-300
+                                  dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800
+                                  text-neutral-900 dark:text-neutral-100 placeholder-neutral-500
+                                  dark:placeholder-neutral-400 focus:ring-primary focus:border-primary" />
+                </div>
+
+                <!-- Bộ lọc loại tìm kiếm -->
+                <select name="filterType"
+                        class="form-select border-neutral-300 dark:border-neutral-700 rounded-lg bg-white
+                               dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-primary focus:border-primary">
+
+                    <option value="email" @(filterType == "email" ? "selected" : "")>Email</option>
+                    <option value="phone" @(filterType == "phone" ? "selected" : "")>Số điện thoại</option>
+
+                </select>
+
+            </div>
+
+            <!-- Nút -->
+            <div class="flex gap-2">
+
+                <!-- Đặt lại -->
+                <a href="@Url.Action("QuanLyNguoiMua")"
+                   class="flex min-w-[80px] items-center justify-center rounded-lg h-10 px-4
+                          border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800
+                          text-neutral-900 dark:text-neutral-100 text-sm font-medium">
+                    Đặt lại
+                </a>
+
+                <!-- Tìm kiếm -->
+                <button type="submit"
+                        class="flex min-w-[80px] items-center justify-center rounded-lg h-10 px-4
+                               bg-primary text-white text-sm font-medium hover:bg-primary/90">
+                    Tìm kiếm
+                </button>
+
+            </div>
+
+        </form>
+
+        <!-- 📋 TABLE -->
+        <div class="overflow-x-auto">
+            <div class="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+
+                <table class="w-full min-w-[800px] text-sm text-left">
+                    <thead class="bg-neutral-50 dark:bg-white/5">
+                        <tr>
+                            <th class="px-4 py-3 font-medium text-neutral-600 dark:text-neutral-300">ID</th>
+                            <th class="px-4 py-3 font-medium text-neutral-600 dark:text-neutral-300">Tên Người Mua</th>
+                            <th class="px-4 py-3 font-medium text-neutral-600 dark:text-neutral-300">Email</th>
+                            <th class="px-4 py-3 font-medium text-neutral-600 dark:text-neutral-300">Số Điện Thoại</th>
+                            <th class="px-4 py-3 font-medium text-neutral-600 dark:text-neutral-300 text-center">Hành Động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-neutral-50 dark:hover:bg-white/5">
+
+                                <td class="px-4 py-3 text-neutral-700 dark:text-neutral-200">@item.MaNguoiMua</td>
+
+                                <td class="px-4 py-3 font-medium text-neutral-900 dark:text-neutral-100">
+                                    @item.HoVaTen
+                                </td>
+
+                                <td class="px-4 py-3 text-neutral-700 dark:text-neutral-200">
+                                    @item.Email
+                                </td>
+
+                                <td class="px-4 py-3 text-neutral-700 dark:text-neutral-200">
+                                    @item.SDT
+                                </td>
+
+
+
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center justify-center">
+                                        <a href="@Url.Action("ChiTietNguoiMua", new { pMaNM = item.MaNguoiMua })"
+                                           class="text-primary hover:underline text-sm">
+                                            Xem chi tiết
+                                        </a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <!-- 📌 PHÂN TRANG -->
+        <div class="flex items-center justify-end mt-6">
+            <div class="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+
+                <!-- Previous -->
+                <a href="@Url.Action("QuanLyNguoiMua", new { page = ViewBag.Page - 1, keyword = keyword, filterType = filterType })"
+                   class="flex items-center justify-center h-8 w-8 rounded bg-white dark:bg-neutral-800
+                          border border-neutral-300 dark:border-neutral-600 shadow-sm hover:bg-neutral-50
+                          dark:hover:bg-neutral-700
+                          @(ViewBag.Page == 1 ? "opacity-50 pointer-events-none" : "")">
+                    <span class="material-symbols-outlined text-base">chevron_left</span>
+                </a>
+
+                <!-- Page numbers -->
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    if (i == ViewBag.Page)
+                    {
+                        <span class="flex items-center justify-center h-8 min-w-[32px] px-3 rounded bg-primary text-white text-sm">
+                            @i
+                        </span>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("QuanLyNguoiMua", new { page = i, keyword = keyword, filterType = filterType })"
+                           class="flex items-center justify-center h-8 min-w-[32px] px-3 rounded bg-white dark:bg-neutral-800
+                                  border border-neutral-300 dark:border-neutral-600 shadow-sm hover:bg-neutral-50
+                                  dark:hover:bg-neutral-700 text-sm">
+                            @i
+                        </a>
+                    }
+                }
+
+                <!-- Next -->
+                <a href="@Url.Action("QuanLyNguoiMua", new { page = ViewBag.Page + 1, keyword = keyword, filterType = filterType })"
+                   class="flex items-center justify-center h-8 w-8 rounded bg-white dark:bg-neutral-800 border
+                          border-neutral-300 dark:border-neutral-600 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700
+                          @(ViewBag.Page == ViewBag.TotalPages ? "opacity-50 pointer-events-none" : "")">
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</main>

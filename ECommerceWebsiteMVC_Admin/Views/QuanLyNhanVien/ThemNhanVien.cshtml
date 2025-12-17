@@ -1,0 +1,76 @@
+﻿@model ECommerceWebsiteMVC_Admin.Models.NhanVien
+@{
+    ViewBag.Title = "Thêm nhân viên";
+    Layout = "~/Views/Shared/_QuanLyNhanVienLayout.cshtml";
+}
+
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+
+    <h2 class="text-xl font-bold mb-4">Thêm nhân viên mới</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="p-3 mb-4 bg-red-100 text-red-700 rounded">
+            @ViewBag.Error
+        </div>
+    }
+
+    <form method="post">
+
+        <div class="grid grid-cols-1 gap-4">
+
+            <div>
+                <label>Họ và tên</label>
+                <input name="HoVaTen" value="@(Model != null ? Model.HoVaTen : "")"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input name="Email" value="@(Model != null ? Model.Email : "")"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Tài khoản</label>
+                <input name="TaiKhoan" value="@(Model != null ? Model.TaiKhoan : "")"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Mật khẩu</label>
+                <input name="MatKhau" type="password"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Số điện thoại</label>
+                <input name="SDT" value="@(Model != null ? Model.SDT : "")"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>CCCD</label>
+                <input name="CCCD" value="@(Model != null ? Model.CCCD : "")"
+                       class="border rounded p-2 w-full" />
+            </div>
+
+            <div>
+                <label>Quyền hệ thống</label>
+                <select name="MaQuyenHeThong" class="border rounded p-2 w-full">
+                    @foreach (var q in ViewBag.ListQuyen)
+                    {
+                        <option value="@q.MaQuyenHeThong">@q.TenQuyenHeThong</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <a href="@Url.Action("NhanVien")" class="px-4 py-2 bg-gray-300 rounded">Hủy</a>
+            <button type="submit" class="px-4 py-2 bg-primary text-white rounded">Lưu</button>
+        </div>
+
+    </form>
+</div>

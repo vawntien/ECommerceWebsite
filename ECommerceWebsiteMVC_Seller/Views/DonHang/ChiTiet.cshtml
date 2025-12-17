@@ -1,0 +1,157 @@
+@model ECommerceWebsiteMVC_Seller.Models.SellerOrderDetailViewModel
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/seller-orders.css" />
+
+<div class="order-detail-page">
+    <div class="order-detail-card order-status-card">
+        <div class="order-detail-card-header">
+            <span class="icon-circle text-danger"><i class="bi bi-x-circle"></i></span>
+            <div>
+                <h4 class="mb-1">@Model.TrangThaiDonHang</h4>
+                @if (!string.IsNullOrEmpty(Model.LyDoHuy))
+                {
+                    <div class="text-muted small">@Model.LyDoHuy</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.GhiChuTuNguoiMua))
+                {
+                    <div class="text-muted small">Lý do hủy: @Model.GhiChuTuNguoiMua</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="order-detail-card">
+        <div class="order-detail-section">
+            <div class="order-detail-section-title">
+                <span class="icon-circle"><i class="bi bi-receipt"></i></span>
+                <span>Mã đơn hàng</span>
+            </div>
+            <div class="order-detail-section-body">
+                <div class="fw-semibold">@Model.MaDonHang</div>
+                <div class="text-muted small">
+                    Thời gian đặt: @Model.ThoiGianDat.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+        </div>
+
+        <div class="order-detail-section">
+            <div class="order-detail-section-title">
+                <span class="icon-circle"><i class="bi bi-geo-alt"></i></span>
+                <span>Địa chỉ nhận hàng</span>
+            </div>
+            <div class="order-detail-section-body">
+                <div class="fw-semibold">@Model.TenNguoiNhan</div>
+                <div>@Model.SDT</div>
+                <div class="text-muted">@Model.DiaChi</div>
+            </div>
+        </div>
+
+        <div class="order-detail-section">
+            <div class="order-detail-section-title">
+                <span class="icon-circle"><i class="bi bi-truck"></i></span>
+                <span>Thông tin vận chuyển</span>
+            </div>
+            <div class="order-detail-section-body">
+                <div>
+                    <div class="fw-semibold">Gói hàng 1: @Model.TrangThaiVanChuyen</div>
+                    <div class="text-muted small">@Model.DonViVanChuyen</div>
+                </div>
+                <div class="mt-2">
+                    <div class="d-flex align-items-center">
+                        @if (Model.Items.Any() && !string.IsNullOrEmpty(Model.Items.First().AnhSanPham))
+                        {
+                            <img src="@Model.Items.First().AnhSanPham"
+                                 alt="@Model.Items.First().TenSanPham"
+                                 class="order-detail-product-thumb" />
+                        }
+                        <div class="ms-2 text-muted small">
+                            Total @Model.Items.Count() products
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.GhiChuTuNguoiMua))
+        {
+            <div class="order-detail-section">
+                <div class="order-detail-section-title">
+                    <span class="icon-circle"><i class="bi bi-chat-dots"></i></span>
+                    <span>Lý do từ Người mua</span>
+                </div>
+                <div class="order-detail-section-body">
+                    <div class="text-muted">@Model.GhiChuTuNguoiMua</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="order-detail-card">
+        <div class="order-detail-section-header">
+            <div class="order-detail-section-title">
+                <span class="icon-circle"><i class="bi bi-credit-card"></i></span>
+                <span>Thông tin thanh toán</span>
+            </div>
+            <a href="#" class="small">Xem lịch sử giao dịch</a>
+        </div>
+
+        <div class="order-detail-table">
+            <div class="order-detail-table-header">
+                <span class="col-stt">STT</span>
+                <span class="col-product">Sản phẩm</span>
+                <span class="col-price text-end">Đơn giá</span>
+                <span class="col-qty text-end">Số lượng</span>
+                <span class="col-total text-end">Thành tiền</span>
+            </div>
+
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                var item = Model.Items[i];
+                <div class="order-detail-table-row">
+                    <span class="col-stt">@(@i + 1)</span>
+                    <span class="col-product">
+                        <div class="d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(item.AnhSanPham))
+                            {
+                                <img src="@item.AnhSanPham" alt="@item.TenSanPham" class="order-detail-product-thumb me-2" />
+                            }
+                            <div>
+                                <div class="order-detail-product-name">@item.TenSanPham</div>
+                                @if (!string.IsNullOrEmpty(item.TenBienThe))
+                                {
+                                    <div class="order-detail-product-variant text-muted small">
+                                        Phân loại: @item.TenBienThe
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </span>
+                    <span class="col-price text-end">@String.Format("{0:N0}", item.DonGia)</span>
+                    <span class="col-qty text-end">@item.SoLuong</span>
+                    <span class="col-total text-end">@String.Format("{0:N0}", item.ThanhTien)</span>
+                </div>
+            }
+        </div>
+
+        <div class="order-detail-summary">
+            <div class="order-detail-summary-row">
+                <span>Tổng tiền sản phẩm</span>
+                <span>₫@String.Format("{0:N0}", Model.TongTienSanPham)</span>
+            </div>
+            <div class="order-detail-summary-row">
+                <span>Tổng phí vận chuyển ước tính</span>
+                <span>₫@String.Format("{0:N0}", Model.PhiVanChuyen)</span>
+            </div>
+            <div class="order-detail-summary-row order-detail-summary-total">
+                <span>Doanh thu đơn hàng ước tính</span>
+                <span>₫@String.Format("{0:N0}", Model.TongTienDonHang)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
