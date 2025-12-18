@@ -109,6 +109,7 @@ namespace ECommerceWebsiteMVC.Models
         public string MaVoucher { get; set; }
 
         public List<GiamGia> DanhSachVoucher { get; set; }
+        public List<DonViVanChuyen> DanhSachDVVC { get; set; }
         public List<CheckoutItemVM> Items { get; set; }
 
         public decimal TongTienHang { get; set; }

@@ -288,10 +288,150 @@
         gap: 16px;
     }
 
-        .form-row-2 > * {
-            flex: 1;
+    .form-row-2 > * {
+        flex: 1;
+    }
+
+    /* Address Selector Styles */
+    .address-tab {
+        transition: all 0.2s;
+    }
+
+    .address-tab:hover {
+        background: #f8f8f8;
+    }
+
+    .address-tab.active {
+        color: #ee4d2d !important;
+        border-bottom: 2px solid #ee4d2d;
+    }
+
+    .address-item {
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .address-item:hover {
+        background: #f8f8f8;
+    }
+
+    .address-item.selected {
+        background: #fff5f5;
+        color: #ee4d2d;
+        font-weight: 500;
+    }
+
+    /* Alert Notification Styles */
+    .alert-notification {
+        position: fixed;
+        top: 130px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ff9800;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        z-index: 99999 !important;
+        display: none;
+        align-items: center;
+        gap: 15px;
+        min-width: 400px;
+        max-width: 90%;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
         }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    .alert-notification.show {
+        display: flex;
+    }
+
+    .alert-notification .alert-message {
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .alert-notification .alert-close {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+
+    .alert-notification .alert-close:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    /* Icon Voucher */
+    .voucher-icon {
+        width: 24px;
+        height: 18px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+        filter: drop-shadow(0 0 2px rgba(238, 77, 45, 0.5));
+    }
+
+    /* Đảm bảo các nút có thể click được */
+    #btn-open-address,
+    #btn-change-shipping,
+    #selected-voucher-text {
+        pointer-events: auto !important;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Đảm bảo popup có z-index cao */
+    #popup-address,
+    #popup-shipping,
+    #popup-voucher {
+        z-index: 10000 !important;
+    }
+
+    /* Nút đóng address selector */
+    #btn-close-address-selector:hover {
+        background: #f0f0f0 !important;
+        color: #333 !important;
+    }
 </style>
+
+<!-- Alert Notification -->
+<div id="alert-notification" class="alert-notification">
+    <span class="alert-message" id="alert-message"></span>
+    <button type="button" class="alert-close" id="alert-close">&times;</button>
+</div>
+
+<!-- MODAL THÔNG BÁO SHOPEE STYLE -->
+<div id="shopee-alert-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10001; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:400px; max-width:90%; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1); border:1px solid #e8e8e8;">
+        <div id="shopee-alert-message" style="padding:24px; font-size:15px; color:#333; text-align:center; line-height:1.5;">
+        </div>
+        <div id="shopee-alert-buttons" style="padding:0; border-top:1px solid #e8e8e8;">
+            <!-- Buttons sẽ được thêm động bằng JavaScript -->
+        </div>
+    </div>
+</div>
 
 <div class="checkout-container">
 
@@ -312,7 +452,7 @@
     @foreach (var item in Model.Items)
     {
         <div class="item-row">
-           <img src="@($"https://ecommerceshopstorage.blob.core.windows.net/variants/{item.HinhAnh}")" />
+            <img src="@($"https://ecommerceshopstorage.blob.core.windows.net/variants/{item.HinhAnh}")" />
             <div>
                 <div style="font-weight:bold;">@item.TenSanPham</div>
                 <div style="color:#888;">@item.PhanLoai</div>
@@ -322,21 +462,56 @@
         </div>
     }
 
-    <div class="section-title" style="margin-top:20px;">Shopee Voucher</div>
-    <div style="display:flex;align-items:center;">
-        <select id="voucherSelect" style="width:300px;padding:6px;border:1px solid #ddd;border-radius:4px;">
-            <option value="">-- Không dùng voucher --</option>
-            @foreach (var vc in Model.DanhSachVoucher)
-            {
-                var g = Convert.ToDecimal(vc.GiaTriGiam);
-                <option value="@vc.MaGiamGia">
-                    @vc.TenMaGG - Giảm @g.ToString("N0")đ
-                </option>
-            }
-        </select>
-        <button id="applyVoucher" type="button" style="margin-left:10px;padding:6px 14px;background:#ee4d2d;color:white;border:none;border-radius:4px;cursor:pointer;">
-            Áp dụng
-        </button>
+    <!-- PHẦN LỜI NHẮN & VẬN CHUYỂN -->
+    <div style="background: #fafdff; border-top: 1px dashed #e8e8e8; border-bottom: 1px dashed #e8e8e8; padding: 20px 0; margin-top: 20px;">
+        <div style="display: flex; align-items: center;">
+            <div style="width: 45%; padding-right: 20px; border-right: 1px dashed #e8e8e8;">
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 14px; min-width: 80px;">Lời nhắn:</span>
+                    <input type="text" id="order-note" placeholder="Lưu ý cho Người bán..." style="flex: 1; font-size: 14px; border: 1px solid #e8e8e8; padding: 6px 10px; border-radius: 2px;" />
+                </div>
+            </div>
+            <div style="width: 55%; padding-left: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div style="color: #00bfa5; font-weight: 500; font-size: 14px;">Phương thức vận chuyển:</div>
+                        <div id="selected-shipping-name" style="font-size: 14px; margin-top: 4px; font-weight: bold;">
+                            @(Model.DanhSachDVVC != null && Model.DanhSachDVVC.Any() ? Model.DanhSachDVVC.FirstOrDefault()?.TenDVVC : "Vận Chuyển Nhanh")
+                        </div>
+                        <div style="font-size: 12px; color: #888;">Nhận hàng vào 22 Th12 - 26 Th12</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="button" id="btn-change-shipping" style="background: none; border: none; color: #05a; font-size: 14px; cursor: pointer; text-transform: uppercase;">Thay đổi</button>
+                        <div id="shipping-fee-display" style="font-size: 14px; margin-top: 4px;">@Model.PhiVanChuyen.ToString("N0")đ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: right; padding: 15px 20px 0; font-size: 14px; border-top: 1px dashed #e8e8e8; margin-top: 15px;">
+            Tổng số tiền (@Model.Items.Count sản phẩm): <span style="color: #ee4d2d; font-size: 18px; font-weight: 500;">@Model.TongTienHang.ToString("N0")đ</span>
+        </div>
+    </div>
+
+    <!-- SHOPEE VOUCHER -->
+    <div style="background: #fff; padding: 20px 0; border-bottom: 1px solid #f0f0f0;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <svg class="voucher-icon" viewBox="0 0 24 18" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Răng cưa bên trái -->
+                    <path d="M0,0 L0,3 L2,4.5 L0,6 L0,9 L2,10.5 L0,12 L0,15 L2,16.5 L0,18" stroke="#ee4d2d" stroke-width="2" fill="none"/>
+                    <!-- Viền chính -->
+                    <rect x="2" y="0" width="20" height="18" stroke="#ee4d2d" stroke-width="2" fill="white" rx="1"/>
+                    <!-- Răng cưa bên phải -->
+                    <path d="M22,0 L22,3 L24,4.5 L22,6 L22,9 L24,10.5 L22,12 L22,15 L24,16.5 L22,18" stroke="#ee4d2d" stroke-width="2" fill="none"/>
+                    <!-- Các đường gạch ngang bên trong -->
+                    <line x1="5" y1="6" x2="19" y2="6" stroke="#ee4d2d" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="5" y1="9" x2="19" y2="9" stroke="#ee4d2d" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="5" y1="12" x2="19" y2="12" stroke="#ee4d2d" stroke-width="1" stroke-dasharray="2,2"/>
+                </svg>
+                <span style="font-size: 16px;">Shopee Voucher</span>
+            </div>
+            <div id="selected-voucher-text" style="color: #05a; cursor: pointer; font-size: 14px;">Chọn Voucher</div>
+        </div>
     </div>
 
     <div class="total-box">
@@ -372,8 +547,90 @@
         <input type="hidden" name="SDT" id="hidden-sdt" value="@Model.SDT" />
         <input type="hidden" name="DiaChi" id="hidden-diachi" value="@Model.DiaChi" />
         <input type="hidden" name="MaVoucher" id="voucherHidden" />
+        <input type="hidden" name="MaDVVC" id="shippingHidden" value="@(Model.DanhSachDVVC != null && Model.DanhSachDVVC.Any() ? Model.DanhSachDVVC.FirstOrDefault()?.MaDVVC ?? 1 : 1)" />
+        <input type="hidden" name="PhiShip" id="phiShipHidden" value="@Model.PhiVanChuyen" />
+        <input type="hidden" name="GhiChu" id="ghiChuHidden" />
         <button type="submit" class="confirm-button">Đặt hàng</button>
     </form>
+</div>
+
+<!-- POPUP CHỌN ĐƠN VỊ VẬN CHUYỂN -->
+<div id="popup-shipping" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; justify-content: center; align-items: center;">
+    <div class="shopee-popup" style="width: 500px;">
+        <div class="popup-header">Chọn phương thức vận chuyển</div>
+        <div class="address-list-body">
+            <div style="padding: 20px 0;">
+                <div style="font-weight: 500; margin-bottom: 15px; color: #555;">Vận Chuyển Nhanh</div>
+                @if (Model.DanhSachDVVC != null && Model.DanhSachDVVC.Any())
+                {
+                    foreach (var dv in Model.DanhSachDVVC)
+                    {
+                        <div class="addr-item" style="cursor: pointer;" onclick="$(this).find('input').prop('checked', true)">
+                            <div class="addr-radio-col">
+                                <input type="radio" name="shipping_option" value="@dv.MaDVVC" data-name="@dv.TenDVVC" class="addr-radio" @(dv == Model.DanhSachDVVC.First() ? "checked" : "")>
+                            </div>
+                            <div class="addr-content-col">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 14px; color: #000;">@dv.TenDVVC</span>
+                                    <span style="font-size: 14px; color: #000;">17.000đ</span>
+                                </div>
+                                <div style="font-size: 12px; color: #888; margin-top: 4px;">Nhận hàng vào 22 Th12 - 26 Th12</div>
+                                <div style="font-size: 12px; color: #888; margin-top: 2px;">Nhận Voucher trị giá 15.000đ nếu đơn hàng được giao đến bạn sau ngày 26 Tháng 12 2025.</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div style="text-align: center; padding: 20px; color: #888;">Không có phương thức vận chuyển nào.</div>
+                }
+            </div>
+        </div>
+        <div class="popup-footer">
+            <button class="btn-cancel" onclick="$('#popup-shipping').hide()">Trở Lại</button>
+            <button class="btn-confirm" id="btn-confirm-shipping">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP CHỌN VOUCHER -->
+<div id="popup-voucher" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; justify-content: center; align-items: center;">
+    <div class="shopee-popup" style="width: 600px;">
+        <div class="popup-header">Chọn Shopee Voucher</div>
+        <div class="address-list-body" style="background: #f8f8f8;">
+            <div style="padding: 20px 0;">
+                @if (!Model.DanhSachVoucher.Any())
+                {
+                    <div style="text-align: center; padding: 40px; color: #888;">Không có voucher nào khả dụng cho đơn hàng này.</div>
+                }
+                else
+                {
+                    foreach (var vc in Model.DanhSachVoucher)
+                    {
+                        var g = Convert.ToDecimal(vc.GiaTriGiam);
+                        <div class="addr-item" style="background: #fff; margin-bottom: 15px; border: 1px solid #e8e8e8; border-radius: 2px; padding: 15px; display: flex; align-items: center; cursor: pointer;" onclick="$(this).find('input').prop('checked', true)">
+                            <div style="width: 100px; height: 100px; background: #ee4d2d; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-right: 15px;">
+                                <div style="font-size: 12px;">Giảm</div>
+                                <div style="font-size: 18px; font-weight: bold;">@g.ToString("N0")đ</div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; font-size: 16px;">@vc.TenMaGG</div>
+                                <div style="font-size: 12px; color: #888; margin-top: 4px;">@vc.MoTa</div>
+                                <div style="font-size: 12px; color: #ee4d2d; margin-top: 8px;">HSD: @(vc.NgayKT?.ToString("dd/MM/yyyy") ?? "Không thời hạn")</div>
+                            </div>
+                            <div class="addr-radio-col">
+                                <input type="radio" name="voucher_option" value="@vc.MaGiamGia" data-name="@vc.TenMaGG" data-giam="@g" class="addr-radio">
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="popup-footer">
+            <button class="btn-cancel" onclick="$('#popup-voucher').hide()">Trở Lại</button>
+            <button class="btn-confirm" id="btn-confirm-voucher">Xác nhận</button>
+        </div>
+    </div>
 </div>
 
 <div id="popup-address">
@@ -401,7 +658,7 @@
         <div id="view-form" style="display:none; flex-direction:column; height:100%;">
             <div class="popup-header">Địa chỉ mới</div>
 
-            <div class="address-list-body" style="padding-top: 20px;">
+            <div class="address-list-body" style="padding-top: 20px; overflow-y: auto;">
                 <div class="form-row-2 form-group">
                     <input id="new-name" class="input-shopee" placeholder="Họ và tên" />
                    <input id="new-phone" 
@@ -414,8 +671,38 @@
                    required />
                 </div>
 
+                <!-- ĐỊA CHỈ CHỌN THEO TỈNH/THÀNH PHỐ, QUẬN/HUYỆN, PHƯỜNG/XÃ -->
                 <div class="form-group">
-                    <input id="new-city" class="input-shopee" placeholder="Tỉnh/Thành phố, Quận/Huyện, Phường/Xã, Số nhà..." />
+                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #555;">Tỉnh/Thành phố, Quận/Huyện, Phường/Xã</label>
+                    <div style="position: relative;">
+                        <input id="address-search" class="input-shopee" placeholder="Chọn hoặc tìm kiếm địa chỉ..." readonly style="cursor: pointer;" />
+                        <span id="address-dropdown-icon" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888;">▼</span>
+                    </div>
+                    <div id="address-selector" style="display: none; margin-top: 10px; border: 1px solid #e8e8e8; border-radius: 4px; background: #fff; position: relative;">
+                        <!-- Nút đóng -->
+                        <button type="button" id="btn-close-address-selector" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 20px; color: #888; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; z-index: 10;" title="Đóng">
+                            ×
+                        </button>
+                        <!-- Tabs -->
+                        <div style="display: flex; border-bottom: 1px solid #e8e8e8;">
+                            <div class="address-tab active" data-tab="province" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; border-bottom: 2px solid #ee4d2d; color: #ee4d2d; font-weight: 500;">Tỉnh/Thành phố</div>
+                            <div class="address-tab" data-tab="district" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; color: #888;">Quận/Huyện</div>
+                            <div class="address-tab" data-tab="ward" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; color: #888;">Phường/Xã</div>
+                        </div>
+                        <!-- List -->
+                        <div id="address-list" style="max-height: 300px; overflow-y: auto; padding: 10px 0;">
+                            <!-- Sẽ được populate bằng JavaScript -->
+                        </div>
+                    </div>
+                    <input type="hidden" id="selected-province" />
+                    <input type="hidden" id="selected-district" />
+                    <input type="hidden" id="selected-ward" />
+                </div>
+
+                <!-- ĐỊA CHỈ CỤ THỂ -->
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #555;">Địa chỉ cụ thể</label>
+                    <input id="new-street" class="input-shopee" placeholder="Số nhà, tên đường, tòa nhà..." />
                 </div>
             </div>
 
@@ -428,68 +715,201 @@
     </div>
 </div>
 
-@section scripts {
+@section Scripts {
     <script>
-        // ===== LOGIC VOUCHER =====
-        function getMoney(selector) {
-            let raw = $(selector).attr("data-raw");
-            return parseInt(raw) || 0;
-        }
+        $(document).ready(function () {
+            // Kiểm tra jQuery đã load chưa
+            if (typeof jQuery === 'undefined') {
+                console.error('jQuery chưa được load!');
+                return;
+            }
 
-        $(document).on("click", "#applyVoucher", function () {
-            var maVoucher = $("#voucherSelect").val();
-            var tongTienHang = getMoney("#tien-hang");
+            // Kiểm tra các element tồn tại
+            console.log("Đang khởi tạo checkout page...");
+            console.log("Nút địa chỉ:", $("#btn-open-address").length > 0 ? "Tồn tại" : "KHÔNG TỒN TẠI");
+            console.log("Nút vận chuyển:", $("#btn-change-shipping").length > 0 ? "Tồn tại" : "KHÔNG TỒN TẠI");
+            console.log("Nút voucher:", $("#selected-voucher-text").length > 0 ? "Tồn tại" : "KHÔNG TỒN TẠI");
 
-            $.ajax({
-                url: "/GioHang/ApplyVoucher",
-                type: "POST",
-                data: { maVoucher: maVoucher, tongTienHang: tongTienHang },
-                success: function (res) {
-                    if (!res.success) {
-                        alert(res.message || "Voucher không hợp lệ!");
-                        return;
+            // ===== HÀM THÔNG BÁO SHOPEE STYLE (ALERT & CONFIRM) =====
+            function showShopeeAlert(message, callback) {
+                $("#shopee-alert-message").text(message);
+                $("#shopee-alert-buttons").html(
+                    '<button id="shopee-alert-ok" style="width:100%; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>'
+                );
+                $("#shopee-alert-modal").css("display", "flex");
+                
+                $("#shopee-alert-ok").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(true);
+                });
+            }
+
+            function showShopeeConfirm(message, callback) {
+                $("#shopee-alert-message").text(message);
+                $("#shopee-alert-buttons").html(
+                    '<div style="display:flex; border-top:1px solid #e8e8e8;">' +
+                    '<button id="shopee-confirm-cancel" style="flex:1; padding:12px 0; background:#fff; color:#555; border:none; border-right:1px solid #e8e8e8; font-size:15px; cursor:pointer;">Hủy</button>' +
+                    '<button id="shopee-confirm-ok" style="flex:1; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>' +
+                    '</div>'
+                );
+                $("#shopee-alert-modal").css("display", "flex");
+                
+                $("#shopee-confirm-ok").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(true);
+                });
+                
+                $("#shopee-confirm-cancel").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(false);
+                });
+            }
+
+            // ===== HÀM HIỂN THỊ THÔNG BÁO MÀU CAM =====
+            function showAlert(message) {
+                $("#alert-message").text(message);
+                $("#alert-notification").addClass("show");
+                // Tự động ẩn sau 5 giây
+                setTimeout(function() {
+                    hideAlert();
+                }, 5000);
+            }
+
+            function hideAlert() {
+                $("#alert-notification").removeClass("show");
+            }
+
+            // Đóng thông báo khi click nút X
+            $(document).on("click", "#alert-close", function() {
+                hideAlert();
+            });
+
+            // ===== LOGIC VOUCHER & SHIP =====
+            function getMoney(selector) {
+                let raw = $(selector).attr("data-raw");
+                return parseInt(raw) || 0;
+            }
+
+            // Mở popup vận chuyển
+            $(document).on("click", "#btn-change-shipping", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Click vào nút thay đổi vận chuyển");
+                $("#popup-shipping").css("display", "flex");
+            });
+
+            // Xác nhận vận chuyển
+            $(document).on("click", "#btn-confirm-shipping", function (e) {
+                e.preventDefault();
+                var selected = $("input[name='shipping_option']:checked");
+                if (selected.length === 0) {
+                    showShopeeAlert("Vui lòng chọn phương thức vận chuyển!");
+                    return;
+                }
+                var name = selected.data("name");
+                var id = selected.val();
+
+                $("#selected-shipping-name").text(name);
+                $("#shippingHidden").val(id);
+                // Ở đây tạm thời ship là 17k cố định như thiết kế
+                $("#popup-shipping").hide();
+            });
+
+            // Mở popup voucher
+            $(document).on("click", "#selected-voucher-text", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Click vào chọn voucher");
+                $("#popup-voucher").css("display", "flex");
+            });
+
+            // Xác nhận voucher
+            $(document).on("click", "#btn-confirm-voucher", function (e) {
+                e.preventDefault();
+                var selected = $("input[name='voucher_option']:checked");
+                if (selected.length === 0) {
+                    $("#popup-voucher").hide();
+                    return;
+                }
+
+                var id = selected.val();
+                var name = selected.data("name");
+                var tongTienHang = getMoney("#tien-hang");
+                var phiShip = getMoney("#phi-ship");
+
+                $.ajax({
+                    url: "/GioHang/ApplyVoucher",
+                    type: "POST",
+                    data: { maVoucher: id, tongTienHang: tongTienHang, phiShip: phiShip },
+                    success: function (res) {
+                        if (!res.success) {
+                            showShopeeAlert(res.message || "Voucher không hợp lệ!");
+                            return;
+                        }
+                        $("#giam-gia")
+                            .attr("data-raw", res.giamGia)
+                            .text(res.giamGia.toLocaleString("vi-VN") + " đ");
+                        $("#tong-thanh-toan")
+                            .attr("data-raw", res.tongThanhToan)
+                            .text(res.tongThanhToan.toLocaleString("vi-VN") + " đ");
+                        $("#voucherHidden").val(id);
+                        $("#selected-voucher-text").text("Đã chọn: " + name).css("color", "#ee4d2d");
+                        $("#popup-voucher").hide();
+                    },
+                    error: function () {
+                        showShopeeAlert("Lỗi kết nối server!");
                     }
-                    $("#giam-gia")
-                        .attr("data-raw", res.giamGia)
-                        .text(res.giamGia.toLocaleString("vi-VN") + " đ");
-                    $("#tong-thanh-toan")
-                        .attr("data-raw", res.tongThanhToan)
-                        .text(res.tongThanhToan.toLocaleString("vi-VN") + " đ");
-                    $("#voucherHidden").val(maVoucher);
-                },
-                error: function () {
-                    alert("Lỗi kết nối server!");
-                }
+                });
             });
-        });
 
-        // ===============================================
-        // ===== LOGIC ĐỊA CHỈ (ĐÃ CẬP NHẬT) =====
-        // ===============================================
-
-        // 1. Mở popup
-        $(document).on("click", "#btn-open-address", function (e) {
-            e.preventDefault();
-            $("#popup-address").css("display", "flex");
-            $("#view-list").show();
-            $("#view-form").hide();
-            loadAddressHistory();
-        });
-
-        // Gọi Ajax lấy lịch sử
-        function loadAddressHistory() {
-            $("#address-list-container").html('<div style="padding:20px;text-align:center;">Đang tải...</div>');
-            $.get("/GioHang/GetDeliveryHistory", function (res) {
-                if (res.success) {
-                    renderAddressList(res.data);
-                } else {
-                    $("#address-list-container").html('<div style="padding:20px;text-align:center;">Lỗi tải dữ liệu</div>');
-                }
+            // Cập nhật lời nhắn vào hidden input khi thay đổi
+            $(document).on("input", "#order-note", function() {
+                $("#ghiChuHidden").val($(this).val());
             });
-        }
 
-        // Vẽ danh sách địa chỉ
-        function renderAddressList(data) {
+            // Đóng address selector khi click bên ngoài (chỉ khi đã chọn đủ 3 trường)
+            $(document).on("click", function(e) {
+                // Chỉ đóng nếu không click vào các element liên quan đến address selector
+                var target = $(e.target);
+                if (!target.closest("#address-search, #address-dropdown-icon, #address-selector, #btn-close-address-selector").length) {
+                    // Chỉ đóng nếu đã chọn đủ tỉnh, quận, phường
+                    if (selectedProvince && selectedDistrict && selectedWard) {
+                        $("#address-selector").hide();
+                        addressSelectorOpened = false;
+                    }
+                }
+                // Không preventDefault để các click event khác vẫn hoạt động
+            });
+
+            // ===============================================
+            // ===== LOGIC ĐỊA CHỈ (ĐÃ CẬP NHẬT) =====
+            // ===============================================
+
+            // 1. Mở popup
+            $(document).on("click", "#btn-open-address", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Click vào nút thay đổi địa chỉ");
+                $("#popup-address").css("display", "flex");
+                $("#view-list").show();
+                $("#view-form").hide();
+                loadAddressHistory();
+            });
+
+            // Gọi Ajax lấy lịch sử
+            function loadAddressHistory() {
+                $("#address-list-container").html('<div style="padding:20px;text-align:center;">Đang tải...</div>');
+                $.get("/GioHang/GetDeliveryHistory", function (res) {
+                    if (res.success) {
+                        renderAddressList(res.data);
+                    } else {
+                        $("#address-list-container").html('<div style="padding:20px;text-align:center;">Lỗi tải dữ liệu</div>');
+                    }
+                });
+            }
+
+            // Vẽ danh sách địa chỉ
+            function renderAddressList(data) {
             var html = "";
             var currentName = $("#tennhan").text().trim();
             var currentPhone = $("#sdtnhan").text().trim();
@@ -523,115 +943,473 @@
                         </div>`;
                 });
             }
-            $("#address-list-container").html(html);
-        }
-
-        // Chuyển màn hình 
-        $("#btn-show-add-form").click(function () {
-            $("#view-list").hide(); $("#view-form").show();
-
-            // Lấy thông tin Tên & SĐT đang hiển thị trên màn hình chính (Dữ liệu đã được gán)
-            var currentName = $("#tennhan").text().trim();
-            var currentPhone = $("#sdtnhan").text().trim();
-            var currentAddr = $("#diachinhan").text().trim();
-
-            // Tự động điền các ô input mới
-            $("#new-name").val(currentName);
-            $("#new-phone").val(currentPhone);
-            $("#new-city").val(currentAddr);
-        });
-
-        $("#btn-back-to-list, #btn-close-popup").click(function () {
-            if ($(this).attr("id") === "btn-close-popup") $("#popup-address").hide();
-            else { $("#view-form").hide(); $("#view-list").show(); }
-        });
-
-        // Điền form để cập nhật (Chỉ dùng 1 ô địa chỉ)
-        window.fillFormForUpdate = function (name, phone, addr) {
-            $("#new-name").val(name);
-            $("#new-phone").val(phone);
-            $("#new-city").val(addr); // Điền toàn bộ địa chỉ vào ô này
-
-            $("#view-list").hide();
-            $("#view-form").show();
-        };
-
-        // Xác nhận chọn từ danh sách
-        $("#btn-confirm-selection").click(function () {
-            var selected = $("input[name='addr_radio']:checked");
-            if (selected.length === 0) { alert("Vui lòng chọn địa chỉ!"); return; }
-            applyAddress(selected.data("name"), selected.data("phone"), selected.data("addr"));
-            $("#popup-address").hide();
-        });
-
-        // Nút Hoàn thành (Lưu mới) - Đã sửa bỏ Textarea
-        $("#btn-save-new").click(function () {
-            var ten = $("#new-name").val().trim();
-            var sdt = $("#new-phone").val().trim();
-            var fullAddr = $("#new-city").val().trim();
-
-            if (ten === "" || sdt === "" || fullAddr === "") {
-                alert("Vui lòng điền đủ thông tin!"); return;
+                $("#address-list-container").html(html);
             }
 
-            // --- KIỂM TRA ĐỊNH DẠNG NGHIÊM NGẶT (NHƯ TRIGGER SQL) ---
-            // Kiểm tra: Phải 10 số AND bắt đầu bằng 0 AND không chứa ký tự lạ
-            if (sdt.length !== 10 || !sdt.startsWith("0") || sdt.match(/[^0-9]/)) {
-                alert("Lỗi: Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0!");
-                $("#new-phone").focus();
-                return;
+            // ===============================================
+            // ===== LOGIC CHỌN ĐỊA CHỈ (TỈNH/QUẬN/PHƯỜNG) =====
+            // ===============================================
+            var addressData = {}; // Sẽ được load từ JSON file
+            var addressDataLoaded = false;
+            var currentTab = "province";
+            var selectedProvince = "";
+            var selectedDistrict = "";
+            var selectedWard = "";
+
+            // Load dữ liệu địa chỉ từ JSON file qua Controller
+            function loadAddressData(callback) {
+                if (addressDataLoaded) {
+                    if (callback) callback();
+                    return;
+                }
+                
+                $.ajax({
+                    url: "/GioHang/GetVietnamAddresses",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        // Chuyển đổi cấu trúc JSON thành format dễ sử dụng
+                        addressData = {};
+                        if (data && data.provinces) {
+                            data.provinces.forEach(function(province) {
+                                addressData[province.name] = {};
+                                if (province.districts) {
+                                    province.districts.forEach(function(district) {
+                                        addressData[province.name][district.name] = district.wards || [];
+                                    });
+                                }
+                            });
+                        }
+                        addressDataLoaded = true;
+                        console.log("Đã tải dữ liệu địa chỉ thành công:", Object.keys(addressData).length, "tỉnh/thành phố");
+                        if (callback) callback();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Không thể tải dữ liệu địa chỉ:", error);
+                        // Fallback với dữ liệu mẫu nếu không load được
+                        addressData = {
+                            "TP. Hồ Chí Minh": {
+                                "Quận Tân Phú": ["Phường Tây Thạnh", "Phường Sơn Kỳ", "Phường Tân Quý", "Phường Tân Sơn Nhì", "Phường Phú Thọ Hòa"],
+                                "Quận 1": ["Phường Bến Nghé", "Phường Đa Kao", "Phường Bến Thành", "Phường Nguyễn Thái Bình", "Phường Phạm Ngũ Lão"],
+                                "Quận 3": ["Phường Võ Thị Sáu", "Phường Đa Kao", "Phường Nguyễn Thái Bình", "Phường Cô Giang", "Phường Cầu Kho"],
+                                "Quận 7": ["Phường Tân Phong", "Phường Tân Phú", "Phường Tân Thuận Đông", "Phường Tân Thuận Tây", "Phường Bình Thuận"]
+                            },
+                            "Hà Nội": {
+                                "Quận Ba Đình": ["Phường Điện Biên", "Phường Đội Cấn", "Phường Giảng Võ", "Phường Kim Mã", "Phường Liễu Giai"],
+                                "Quận Hoàn Kiếm": ["Phường Chương Dương", "Phường Cửa Đông", "Phường Cửa Nam", "Phường Đồng Xuân", "Phường Hàng Bạc"],
+                                "Quận Đống Đa": ["Phường Cát Linh", "Phường Hàng Bột", "Phường Khâm Thiên", "Phường Khương Thượng", "Phường Kim Liên"]
+                            }
+                        };
+                        addressDataLoaded = true;
+                        if (callback) callback();
+                    }
+                });
             }
-            // --------------------------------------------------------
 
-            applyAddress(ten, sdt, fullAddr);
-            $("#popup-address").hide();
-        });
+            // Load dữ liệu khi trang được tải
+            loadAddressData();
 
-        // Hàm cập nhật ra màn hình chính
-        function applyAddress(ten, sdt, diachi) {
-            $("#tennhan").text(ten);
-            $("#sdtnhan").text(sdt);
-            $("#diachinhan").text(diachi);
-            $("#hidden-ten").val(ten);
-            $("#hidden-sdt").val(sdt);
-            $("#hidden-diachi").val(diachi);
-        }
+            var addressSelectorOpened = false;
 
-        // ===============================================
-        // ===== VALIDATE TRƯỚC KHI SUBMIT FORM (ĐÃ SỬA) =====
-        // ===============================================
-        $("#form-checkout").submit(function (e) {
-            // Lấy giá trị từ các ô hidden
-            var ten = $("#hidden-ten").val().trim();
-            var sdt = $("#hidden-sdt").val().trim();
-            var diachi = $("#hidden-diachi").val().trim();
+            // Mở address selector (chỉ mở 1 lần, không toggle)
+            $(document).on("click", "#address-search, #address-dropdown-icon", function() {
+                if (!addressSelectorOpened) {
+                    loadAddressData(function() {
+                        $("#address-selector").show();
+                        addressSelectorOpened = true;
+                        currentTab = "province";
+                        $(".address-tab").removeClass("active");
+                        $(".address-tab[data-tab='province']").addClass("active");
+                        loadAddressList("province");
+                    });
+                }
+            });
 
-            // Kiểm tra nếu thiếu 1 trong 3 thông tin
-            if (ten === "" || sdt === "" || diachi === "") {
-                e.preventDefault(); // <-- CHẶN gửi form
+            // Đóng address selector khi click nút đóng
+            $(document).on("click", "#btn-close-address-selector", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $("#address-selector").hide();
+                addressSelectorOpened = false;
+            });
 
-                alert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi đặt hàng!");
+            // Chuyển tab
+            $(document).on("click", ".address-tab", function() {
+                var tab = $(this).data("tab");
+                loadAddressData(function() {
+                    $(".address-tab").removeClass("active");
+                    $(this).addClass("active");
+                    currentTab = tab;
+                    loadAddressList(tab);
+                }.bind(this));
+            });
 
-                // 1. Mở Popup
-                $("#popup-address").css("display", "flex");
+            // Load danh sách địa chỉ theo tab
+            function loadAddressList(tab) {
+                if (!addressDataLoaded) {
+                    $("#address-list").html('<div style="padding: 20px; text-align: center; color: #888;">Đang tải dữ liệu...</div>');
+                    return;
+                }
 
-                // 2. Chuyển thẳng sang FORM thêm mới (view-form) và ẩn danh sách lịch sử
-                $("#view-list").hide();
-                $("#view-form").show();
+                var html = "";
+                if (tab === "province") {
+                    var provinces = Object.keys(addressData).sort();
+                    if (provinces.length === 0) {
+                        html = '<div style="padding: 20px; text-align: center; color: #888;">Không có dữ liệu tỉnh/thành phố.</div>';
+                    } else {
+                        provinces.forEach(function(province) {
+                            html += '<div class="address-item" data-value="' + province + '">' + province + '</div>';
+                        });
+                    }
+                } else if (tab === "district") {
+                    if (!selectedProvince) {
+                        html = '<div style="padding: 20px; text-align: center; color: #888;">Vui lòng chọn Tỉnh/Thành phố trước.</div>';
+                    } else if (addressData[selectedProvince]) {
+                        var districts = Object.keys(addressData[selectedProvince]).sort();
+                        if (districts.length === 0) {
+                            html = '<div style="padding: 20px; text-align: center; color: #888;">Không có dữ liệu quận/huyện.</div>';
+                        } else {
+                            districts.forEach(function(district) {
+                                html += '<div class="address-item" data-value="' + district + '">' + district + '</div>';
+                            });
+                        }
+                    } else {
+                        html = '<div style="padding: 20px; text-align: center; color: #888;">Không tìm thấy dữ liệu cho tỉnh/thành phố đã chọn.</div>';
+                    }
+                } else if (tab === "ward") {
+                    if (!selectedProvince || !selectedDistrict) {
+                        html = '<div style="padding: 20px; text-align: center; color: #888;">Vui lòng chọn Quận/Huyện trước.</div>';
+                    } else if (addressData[selectedProvince] && addressData[selectedProvince][selectedDistrict]) {
+                        var wards = addressData[selectedProvince][selectedDistrict].sort();
+                        if (wards.length === 0) {
+                            html = '<div style="padding: 20px; text-align: center; color: #888;">Không có dữ liệu phường/xã.</div>';
+                        } else {
+                            wards.forEach(function(ward) {
+                                html += '<div class="address-item" data-value="' + ward + '">' + ward + '</div>';
+                            });
+                        }
+                    } else {
+                        html = '<div style="padding: 20px; text-align: center; color: #888;">Không tìm thấy dữ liệu phường/xã.</div>';
+                    }
+                }
+                
+                $("#address-list").html(html);
+            }
 
-                // 3. Tự động điền thông tin cũ vào form
+            // Hàm cập nhật text input địa chỉ
+            function updateAddressDisplay() {
+                var displayText = "";
+                if (selectedProvince) {
+                    displayText = selectedProvince;
+                    if (selectedDistrict) {
+                        displayText += ", " + selectedDistrict;
+                        if (selectedWard) {
+                            displayText += ", " + selectedWard;
+                        }
+                    }
+                }
+                $("#address-search").val(displayText);
+            }
+
+            // Chọn địa chỉ
+            $(document).on("click", ".address-item", function() {
+                var value = $(this).data("value");
+                $(".address-item").removeClass("selected");
+                $(this).addClass("selected");
+
+                if (currentTab === "province") {
+                    selectedProvince = value;
+                    selectedDistrict = "";
+                    selectedWard = "";
+                    $("#selected-province").val(value);
+                    $("#selected-district").val("");
+                    $("#selected-ward").val("");
+                    updateAddressDisplay(); // Cập nhật ngay khi chọn tỉnh
+                    // Chuyển sang tab district - KHUNG VẪN MỞ
+                    currentTab = "district";
+                    $(".address-tab").removeClass("active");
+                    $(".address-tab[data-tab='district']").addClass("active");
+                    loadAddressList("district");
+                } else if (currentTab === "district") {
+                    selectedDistrict = value;
+                    selectedWard = "";
+                    $("#selected-district").val(value);
+                    $("#selected-ward").val("");
+                    updateAddressDisplay(); // Cập nhật ngay khi chọn quận
+                    // Chuyển sang tab ward - KHUNG VẪN MỞ
+                    currentTab = "ward";
+                    $(".address-tab").removeClass("active");
+                    $(".address-tab[data-tab='ward']").addClass("active");
+                    loadAddressList("ward");
+                } else if (currentTab === "ward") {
+                    selectedWard = value;
+                    $("#selected-ward").val(value);
+                    updateAddressDisplay(); // Cập nhật khi chọn phường
+                    // Đóng khung sau khi đã chọn đủ 3 trường (Tỉnh, Quận, Phường)
+                    if (selectedProvince && selectedDistrict && selectedWard) {
+                        setTimeout(function() {
+                            $("#address-selector").hide();
+                            addressSelectorOpened = false;
+                        }, 300);
+                    }
+                }
+            });
+
+            // Chuyển màn hình 
+            $(document).on("click", "#btn-show-add-form", function () {
+                $("#view-list").hide(); $("#view-form").show();
+
+                // Lấy thông tin Tên & SĐT đang hiển thị trên màn hình chính (Dữ liệu đã được gán)
                 var currentName = $("#tennhan").text().trim();
                 var currentPhone = $("#sdtnhan").text().trim();
                 var currentAddr = $("#diachinhan").text().trim();
 
+                // Tự động điền các ô input mới
                 $("#new-name").val(currentName);
                 $("#new-phone").val(currentPhone);
+                
+                // Reset address selector
+                selectedProvince = "";
+                selectedDistrict = "";
+                selectedWard = "";
+                $("#address-search").val("");
+                $("#selected-province").val("");
+                $("#selected-district").val("");
+                $("#selected-ward").val("");
+                $("#new-street").val("");
+                $("#address-selector").hide();
+                addressSelectorOpened = false; // Reset để có thể mở lại
+                currentTab = "province";
+                $(".address-tab").removeClass("active");
+                $(".address-tab[data-tab='province']").addClass("active");
+            });
 
-                // Điền địa chỉ đang thiếu vào ô nhập địa chỉ mới
-                $("#new-city").val(currentAddr);
+            $(document).on("click", "#btn-back-to-list, #btn-close-popup", function () {
+                if ($(this).attr("id") === "btn-close-popup") {
+                    $("#popup-address").hide();
+                    $("#address-selector").hide();
+                    addressSelectorOpened = false; // Reset khi đóng popup
+                } else { 
+                    $("#view-form").hide(); 
+                    $("#view-list").show(); 
+                }
+            });
+
+            // Điền form để cập nhật
+            window.fillFormForUpdate = function (name, phone, addr) {
+                $("#new-name").val(name);
+                $("#new-phone").val(phone);
+                
+                // Reset address selector
+                selectedProvince = "";
+                selectedDistrict = "";
+                selectedWard = "";
+                $("#address-search").val("");
+                $("#selected-province").val("");
+                $("#selected-district").val("");
+                $("#selected-ward").val("");
+                $("#new-street").val("");
+                $("#address-selector").hide();
+                addressSelectorOpened = false; // Reset để có thể mở lại
+                currentTab = "province";
+                $(".address-tab").removeClass("active");
+                $(".address-tab[data-tab='province']").addClass("active");
+                
+                // Nếu có địa chỉ cũ, cố gắng parse và điền vào
+                if (addr) {
+                    $("#address-search").val(addr);
+                    $("#new-street").val(addr);
+                }
+
+                $("#view-list").hide();
+                $("#view-form").show();
+            };
+
+            // Xác nhận chọn từ danh sách
+            $(document).on("click", "#btn-confirm-selection", function () {
+                var selected = $("input[name='addr_radio']:checked");
+                if (selected.length === 0) { 
+                    showShopeeAlert("Vui lòng chọn địa chỉ!"); 
+                    return; 
+                }
+                applyAddress(selected.data("name"), selected.data("phone"), selected.data("addr"));
+                $("#popup-address").hide();
+                $("#address-selector").hide();
+                addressSelectorOpened = false; // Reset khi xác nhận
+            });
+
+            // Nút Hoàn thành (Lưu mới)
+            $(document).on("click", "#btn-save-new", function () {
+                var ten = $("#new-name").val().trim();
+                var sdt = $("#new-phone").val().trim();
+                var province = $("#selected-province").val();
+                var district = $("#selected-district").val();
+                var ward = $("#selected-ward").val();
+                var street = $("#new-street").val().trim();
+
+                if (ten === "" || sdt === "") {
+                    showShopeeAlert("Vui lòng điền đủ thông tin Họ tên và Số điện thoại!"); 
+                    return;
+                }
+
+                if (!province || !district || !ward) {
+                    showAlert("Vui lòng chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và Phường/Xã!");
+                    return;
+                }
+
+                // --- KIỂM TRA ĐỊNH DẠNG NGHIÊM NGẶT (NHƯ TRIGGER SQL) ---
+                // Kiểm tra: Phải 10 số AND bắt đầu bằng 0 AND không chứa ký tự lạ
+                if (sdt.length !== 10 || !sdt.startsWith("0") || sdt.match(/[^0-9]/)) {
+                    showAlert("Lỗi: Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0!");
+                    $("#new-phone").focus();
+                    return;
+                }
+                // --------------------------------------------------------
+
+                // BẮT BUỘC NHẬP ĐỊA CHỈ CỤ THỂ
+                if (!street || street.length < 5) {
+                    showAlert("Vui lòng nhập địa chỉ cụ thể (số nhà, ngõ, tên đường, tòa nhà...)!");
+                    $("#new-street").focus();
+                    return;
+                }
+
+                // Ghép địa chỉ đầy đủ theo thứ tự: Địa chỉ cụ thể, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố
+                var fullAddr = "";
+                if (street) {
+                    fullAddr = street;
+                }
+                if (ward) {
+                    if (fullAddr) fullAddr += ", ";
+                    fullAddr += ward;
+                }
+                if (district) {
+                    if (fullAddr) fullAddr += ", ";
+                    fullAddr += district;
+                }
+                if (province) {
+                    if (fullAddr) fullAddr += ", ";
+                    fullAddr += province;
+                }
+
+                applyAddress(ten, sdt, fullAddr);
+                $("#popup-address").hide();
+                $("#address-selector").hide();
+                addressSelectorOpened = false; // Reset khi lưu thành công
+            });
+
+            // Hàm cập nhật ra màn hình chính
+            function applyAddress(ten, sdt, diachi) {
+                $("#tennhan").text(ten);
+                $("#sdtnhan").text(sdt);
+                $("#diachinhan").text(diachi);
+                $("#hidden-ten").val(ten);
+                $("#hidden-sdt").val(sdt);
+                $("#hidden-diachi").val(diachi);
             }
-            // Nếu thông tin đầy đủ, form sẽ gửi đi bình thường.
-        });
 
+            // ===============================================
+            // ===== VALIDATE TRƯỚC KHI SUBMIT FORM (ĐÃ SỬA) =====
+            // ===============================================
+            $(document).on("submit", "#form-checkout", function (e) {
+                // Lấy giá trị từ các ô hidden
+                var ten = $("#hidden-ten").val().trim();
+                var sdt = $("#hidden-sdt").val().trim();
+                var diachi = $("#hidden-diachi").val().trim();
+
+                // Kiểm tra nếu thiếu 1 trong 3 thông tin
+                if (ten === "" || sdt === "" || diachi === "") {
+                    e.preventDefault(); // <-- CHẶN gửi form
+
+                    showAlert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi đặt hàng!");
+
+                    // 1. Mở Popup
+                    $("#popup-address").css("display", "flex");
+
+                    // 2. Chuyển thẳng sang FORM thêm mới (view-form) và ẩn danh sách lịch sử
+                    $("#view-list").hide();
+                    $("#view-form").show();
+                    return;
+                }
+
+                // Kiểm tra địa chỉ cụ thể (phải có ít nhất 4 phần: Tỉnh, Quận, Phường, Địa chỉ cụ thể)
+                var addressParts = diachi.split(",").map(function(p) { return p.trim(); });
+                if (addressParts.length < 4) {
+                    e.preventDefault();
+                    showAlert("Vui lòng nhập địa chỉ cụ thể (số nhà, ngõ, tên đường, tòa nhà...)!");
+                    
+                    // Mở popup để chỉnh sửa địa chỉ
+                    $("#popup-address").css("display", "flex");
+                    $("#view-list").hide();
+                    $("#view-form").show();
+                    
+                    // Parse địa chỉ hiện tại để điền vào form
+                    var currentName = $("#tennhan").text().trim();
+                    var currentPhone = $("#sdtnhan").text().trim();
+                    var currentAddr = $("#diachinhan").text().trim();
+                    
+                    $("#new-name").val(currentName);
+                    $("#new-phone").val(currentPhone);
+                    
+                    // Parse địa chỉ để điền vào các trường
+                    if (currentAddr && addressParts.length >= 3) {
+                        selectedProvince = addressParts[0];
+                        selectedDistrict = addressParts[1];
+                        selectedWard = addressParts[2];
+                        var street = addressParts.slice(3).join(", ");
+                        
+                        $("#selected-province").val(selectedProvince);
+                        $("#selected-district").val(selectedDistrict);
+                        $("#selected-ward").val(selectedWard);
+                        updateAddressDisplay();
+                        $("#new-street").val(street);
+                    } else {
+                        $("#address-search").val(currentAddr || "");
+                        $("#new-street").val("");
+                    }
+                    
+                    $("#address-selector").hide();
+                    currentTab = "province";
+                    $(".address-tab").removeClass("active");
+                    $(".address-tab[data-tab='province']").addClass("active");
+                    return;
+                }
+                
+                // Kiểm tra phần địa chỉ cụ thể (phần cuối cùng) phải có ít nhất 5 ký tự
+                var specificAddress = addressParts.slice(3).join(", ");
+                if (specificAddress.length < 5) {
+                    e.preventDefault();
+                    showAlert("Địa chỉ cụ thể quá ngắn. Vui lòng nhập chi tiết hơn (số nhà, ngõ, tên đường...)!");
+                    
+                    // Mở popup để chỉnh sửa địa chỉ
+                    $("#popup-address").css("display", "flex");
+                    $("#view-list").hide();
+                    $("#view-form").show();
+                    
+                    var currentName = $("#tennhan").text().trim();
+                    var currentPhone = $("#sdtnhan").text().trim();
+                    
+                    $("#new-name").val(currentName);
+                    $("#new-phone").val(currentPhone);
+                    
+                    if (addressParts.length >= 3) {
+                        selectedProvince = addressParts[0];
+                        selectedDistrict = addressParts[1];
+                        selectedWard = addressParts[2];
+                        
+                        $("#selected-province").val(selectedProvince);
+                        $("#selected-district").val(selectedDistrict);
+                        $("#selected-ward").val(selectedWard);
+                        updateAddressDisplay();
+                        $("#new-street").val(specificAddress);
+                    }
+                    
+                    $("#address-selector").hide();
+                    $("#new-street").focus();
+                    return;
+                }
+                // Nếu thông tin đầy đủ, form sẽ gửi đi bình thường.
+            });
+
+        }); // End $(document).ready()
     </script>
 }

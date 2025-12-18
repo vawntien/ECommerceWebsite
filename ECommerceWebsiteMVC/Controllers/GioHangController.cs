@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ECommerceWebsiteMVC.Models;
 using System.Data.Entity;
+using System.IO;
 
 namespace ECommerceWebsiteMVC.Controllers
 {
@@ -177,6 +178,49 @@ namespace ECommerceWebsiteMVC.Controllers
         }
 
         // ==========================================
+        // 2.5 API LẤY SỐ LƯỢNG SẢN PHẨM TRONG GIỎ
+        // ==========================================
+        [HttpGet]
+        public ActionResult GetCartCount()
+        {
+            int userId = GetUserId();
+            if (userId == -1) return Json(new { count = 0 }, JsonRequestBehavior.AllowGet);
+
+            var gioHang = db.GioHangs.FirstOrDefault(g => g.MaNguoiMua == userId);
+            if (gioHang == null) return Json(new { count = 0 }, JsonRequestBehavior.AllowGet);
+
+            // Tính tổng số lượng (Sum of SoLuong)
+            int count = db.ChiTietGioHangs
+                          .Where(c => c.MaGioHang == gioHang.MaGioHang && c.TrangThai == true)
+                          .Sum(c => (int?)c.SoLuong) ?? 0;
+
+            return Json(new { count = count }, JsonRequestBehavior.AllowGet);
+        }
+
+        // ==========================================
+        // 2.6 API LẤY DỮ LIỆU ĐỊA CHỈ VIỆT NAM
+        // ==========================================
+        [HttpGet]
+        public ActionResult GetVietnamAddresses()
+        {
+            try
+            {
+                var filePath = Server.MapPath("~/Scripts/data/vietnam-addresses.json");
+                if (System.IO.File.Exists(filePath))
+                {
+                    var jsonContent = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+                    // Trả về JSON string trực tiếp với content type đúng
+                    return Content(jsonContent, "application/json");
+                }
+                return Json(new { error = "File not found" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // ==========================================
         // 3. CHECKOUT & THANH TOÁN
         // ==========================================
         [HttpPost]
@@ -218,21 +262,31 @@ namespace ECommerceWebsiteMVC.Controllers
                 HinhAnh = i.BienTheSanPham.HinhAnh
             }).ToList();
 
+            decimal tongTienHang = items.Sum(x => x.ThanhTien);
+
             var model = new CheckoutViewModel
             {
                 TenNguoiNhan = user != null ? user.HoVaTen : "",
                 SDT = user != null ? user.SDT : "",
-
-                // --- SỬA LỖI Ở ĐÂY: Gán chuỗi rỗng ---
-                DiaChi = "",
-
+                DiaChi = "", // Địa chỉ sẽ được người dùng nhập/chọn trong popup
                 Items = items,
 
-                // Lấy Voucher
-                DanhSachVoucher = db.GiamGias.Where(v => v.NgayKT >= DateTime.Now).ToList(),
+                // Lấy Voucher có thể áp dụng
+                // Điều kiện: 
+                // 1. NgayBD <= DateTime.Now (voucher đã bắt đầu) hoặc NgayBD null
+                // 2. NgayKT >= DateTime.Now (voucher chưa hết hạn) hoặc NgayKT null
+                // 3. GiaTriDonHangToiThieu <= tongTienHang (đơn hàng đủ giá trị tối thiểu)
+                DanhSachVoucher = db.GiamGias
+                                    .Where(v => (v.NgayBD == null || v.NgayBD <= DateTime.Now) 
+                                             && (v.NgayKT == null || v.NgayKT >= DateTime.Now) 
+                                             && v.GiaTriDonHangToiThieu <= tongTienHang)
+                                    .ToList(),
+                
+                // Lấy danh sách đơn vị vận chuyển
+                DanhSachDVVC = db.DonViVanChuyens.ToList(),
 
-                TongTienHang = items.Sum(x => x.ThanhTien),
-                PhiVanChuyen = 38000,
+                TongTienHang = tongTienHang,
+                PhiVanChuyen = 17000, 
                 GiamGia = 0
             };
             model.TongThanhToan = model.TongTienHang + model.PhiVanChuyen;
@@ -242,11 +296,22 @@ namespace ECommerceWebsiteMVC.Controllers
 
         // --- HÀM API CHO VOUCHER (Mới thêm) ---
         [HttpPost]
-        public ActionResult ApplyVoucher(int maVoucher, decimal tongTienHang)
+        public ActionResult ApplyVoucher(int maVoucher, decimal tongTienHang, decimal phiShip)
         {
             var vc = db.GiamGias.Find(maVoucher);
-            if (vc == null) return Json(new { success = false });
-            if (vc.GiaTriDonHangToiThieu > tongTienHang) return Json(new { success = false });
+            if (vc == null) return Json(new { success = false, message = "Voucher không tồn tại." });
+            
+            // Kiểm tra điều kiện ngày bắt đầu
+            if (vc.NgayBD != null && vc.NgayBD > DateTime.Now)
+                return Json(new { success = false, message = "Voucher chưa đến thời gian áp dụng." });
+            
+            // Kiểm tra điều kiện ngày kết thúc
+            if (vc.NgayKT != null && vc.NgayKT < DateTime.Now)
+                return Json(new { success = false, message = "Voucher đã hết hạn." });
+            
+            // Kiểm tra giá trị đơn hàng tối thiểu
+            if (vc.GiaTriDonHangToiThieu > tongTienHang) 
+                return Json(new { success = false, message = "Đơn hàng chưa đủ điều kiện áp dụng voucher này." });
 
             decimal giam = 0;
             if (vc.GiaTriGiam <= 1)
@@ -256,7 +321,7 @@ namespace ECommerceWebsiteMVC.Controllers
             }
             else giam = (decimal)vc.GiaTriGiam;
 
-            decimal tong = tongTienHang + 38000 - giam;
+            decimal tong = tongTienHang + phiShip - giam;
             if (tong < 0) tong = 0;
 
             return Json(new { success = true, giamGia = giam, tongThanhToan = tong });
@@ -374,8 +439,6 @@ namespace ECommerceWebsiteMVC.Controllers
                     IsDefault = true
                 });
 
-                // 2. Lấy lịch sử từ đơn hàng cũ
-                // Logic: Tìm đơn hàng có cùng SDT với người dùng hiện tại
                 var history = db.DonHangs
                                 .Where(d => d.SDT == user.SDT && d.DiaChi != null)
                                 .OrderByDescending(d => d.ThoiGianDat) // CHUẨN: ThoiGianDat
@@ -388,11 +451,8 @@ namespace ECommerceWebsiteMVC.Controllers
                                 .Distinct()
                                 .Take(5)
                                 .ToList();
-
-                // 3. Lọc trùng
                 foreach (var item in history)
                 {
-                    // Lấy địa chỉ user (xử lý an toàn nếu null)
                     string userAddr = (user.GetType().GetProperty("DiaChi") != null) ? (string)user.GetType().GetProperty("DiaChi").GetValue(user, null) : "";
 
                     bool isDuplicate = (item.HoTen == user.HoVaTen && item.SDT == user.SDT && item.DiaChi == userAddr);
@@ -417,7 +477,7 @@ namespace ECommerceWebsiteMVC.Controllers
         // 7. THANH TOÁN (ORDER SUCCESS) - CHUẨN DB MỚI
         // ==========================================
         [HttpPost]
-        public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher)
+        public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher, int MaDVVC, decimal PhiShip, string GhiChu)
         {
             int userId = GetUserId(); 
 
@@ -453,46 +513,74 @@ namespace ECommerceWebsiteMVC.Controllers
 
                     if (!string.IsNullOrEmpty(MaVoucher))
                     {
-                        int vID = int.Parse(MaVoucher);
-                        var vc = db.GiamGias.Find(vID);
-                        if (vc != null)
+                        int vID;
+                        if (int.TryParse(MaVoucher, out vID))
                         {
-                            maGiamGiaID = vID;
-                            if (vc.GiaTriGiam <= 1)
+                            var vc = db.GiamGias.Find(vID);
+                            if (vc != null)
                             {
-                                giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
-                                if (vc.GiaTriGiamToiDa > 0 && giamGia > vc.GiaTriGiamToiDa)
-                                    giamGia = (decimal)vc.GiaTriGiamToiDa;
-                            }
-                            else
-                            {
-                                giamGia = (decimal)vc.GiaTriGiam;
+                                // KIỂM TRA LẠI ĐIỀU KIỆN VOUCHER KHI ĐẶT HÀNG (Bảo mật nghiệp vụ)
+                                // Kiểm tra ngày bắt đầu
+                                if (vc.NgayBD != null && vc.NgayBD > DateTime.Now)
+                                {
+                                    transaction.Rollback();
+                                    TempData["Error"] = "Voucher chưa đến thời gian áp dụng.";
+                                    return RedirectToAction("Index");
+                                }
+                                
+                                // Kiểm tra ngày kết thúc
+                                if (vc.NgayKT != null && vc.NgayKT < DateTime.Now)
+                                {
+                                    transaction.Rollback();
+                                    TempData["Error"] = "Voucher đã hết hạn.";
+                                    return RedirectToAction("Index");
+                                }
+                                
+                                // Kiểm tra giá trị đơn hàng tối thiểu
+                                if (vc.GiaTriDonHangToiThieu > tongTienHang)
+                                {
+                                    transaction.Rollback();
+                                    TempData["Error"] = "Đơn hàng chưa đủ điều kiện áp dụng voucher này.";
+                                    return RedirectToAction("Index");
+                                }
+                                
+                                // Tính toán giảm giá
+                                maGiamGiaID = vID;
+                                if (vc.GiaTriGiam <= 1)
+                                {
+                                    giamGia = tongTienHang * (decimal)vc.GiaTriGiam;
+                                    if (vc.GiaTriGiamToiDa > 0 && giamGia > vc.GiaTriGiamToiDa)
+                                        giamGia = (decimal)vc.GiaTriGiamToiDa;
+                                }
+                                else
+                                {
+                                    giamGia = (decimal)vc.GiaTriGiam;
+                                }
                             }
                         }
                     }
 
-                    // --- TẠO ĐƠN HÀNG (Khớp 100% ảnh image_b0ff7d.png) ---
                     var dh = new DonHang
                     {
-                        // Không gán MaNguoiMua vì bảng không có
-                        MaDVVC = 1, // Bắt buộc (int, not null) - Giả sử 1 là Giao hàng nhanh
+                       
+                        MaDVVC = MaDVVC, 
 
                         TenNguoiNhan = NguoiNhan,
                         SDT = SDT,
                         DiaChi = DiaChi,
 
-                        ThoiGianDat = DateTime.Now, // CHUẨN: ThoiGianDat
+                        ThoiGianDat = DateTime.Now, 
 
-                        TongTien = tongTienHang + 38000 - giamGia,
-                        PhiVanChuyen = 38000,
+                        TongTien = Math.Max(0, tongTienHang + PhiShip - giamGia), // Đảm bảo tổng tiền không âm
+                        PhiVanChuyen = PhiShip,
 
-                        MaGiamGia = maGiamGiaID, // CHUẨN: MaGiamGia (Allow Nulls)
+                        MaGiamGia = maGiamGiaID,
 
                         TrangThaiDonHang = "Chờ xác nhận",
-                        TrangThaiVanChuyen = "Chưa giao", // Allow Nulls nhưng nên gán
-                        TrangThaiThanhToan = false,      // CHUẨN: bit (boolean)
+                        TrangThaiVanChuyen = "Chưa giao", 
+                        TrangThaiThanhToan = false,    
 
-                        GhiChu = "" // Allow Nulls
+                        GhiChu = GhiChu ?? "" 
                     };
 
                     db.DonHangs.Add(dh);
