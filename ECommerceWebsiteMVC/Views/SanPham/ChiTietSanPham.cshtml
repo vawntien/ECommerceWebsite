@@ -157,7 +157,7 @@
             let soLuongMua = qtyInput ? parseInt(qtyInput.value) : 1;
 
             if (!idBienThe || idBienThe === "") {
-                alert("Vui lòng chọn phân loại sản phẩm!");
+                showShopeeAlert("Vui lòng chọn phân loại sản phẩm!");
                 return;
             }
 
@@ -176,9 +176,9 @@
                     // TRƯỜNG HỢP 2: THIẾU HÀNG
                     else {
                         if (data.soLuongConLai <= 0) {
-                            alert(" Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
+                            showShopeeAlert("Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
                         } else {
-                            alert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.\n\nHệ thống sẽ tự động cập nhật số lượng tối đa cho bạn.`);
+                            showShopeeAlert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.\n\nHệ thống sẽ tự động cập nhật số lượng tối đa cho bạn.`);
                             if (qtyInput) {
                                 qtyInput.value = data.soLuongConLai; // Tự sửa số lượng
                             }
@@ -187,7 +187,7 @@
                 })
                 .catch(error => {
                     console.error('Lỗi:', error);
-                    alert("Có lỗi kết nối hệ thống.");
+                    showShopeeAlert("Có lỗi kết nối hệ thống.");
                 });
         }
 
@@ -200,6 +200,36 @@
             handleMuaHang('buy');
         });
 
+    </script>
+
+    <!-- MODAL THÔNG BÁO SHOPEE STYLE -->
+    <div id="shopee-alert-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:#fff; width:400px; max-width:90%; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1); border:1px solid #e8e8e8;">
+            <div id="shopee-alert-message" style="padding:24px; font-size:15px; color:#333; text-align:center; line-height:1.5;">
+            </div>
+            <div id="shopee-alert-buttons" style="padding:0; border-top:1px solid #e8e8e8;">
+                <!-- Buttons sẽ được thêm động bằng JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm thông báo Shopee style (Vanilla JavaScript)
+        function showShopeeAlert(message, callback) {
+            var modal = document.getElementById("shopee-alert-modal");
+            var messageDiv = document.getElementById("shopee-alert-message");
+            var buttonsDiv = document.getElementById("shopee-alert-buttons");
+            
+            messageDiv.textContent = message;
+            buttonsDiv.innerHTML = '<button id="shopee-alert-ok" style="width:100%; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>';
+            modal.style.display = "flex";
+            
+            var okBtn = document.getElementById("shopee-alert-ok");
+            okBtn.onclick = function() {
+                modal.style.display = "none";
+                if (callback) callback(true);
+            };
+        }
     </script>
 
 </body>

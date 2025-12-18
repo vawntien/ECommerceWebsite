@@ -109,8 +109,12 @@
 
                         </div>*@
                 </div>
-                <a href="/GioHang/Index">
+                <a href="/GioHang/Index" class="position-relative">
                     <img class="icon-shop" src="~/assets/shop.png" alt="Cart" style="cursor:pointer;" />
+                    <span id="cart-count-badge" class="position-absolute badge rounded-pill bg-white text-danger border border-danger"
+                          style="display: none; top: -5px; left: 90%; transform: translateX(-50%); font-size: 0.8rem; padding: 2px 7px; font-weight: 500; border-width: 1.5px !important;">
+                        0
+                    </span>
                 </a>
 
             </div>
@@ -131,6 +135,31 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5 Bundle (bao gồm Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            updateCartCount();
+        });
+
+        function updateCartCount() {
+            $.ajax({
+                url: '/GioHang/GetCartCount',
+                type: 'GET',
+                success: function (response) {
+                    if (response.count > 0) {
+                        $('#cart-count-badge').text(response.count).show();
+                    } else {
+                        $('#cart-count-badge').hide();
+                    }
+                },
+                error: function () {
+                    // Có thể do chưa đăng nhập, không cần hiện lỗi
+                    $('#cart-count-badge').hide();
+                }
+            });
+        }
+    </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

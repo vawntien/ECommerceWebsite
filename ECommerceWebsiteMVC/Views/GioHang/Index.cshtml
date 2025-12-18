@@ -300,13 +300,13 @@
         <button onclick="$('#variant-modal').hide()" style="margin-top:10px;width:100%;padding:10px;background:#ccc;border:none;">Đóng</button>
     </div>
 </div>
-<div id="delete-confirm-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#fff; width:450px; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-        <div id="delete-modal-message" style="padding:20px 24px; font-size:16px; color:#333;">
+<!-- MODAL THÔNG BÁO SHOPEE STYLE -->
+<div id="shopee-alert-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:400px; max-width:90%; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1); border:1px solid #e8e8e8;">
+        <div id="shopee-alert-message" style="padding:24px; font-size:15px; color:#333; text-align:center; line-height:1.5;">
         </div>
-        <div style="padding:15px 24px; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #eee;">
-            <button id="btn-delete-cancel" style="padding:10px 20px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer;">TRỞ LẠI</button>
-            <button id="btn-delete-confirm" style="padding:10px 20px; background:#ee4d2d; color:#fff; border:none; border-radius:3px; cursor:pointer;">CÓ</button>
+        <div id="shopee-alert-buttons" style="padding:0; border-top:1px solid #e8e8e8;">
+            <!-- Buttons sẽ được thêm động bằng JavaScript -->
         </div>
     </div>
 </div>
@@ -315,6 +315,43 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+
+            // ============================================
+            // 0. HÀM THÔNG BÁO SHOPEE STYLE (ALERT & CONFIRM)
+            // ============================================
+            function showShopeeAlert(message, callback) {
+                $("#shopee-alert-message").text(message);
+                $("#shopee-alert-buttons").html(
+                    '<button id="shopee-alert-ok" style="width:100%; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>'
+                );
+                $("#shopee-alert-modal").css("display", "flex");
+                
+                $("#shopee-alert-ok").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(true);
+                });
+            }
+
+            function showShopeeConfirm(message, callback) {
+                $("#shopee-alert-message").text(message);
+                $("#shopee-alert-buttons").html(
+                    '<div style="display:flex; border-top:1px solid #e8e8e8;">' +
+                    '<button id="shopee-confirm-cancel" style="flex:1; padding:12px 0; background:#fff; color:#555; border:none; border-right:1px solid #e8e8e8; font-size:15px; cursor:pointer;">Hủy</button>' +
+                    '<button id="shopee-confirm-ok" style="flex:1; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>' +
+                    '</div>'
+                );
+                $("#shopee-alert-modal").css("display", "flex");
+                
+                $("#shopee-confirm-ok").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(true);
+                });
+                
+                $("#shopee-confirm-cancel").off("click").on("click", function() {
+                    $("#shopee-alert-modal").hide();
+                    if (callback) callback(false);
+                });
+            }
 
             // ============================================
             // 1. CÁC HÀM TIỆN ÍCH (FORMAT TIỀN, TÍNH TỔNG)
@@ -365,8 +402,16 @@
                 var stock = parseInt(input.data('stock'));
                 var val = parseInt(input.val());
 
-                if (isNaN(val) || val < 1) { alert("Tối thiểu là 1"); input.val(1); val = 1; }
-                if (val > stock) { alert("Kho chỉ còn " + stock); input.val(stock); val = stock; }
+                if (isNaN(val) || val < 1) { 
+                    showShopeeAlert("Tối thiểu là 1"); 
+                    input.val(1); 
+                    val = 1; 
+                }
+                if (val > stock) { 
+                    showShopeeAlert("Kho chỉ còn " + stock); 
+                    input.val(stock); 
+                    val = stock; 
+                }
 
                 $.ajax({
                     url: '/GioHang/UpdateQuantity',
@@ -377,12 +422,13 @@
                             var row = input.closest(".product-row");
                             row.find(".product-subtotal").text(formatCurrency(res.thanhTien));
                             updateTotal();
+                            if (typeof updateCartCount === "function") updateCartCount();
                         } else {
-                            alert(res.message);
+                            showShopeeAlert(res.message);
                             input.val(stock); // Quay về số cũ nếu lỗi
                         }
                     },
-                    error: function () { alert("Lỗi kết nối server!"); }
+                    error: function () { showShopeeAlert("Lỗi kết nối server!"); }
                 });
             }
 
@@ -393,7 +439,7 @@
                 var val = parseInt(input.val()) || 0;
                 var max = parseInt(input.data('stock'));
                 if (val < max) { input.val(val + 1); input.trigger('change'); }
-                else { alert("Đã đạt giới hạn tồn kho!"); }
+                else { showShopeeAlert("Đã đạt giới hạn tồn kho!"); }
             });
 
             $(".btn-minus").click(function () {
@@ -406,20 +452,26 @@
             // 3. XỬ LÝ XÓA SẢN PHẨM
             // ============================================
             $(".btn-delete").click(function () {
-                if (!confirm("Bạn muốn xóa sản phẩm này?")) return;
                 var row = $(this).closest(".product-row");
                 var id = row.data("id");
-
-                $.post("/GioHang/DeleteItem", { id: id }, function (res) {
-                    if (res.success) {
-                        row.remove();
-                        // Kiểm tra nếu shop trống thì xóa luôn tên shop
-                        $(".shop-block").each(function () {
-                            if ($(this).find(".product-row").length === 0) $(this).remove();
-                        });
-                        updateSelectedIds();
-                        updateTotal();
-                    } else { alert(res.message); }
+                
+                showShopeeConfirm("Bạn muốn xóa sản phẩm này?", function(confirmed) {
+                    if (!confirmed) return;
+                    
+                    $.post("/GioHang/DeleteItem", { id: id }, function (res) {
+                        if (res.success) {
+                            row.remove();
+                            // Kiểm tra nếu shop trống thì xóa luôn tên shop
+                            $(".shop-block").each(function () {
+                                if ($(this).find(".product-row").length === 0) $(this).remove();
+                            });
+                            updateSelectedIds();
+                            updateTotal();
+                            if (typeof updateCartCount === "function") updateCartCount();
+                        } else { 
+                            showShopeeAlert(res.message); 
+                        }
+                    });
                 });
             });
 
@@ -428,19 +480,27 @@
                     return $(this).closest(".product-row").data("id");
                 }).get();
 
-                if (ids.length === 0) { alert("Chưa chọn sản phẩm nào!"); return; }
-                if (!confirm("Xóa " + ids.length + " sản phẩm đã chọn?")) return;
-
-                $.ajax({
-                    url: "/GioHang/DeleteSelected",
-                    type: "POST",
-                    traditional: true,
-                    data: { ids: ids },
-                    success: function (res) {
-                        if (res.success) {
-                            location.reload(); // Reload trang cho sạch sẽ
-                        } else { alert(res.message); }
-                    }
+                if (ids.length === 0) { 
+                    showShopeeAlert("Chưa chọn sản phẩm nào!"); 
+                    return; 
+                }
+                
+                showShopeeConfirm("Xóa " + ids.length + " sản phẩm đã chọn?", function(confirmed) {
+                    if (!confirmed) return;
+                    
+                    $.ajax({
+                        url: "/GioHang/DeleteSelected",
+                        type: "POST",
+                        traditional: true,
+                        data: { ids: ids },
+                        success: function (res) {
+                            if (res.success) {
+                                location.reload(); // Reload trang cho sạch sẽ
+                            } else { 
+                                showShopeeAlert(res.message); 
+                            }
+                        }
+                    });
                 });
             });
 
@@ -474,7 +534,7 @@
                     // Hiển thị Modal
                     $("#variant-modal").css("display", "flex");
                 } else {
-                    alert("Sản phẩm này không có phân loại khác.");
+                    showShopeeAlert("Sản phẩm này không có phân loại khác.");
                 }
             });
 
@@ -504,7 +564,7 @@
                         if (res.success) {
                             location.reload(); // Reload trang để cập nhật lại tên, giá, ảnh mới
                         } else {
-                            alert(res.message || "Lỗi cập nhật biến thể");
+                            showShopeeAlert(res.message || "Lỗi cập nhật biến thể");
                         }
                     }
                 );
