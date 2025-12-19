@@ -116,5 +116,91 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public ActionResult QuenMatKhau()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult QuenMatKhau(string TaiKhoan, string Email, string SDT)
+        {
+            if (string.IsNullOrWhiteSpace(TaiKhoan) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(SDT))
+            {
+                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin để xác thực!";
+                return View();
+            }
+
+            // Kiểm tra thông tin người bán trong DB
+            var seller = tk.NguoiBans.FirstOrDefault(x => x.TaiKhoan == TaiKhoan.Trim()
+                                                       && x.Email == Email.Trim()
+                                                       && x.SDT == SDT.Trim());
+
+            if (seller == null)
+            {
+                ViewBag.Error = "Thông tin xác thực không chính xác hoặc tài khoản không tồn tại!";
+                return View();
+            }
+
+            
+            Session["ResetPassword_SellerId"] = seller.MaNguoiBan;
+
+            return RedirectToAction("DatLaiMatKhau");
+        }
+
+        [HttpGet]
+        public ActionResult DatLaiMatKhau()
+        {
+            if (Session["ResetPassword_SellerId"] == null)
+                return RedirectToAction("QuenMatKhau");
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult DatLaiMatKhau(string MatKhauMoi, string XacNhanMatKhau)
+        {
+            if (Session["ResetPassword_SellerId"] == null)
+                return RedirectToAction("QuenMatKhau");
+
+            if (string.IsNullOrWhiteSpace(MatKhauMoi) || MatKhauMoi.Length < 6)
+            {
+                ViewBag.Error = "Mật khẩu mới phải có ít nhất 6 ký tự!";
+                return View();
+            }
+
+            if (MatKhauMoi != XacNhanMatKhau)
+            {
+                ViewBag.Error = "Mật khẩu xác nhận không khớp!";
+                return View();
+            }
+
+            try
+            {
+                int sellerId = (int)Session["ResetPassword_SellerId"];
+                var seller = tk.NguoiBans.Find(sellerId);
+
+                if (seller != null)
+                {
+                    seller.MatKhau = MatKhauMoi;
+                    tk.SaveChanges();
+
+                    
+                    Session.Remove("ResetPassword_SellerId");
+
+                    TempData["Success"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.";
+                    return RedirectToAction("DangNhapNguoiBan");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Lỗi hệ thống: " + ex.Message;
+            }
+
+            return View();
+        }
+
+
     }
 }

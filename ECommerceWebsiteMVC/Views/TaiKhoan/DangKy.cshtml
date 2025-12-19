@@ -193,12 +193,12 @@
 
                                 <div class="mb-3 position-relative">
                                     <input type="password" name="MatKhau" class="form-control" placeholder="Mật khẩu" required />
-                                    <span class="toggle-password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">🙈</span>
+                                    <span class="toggle-password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">︶</span>
                                 </div>
 
                                 <div class="mb-4 position-relative">
                                     <input type="password" name="XacNhanMatKhau" class="form-control" placeholder="Nhập lại mật khẩu" required />
-                                    <span class="toggle-password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">🙈</span>
+                                    <span class="toggle-password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">︶</span>
                                 </div>
 
                                 <button type="submit" class="btn btn-next">ĐĂNG KÝ</button>
@@ -266,7 +266,7 @@
                     if (input) {
                         const type = input.getAttribute("type") === "password" ? "text" : "password";
                         input.setAttribute("type", type);
-                        this.textContent = type === "password" ? "🙈" : "🙊";
+                        this.textContent = type === "password" ? "︶" : "👁";
                     }
                 });
             });

@@ -95,14 +95,14 @@ namespace ECommerceWebsiteMVC.Controllers
         [HttpPost]
         public ActionResult DangKy(NguoiMua model, string XacNhanMatKhau)
         {
-            // 1. Kiểm tra xác nhận mật khẩu
+
             if (model.MatKhau != XacNhanMatKhau)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp!";
                 return View(model);
             }
 
-            // 2. Kiểm tra Số điện thoại đã tồn tại chưa
+
             var checkSdt = db.NguoiMuas.FirstOrDefault(s => s.SDT == model.SDT);
             if (checkSdt != null)
             {
@@ -110,7 +110,6 @@ namespace ECommerceWebsiteMVC.Controllers
                 return View(model);
             }
 
-            // 3. Kiểm tra Tên tài khoản đã tồn tại chưa
             var checkUser = db.NguoiMuas.FirstOrDefault(s => s.TaiKhoan == model.TaiKhoan);
             if (checkUser != null)
             {
@@ -129,7 +128,6 @@ namespace ECommerceWebsiteMVC.Controllers
             }
             catch (Exception ex)
             {
-                // 5. Bắt lỗi từ SQL (Trigger)
                 string message = ex.Message;
                 if (ex.InnerException != null)
                 {
@@ -153,27 +151,33 @@ namespace ECommerceWebsiteMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult QuenMatKhau(string thongTinLienHe)
+        public ActionResult QuenMatKhau(string TenDangNhap, string Email, string SoDienThoai)
         {
-            if (string.IsNullOrWhiteSpace(thongTinLienHe))
+            // 1. Kiểm tra đầu vào không được để trống
+            if (string.IsNullOrWhiteSpace(TenDangNhap) ||
+                string.IsNullOrWhiteSpace(Email) ||
+                string.IsNullOrWhiteSpace(SoDienThoai))
             {
-                ViewBag.Error = "Vui lòng nhập Email hoặc Số điện thoại!";
+                ViewBag.Error = "Vui lòng nhập đầy đủ Tên đăng nhập, Email và Số điện thoại!";
                 return View();
             }
 
-            string input = thongTinLienHe.Trim();
+            string userTrim = TenDangNhap.Trim();
+            string emailTrim = Email.Trim();
+            string sdtTrim = SoDienThoai.Trim();
 
-            // Tìm trong DB giống đăng nhập
-            var user = db.NguoiMuas
-                         .FirstOrDefault(s => s.Email == input || s.SDT == input);
+            // 2. Tìm tài khoản khớp CẢ 3 yếu tố
+            var user = db.NguoiMuas.FirstOrDefault(s => s.TaiKhoan == userTrim &&
+                                                        s.Email == emailTrim &&
+                                                        s.SDT == sdtTrim);
 
             if (user == null)
             {
-                ViewBag.Error = "Không tìm thấy tài khoản trong hệ thống!";
+                ViewBag.Error = "Thông tin xác thực không chính xác!";
                 return View();
             }
 
-            // Lưu ID vào session phục vụ bước reset
+            // 3. Lưu ID vào session phục vụ bước reset
             Session["ResetPassword_UserId"] = user.MaNguoiMua;
 
             return RedirectToAction("DatLaiMatKhau");
@@ -183,25 +187,25 @@ namespace ECommerceWebsiteMVC.Controllers
         public ActionResult DatLaiMatKhau()
         {
             if (Session["ResetPassword_UserId"] == null)
+            {
                 return RedirectToAction("QuenMatKhau");
-
+            }
             return View();
         }
 
+   
         [HttpPost]
         public ActionResult DatLaiMatKhau(string MatKhauMoi, string XacNhanMatKhau)
         {
             if (Session["ResetPassword_UserId"] == null)
                 return RedirectToAction("QuenMatKhau");
 
-            // 1. Kiểm tra nhập đủ
             if (string.IsNullOrWhiteSpace(MatKhauMoi) || string.IsNullOrWhiteSpace(XacNhanMatKhau))
             {
                 ViewBag.Error = "Vui lòng nhập đầy đủ thông tin!";
                 return View();
             }
 
-            // 2. Kiểm tra mật khẩu giống đăng ký
             if (MatKhauMoi != XacNhanMatKhau)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp!";
@@ -209,31 +213,25 @@ namespace ECommerceWebsiteMVC.Controllers
             }
 
             int id = (int)Session["ResetPassword_UserId"];
-            var user = db.NguoiMuas.FirstOrDefault(x => x.MaNguoiMua == id);
+            var user = db.NguoiMuas.Find(id);
 
-            if (user == null)
+            if (user != null)
             {
-                ViewBag.Error = "Tài khoản không tồn tại!";
-                return View();
-            }
+                try
+                {
+                    user.MatKhau = MatKhauMoi; 
+                    db.SaveChanges();
 
-            try
-            {
-                // 3. Lưu mật khẩu mới vào DB
-                user.MatKhau = MatKhauMoi;
-                db.SaveChanges();
-
-                // 4. Xóa session reset password
-                Session.Remove("ResetPassword_UserId");
-
-                TempData["Success"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.";
-                return RedirectToAction("DangNhap");
+                    Session.Remove("ResetPassword_UserId");
+                    TempData["Success"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.";
+                    return RedirectToAction("DangNhap");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Lỗi hệ thống: " + ex.Message;
+                }
             }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Lỗi hệ thống: " + ex.Message;
-                return View();
-            }
+            return View();
         }
 
     }
