@@ -14,5 +14,11 @@ namespace ECommerceWebsiteMVC_Admin
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
+
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            Response.Charset = "utf-8";
+            Response.ContentEncoding = System.Text.Encoding.UTF8;
+        }
     }
 }
