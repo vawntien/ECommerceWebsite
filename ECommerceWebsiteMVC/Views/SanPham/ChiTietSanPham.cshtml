@@ -5,231 +5,498 @@
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
 
-<body>
-
-    <div class="container py-4">
-
-        <div class="row" style="margin-top:150px">
-            <div class="col-md-5">
-                <div class="product-gallery">
-
-                    <img id="main-img" style="height: 500px;width: 500px"
-                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
-                         class="img-fluid shadow" />
 
 
-                    <div class="d-flex gap-2 mt-3">
-                        @foreach (var img in Model.AnhSanPhams)
-                        {
-                            <img class="thumb-img"
-                                 style="height: 60px;width: 60px"
-                                 src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}")"
-                                 onclick="document.getElementById('main-img').src=this.src;" />
-                        }
-                    </div>
+<style>
+    /* Màu chủ đạo Shopee */
+    :root {
+        --primary-color: #ee4d2d;
+        --text-color: #333;
+        --bg-gray: #f5f5f5;
+    }
 
-                </div>
-            </div>
+    body {
+        background-color: var(--bg-gray);
+        color: var(--text-color);
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
 
-            <div class="col-md-7">
-                <h3>@Model.TenSanPham</h3>
+    .bg-white-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 2px;
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+        margin-bottom: 15px;
+    }
 
-                <div class="mt-2">
-                    <span class="price-box" id="price">
-                        @{
-                            // Lấy giá của biến thể đầu tiên (nếu có)
-                            var giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
-                        }
-                        @giaDauTien.ToString("N0") ₫
-                    </span>
-                </div>
+    /* Gallery Ảnh */
+    .main-image-container {
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
 
-                <hr />
+    .thumb-img {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+    }
 
-                <h5>Chọn loại:</h5>
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                    @foreach (var bt in Model.BienTheSanPhams)
-                    {
-                        <button class="variant-btn"
-                                data-id="@bt.MaBienThe"
-                                data-price="@((int)bt.GiaBan)"
-                                data-img="@bt.HinhAnh"
-                                data-stock="@bt.SoLuongTonKho">
-                            @bt.TenBienThe
-                        </button>
-                    }
-                </div>
-
-                <div class="stock mt-1" id="stock">
-                    Còn @(Model.BienTheSanPhams.First().SoLuongTonKho) sản phẩm
-                </div>
-
-                <hr />
-
-                <div class="d-flex align-items-center mb-3">
-                    <label class="me-2 fw-bold">Số lượng:</label>
-                    <div class="input-group" style="width: 120px;">
-                        <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
-                        <input type="number" id="qty" class="form-control text-center" value="1" min="1">
-                        <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <button id="btnMuaNgay"
-                            class="btn btn-danger btn-lg me-2"
-                            data-id="">
-                        Mua Ngay
-                    </button>
-
-                    <button id="btnAddToCart"
-                            class="btn btn-outline-danger btn-lg"
-                            data-id="">
-                        Thêm vào Giỏ
-                    </button>
-                </div>
-
-            </div>
-        </div>
-        <div class="mt-4">
-            @Html.Action("DanhGiaSanPhamPartial", "DanhGia", new { pMaSP = Model.MaSanPham })
-        </div>
-    </div>
-
-
-    <script>
-        const mainImg = document.getElementById("main-img");
-        const priceBox = document.getElementById("price");
-        const stockBox = document.getElementById("stock");
-        const qtyInput = document.getElementById("qty");
-
-        // 1. Logic Chọn biến thể
-        document.querySelectorAll(".variant-btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                // Highlight active
-                document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
-                this.classList.add("active");
-
-                // --- BẮT ĐẦU PHẦN SỬA ĐỔI ---
-                // Lấy giá trị từ attribute data-price
-                let rawPrice = this.getAttribute("data-price");
-
-                // Chuyển đổi sang số thực (float) cho an toàn
-                let priceNumber = parseFloat(rawPrice);
-
-                // Kiểm tra nếu không phải số (NaN) thì gán mặc định là 0
-                if (isNaN(priceNumber)) {
-                    priceNumber = 0;
-                }
-
-                // Hiển thị giá đã format theo định dạng Việt Nam (ví dụ: 100.000)
-                priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
-                // --- KẾT THÚC PHẦN SỬA ĐỔI ---
-
-
-                // Đổi ảnh
-                if (this.dataset.img) {
-                    mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/variants/" + this.dataset.img;
-                }
-
-                // Đổi tồn kho
-                stockBox.innerText = "Còn " + this.dataset.stock + " sản phẩm";
-
-                // Cập nhật ID cho nút mua
-                let id = this.dataset.id;
-                document.getElementById("btnAddToCart").setAttribute("data-id", id);
-                document.getElementById("btnMuaNgay").setAttribute("data-id", id);
-            });
-        });
-
-        // 2. Logic Thay đổi số lượng (+/-)
-        function changeQty(delta) {
-            let currentVal = parseInt(qtyInput.value) || 1;
-            let newVal = currentVal + delta;
-            if (newVal < 1) newVal = 1;
-            qtyInput.value = newVal;
+        .thumb-img:hover, .thumb-img.active {
+            border-color: var(--primary-color);
         }
 
-        // 3. Logic Xử lý Mua hàng (GỌI API CHECK KHO)
-        function handleMuaHang(actionType) {
-            let btn = (actionType === 'add') ? document.getElementById("btnAddToCart") : document.getElementById("btnMuaNgay");
-            let idBienThe = btn.getAttribute("data-id");
-            let soLuongMua = qtyInput ? parseInt(qtyInput.value) : 1;
+    /* Flash Sale Banner */
+    .flash-sale-banner {
+        background: rgb(208,1,27);
+        background: linear-gradient(90deg, rgba(208,1,27,1) 0%, rgba(255,87,34,1) 100%);
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-            if (!idBienThe || idBienThe === "") {
-                showShopeeAlert("Vui lòng chọn phân loại sản phẩm!");
-                return;
+    .flash-sale-timer {
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* Giá */
+    .price-section {
+        background: #fafafa;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #929292;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+
+    .current-price {
+        color: var(--primary-color);
+        font-size: 1.875rem;
+        font-weight: 500;
+    }
+
+    .discount-badge {
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 2px 4px;
+        border-radius: 2px;
+        margin-left: 10px;
+    }
+
+    /* Nút biến thể (Variant) */
+    .variant-btn {
+        border: 1px solid rgba(0,0,0,.09);
+        background: #fff;
+        color: rgba(0,0,0,.8);
+        padding: 8px 20px;
+        margin: 0 8px 8px 0;
+        cursor: pointer;
+        min-width: 80px;
+        text-align: center;
+        border-radius: 2px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .variant-btn img {
+            width: 25px;
+            height: 25px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .variant-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .variant-btn.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            position: relative;
+        }
+            /* Dấu tích V ở góc nút active */
+            .variant-btn.active::after {
+                content: "";
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                background-color: var(--primary-color);
+                clip-path: polygon(100% 0, 100% 100%, 0 100%);
             }
 
-            // Gọi về Server để kiểm tra hàm SQL
-            fetch(`/SanPham/KiemTraTonKho?maBienThe=${idBienThe}&soLuong=${soLuongMua}`)
-                .then(response => response.json())
-                .then(data => {
-                    // TRƯỜNG HỢP 1: ĐỦ HÀNG
-                    if (data.coHang === true) {
-                        if (actionType === 'add') {
-                            window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
-                        } else {
-                            window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
-                        }
-                    }
-                    // TRƯỜNG HỢP 2: THIẾU HÀNG
-                    else {
-                        if (data.soLuongConLai <= 0) {
-                            showShopeeAlert("Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
-                        } else {
-                            showShopeeAlert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.\n\nHệ thống sẽ tự động cập nhật số lượng tối đa cho bạn.`);
-                            if (qtyInput) {
-                                qtyInput.value = data.soLuongConLai; // Tự sửa số lượng
-                            }
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi:', error);
-                    showShopeeAlert("Có lỗi kết nối hệ thống.");
-                });
+    /* Buttons Mua */
+    .btn-add-cart {
+        background: rgba(255,87,34,0.1);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        height: 48px;
+        padding: 0 20px;
+    }
+
+    .btn-buy-now {
+        background-color: var(--primary-color);
+        color: white;
+        border: 1px solid var(--primary-color);
+        height: 48px;
+        padding: 0 20px;
+    }
+
+        .btn-buy-now:hover {
+            color: var(--primary-color);
+            opacity: 0.9;
         }
 
-        // Gán sự kiện cho 2 nút
-        document.getElementById("btnAddToCart").addEventListener("click", function () {
-            handleMuaHang('add');
-        });
+    /* Shop Info Section */
+    .shop-info-container {
+        border-right: 1px solid rgba(0,0,0,.05);
+        padding-right: 20px;
+    }
 
-        document.getElementById("btnMuaNgay").addEventListener("click", function () {
-            handleMuaHang('buy');
-        });
+    .shop-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 1px solid #e5e5e5;
+    }
 
-    </script>
+    .shop-stats span {
+        color: var(--primary-color);
+    }
 
-    <!-- MODAL THÔNG BÁO SHOPEE STYLE -->
-    <div id="shopee-alert-modal" style="display:none; position:fixed; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
-        <div style="background:#fff; width:400px; max-width:90%; border-radius:4px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.1); border:1px solid #e8e8e8;">
-            <div id="shopee-alert-message" style="padding:24px; font-size:15px; color:#333; text-align:center; line-height:1.5;">
+    /* Chi tiết sản phẩm Label */
+    .label-detail {
+        color: rgba(0,0,0,.4);
+        width: 140px;
+        display: inline-block;
+    }
+</style>
+
+<div class="container py-4 " style="margin-top:120px;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb" style="font-size: 14px;">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-dark">Shopee</a></li>
+            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-dark">@Model.DanhMuc.TenDanhMuc</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.TenSanPham</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white-box">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="main-image-container mb-3 text-center">
+                    <img id="main-img" class="img-fluid" style="max-height: 450px; width: auto;"
+                         src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{Model.AnhSanPhams.First(a => a.MacDinh == true).HinhAnh}")"
+                         alt="@Model.TenSanPham" />
+                </div>
+                <div class="d-flex justify-content-center gap-2 overflow-auto">
+                    @foreach (var img in Model.AnhSanPhams)
+                    {
+                        <img class="thumb-img" width="80" height="80"
+                             src="@($"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.MaSanPham}/{img.HinhAnh}")"
+                             onclick="document.getElementById('main-img').src=this.src;" />
+                    }
+                </div>
+
+              
             </div>
-            <div id="shopee-alert-buttons" style="padding:0; border-top:1px solid #e8e8e8;">
-                <!-- Buttons sẽ được thêm động bằng JavaScript -->
+
+            <div class="col-md-7 ps-md-4">
+                <h3 class="fw-normal mb-2">@Model.TenSanPham</h3>
+
+                @*<div class="d-flex align-items-center mb-3 fs-6">
+                    <span class="text-warning me-1"> @Model.SoSaoTrungBinh.ToString()</span>
+                    <div class="text-warning me-3">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <span class="border-start ps-3 me-3">219 <span class="text-muted">Đánh Giá</span></span>
+                    <span class="border-start ps-3">1.2k <span class="text-muted">Đã bán</span></span>
+                </div>*@
+                <div class="d-flex align-items-center mb-3 fs-6">
+                    @{
+                        double diemDanhGia = Convert.ToDouble(Model.SoSaoTrungBinh);
+                    }
+
+                    @if (diemDanhGia == 0)
+                    {
+                        <span class="me-2 text-muted" style="font-size: 14px;">Chưa có đánh giá</span>
+                        <div class="me-3">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star text-secondary" style="opacity: 0.4;"></i>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-warning me-1 fw-bold" style="font-size: 1.1rem;">
+                            @diemDanhGia.ToString("0.0")
+                        </span>
+
+                        <div class="me-3 d-flex align-items-center">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (diemDanhGia >= i)
+                                {
+                                    // 1. Sao Vàng toàn phần
+                                    <i class="fas fa-star text-warning"></i>
+                                }
+                                else if (diemDanhGia >= i - 0.5)
+                                {
+                                    // 2. Sao Nửa (1.5, 2.5, 3.5...)
+                                    // Kỹ thuật: Vẽ sao xám, sau đó đè sao vàng lên và cắt 50% chiều rộng
+                                    <div class="position-relative d-inline-block text-warning">
+                                        <i class="fas fa-star text-secondary" style="opacity: 0.4;"></i>
+
+                                        <div class="position-absolute top-0 start-0 overflow-hidden" style="width: 50%;">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    // 3. Sao Xám toàn phần
+                                    <i class="fas fa-star text-secondary" style="opacity: 0.4;"></i>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="flash-sale-banner mb-0">
+                    <div>
+                        <i class="fas fa-bolt"></i> FLASH SALE
+                    </div>
+                    @*<div class="flash-sale-timer">
+                <i class="far fa-clock"></i> KẾT THÚC TRONG 00:06:47
+            </div>*@
+                </div>
+
+                <div class="price-section mb-4">
+                    @{
+                        // Lấy giá của biến thể đầu tiên (nếu có)
+                        var giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                    }
+                    <span class="original-price">@giaDauTien.ToString("N0")₫</span>
+                    <span class="current-price" id="price">@giaDauTien.ToString("N0")₫</span>
+
+                </div>
+
+
+
+                <div class="mb-4">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-3 text-secondary">Phân loại</div>
+                        <div class="col-9 d-flex flex-wrap">
+                            @foreach (var bt in Model.BienTheSanPhams)
+                            {
+                                <button class="variant-btn"
+                                        data-id="@bt.MaBienThe"
+                                        data-price="@((int)bt.GiaBan)"
+                                        data-img="@bt.HinhAnh"
+                                        data-stock="@bt.SoLuongTonKho">
+                                    @if (!string.IsNullOrEmpty(bt.HinhAnh))
+                                    {
+                                        <img src="@($"https://ecommerceshopstorage.blob.core.windows.net/variants/{bt.HinhAnh}")" alt="" />
+                                    }
+                                    @bt.TenBienThe
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-3 text-secondary">Số lượng</div>
+                        <div class="col-9 d-flex align-items-center">
+                            <div class="input-group me-3" style="width: 120px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
+                                <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+                                <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
+                            </div>
+                            <span class="text-secondary small" id="stock">Còn @Model.BienTheSanPhams.First().SoLuongTonKho sản phẩm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button id="btnAddToCart" class="btn btn-add-cart flex-grow-1" data-id="">
+                        <i class="fas fa-cart-plus me-2"></i> Thêm Vào Giỏ Hàng
+                    </button>
+                    <button id="btnMuaNgay" class="btn btn-buy-now flex-grow-1" data-id="">
+                        Mua Ngay
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Hàm thông báo Shopee style (Vanilla JavaScript)
-        function showShopeeAlert(message, callback) {
-            var modal = document.getElementById("shopee-alert-modal");
-            var messageDiv = document.getElementById("shopee-alert-message");
-            var buttonsDiv = document.getElementById("shopee-alert-buttons");
-            
-            messageDiv.textContent = message;
-            buttonsDiv.innerHTML = '<button id="shopee-alert-ok" style="width:100%; padding:12px 0; background:#ee4d2d; color:#fff; border:none; font-size:15px; font-weight:500; cursor:pointer;">Đồng ý</button>';
-            modal.style.display = "flex";
-            
-            var okBtn = document.getElementById("shopee-alert-ok");
-            okBtn.onclick = function() {
-                modal.style.display = "none";
-                if (callback) callback(true);
-            };
-        }
-    </script>
+    <div class="bg-white-box p-4">
+        <div class="d-flex align-items-center">
+            <div class="shop-info-container d-flex align-items-center" style="width: 35%;">
+                @*<div class="position-relative me-3">
+                    <img src="@(string.IsNullOrEmpty(Model.CuaHang.NguoiBan.) ? "/images/default-shop.png" : Model.NguoiBan.HinhAnh)" class="shop-avatar" />
+                    <span class="badge bg-danger position-absolute bottom-0 start-50 translate-middle-x">Yêu thích</span>
+                </div>*@
+                <div>
+                    <h5 class="mb-1">@Model.CuaHang.TenCuaHang</h5>
+                    <div class="mt-2">
+                        <a href="#" class="btn btn-light border btn-sm"><i class="fas fa-store"></i> Xem Shop</a>
+                    </div>
+                </div>
+            </div>
 
-</body>
+            @*<div class="d-flex justify-content-around flex-grow-1 ps-4 text-secondary font-monospace" style="font-size: 14px;">
+                <div class="d-flex flex-column gap-3">
+                    <div><span class="text-muted">Đánh Giá</span> <span class="text-danger">2,7k</span></div>
+                    <div><span class="text-muted">Sản Phẩm</span> <span class="text-danger">55</span></div>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    <div><span class="text-muted">Tỉ Lệ Phản Hồi</span> <span class="text-danger">100%</span></div>
+                    <div><span class="text-muted">Thời Gian Phản Hồi</span> <span class="text-danger">trong vài giờ</span></div>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    <div><span class="text-muted">Tham Gia</span> <span class="text-danger">4 năm trước</span></div>
+                    <div><span class="text-muted">Người Theo Dõi</span> <span class="text-danger">4,6k</span></div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="bg-white-box">
+                <h5 class="bg-light p-3 mb-4 text-uppercase text-secondary fw-bold">Chi tiết sản phẩm</h5>
+
+                <div class="ps-3 pe-3 pb-3">
+                    <div class="mb-3">
+                        <span class="label-detail">Danh Mục</span>
+                        <nav class="d-inline-block">
+                            <a href="/" class="text-primary text-decoration-none">Shopee</a>
+                            <span class="text-muted mx-1">></span>
+                            <a href="#" class="text-primary text-decoration-none">@Model.DanhMuc.TenDanhMuc</a>
+                        </nav>
+                    </div>
+                    <div class="mb-3">
+                        <span class="label-detail">Xuất xứ</span>
+                        <span>Việt Nam</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="label-detail">Kho hàng</span>
+                        <span>@Model.BienTheSanPhams.Sum(x => x.SoLuongTonKho)</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="label-detail">Gửi từ</span>
+                        <span>@Model.CuaHang.DiaChi</span>
+                    </div>
+                </div>
+
+                <h5 class="bg-light p-3 mb-4 mt-4 text-uppercase text-secondary fw-bold">Mô tả sản phẩm</h5>
+                <div class="ps-3 pe-3 pb-3 text-break" style="white-space: pre-line;">
+                    @Model.MoTa
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white-box">
+        @Html.Action("DanhGiaSanPhamPartial", "DanhGia", new { pMaSP = Model.MaSanPham })
+    </div>
+</div>
+
+<script>
+    const mainImg = document.getElementById("main-img");
+    const priceBox = document.getElementById("price");
+    const stockBox = document.getElementById("stock");
+    const qtyInput = document.getElementById("qty");
+
+    // 1. Logic Chọn biến thể
+    document.querySelectorAll(".variant-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            // Highlight active
+            document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+
+            // Lấy giá
+            let rawPrice = this.getAttribute("data-price");
+            let priceNumber = parseFloat(rawPrice);
+            if (isNaN(priceNumber)) priceNumber = 0;
+
+            // Hiển thị giá
+            priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
+
+            // Đổi ảnh chính nếu biến thể có ảnh
+            if (this.dataset.img) {
+                mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/variants/" + this.dataset.img;
+            }
+
+            // Đổi tồn kho
+            stockBox.innerText = "Còn " + this.dataset.stock + " sản phẩm";
+
+            // Cập nhật ID cho nút mua
+            let id = this.dataset.id;
+            document.getElementById("btnAddToCart").setAttribute("data-id", id);
+            document.getElementById("btnMuaNgay").setAttribute("data-id", id);
+        });
+    });
+
+    // 2. Logic Thay đổi số lượng (+/-)
+    function changeQty(delta) {
+        let currentVal = parseInt(qtyInput.value) || 1;
+        let newVal = currentVal + delta;
+        if (newVal < 1) newVal = 1;
+        qtyInput.value = newVal;
+    }
+
+    // 3. Logic Xử lý Mua hàng (Giữ nguyên logic cũ)
+    function handleMuaHang(actionType) {
+        let btn = (actionType === 'add') ? document.getElementById("btnAddToCart") : document.getElementById("btnMuaNgay");
+        let idBienThe = btn.getAttribute("data-id");
+        let soLuongMua = qtyInput ? parseInt(qtyInput.value) : 1;
+
+        if (!idBienThe || idBienThe === "") {
+            alert("Vui lòng chọn phân loại sản phẩm!");
+            return;
+        }
+
+        // Gọi API check kho (giữ nguyên logic gốc)
+        fetch(`/SanPham/KiemTraTonKho?maBienThe=${idBienThe}&soLuong=${soLuongMua}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.coHang === true) {
+                    if (actionType === 'add') {
+                        window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                    } else {
+                        window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                    }
+                }
+                else {
+                    if (data.soLuongConLai <= 0) {
+                        alert("Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
+                    } else {
+                        alert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.`);
+                        if (qtyInput) qtyInput.value = data.soLuongConLai;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert("Có lỗi kết nối hệ thống.");
+            });
+    }
+
+    // Gán sự kiện cho 2 nút
+    document.getElementById("btnAddToCart").addEventListener("click", function () { handleMuaHang('add'); });
+    document.getElementById("btnMuaNgay").addEventListener("click", function () { handleMuaHang('buy'); });
+</script>
