@@ -10,6 +10,7 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
     public class QuanLyNguoiDungHeThongController : Controller
     {
         DBQuanLyNguoiDungHeThong db = new DBQuanLyNguoiDungHeThong();
+        DBQuanLyKhuyenMai dbKhuyenMai = new DBQuanLyKhuyenMai();
         // GET: QuanLyKhachHang
         public ActionResult Index()
         {
@@ -205,6 +206,302 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.TrangThai = trangthai;
 
             return View(nm);
+        }
+        // QUẢN LÝ KHUYẾN MÃI
+        // Danh sách khuyến mãi
+        public ActionResult QuanLyKhuyenMai(int page = 1, string search = "", string status = "")
+        {
+            Response.Charset = "utf-8";
+            Response.ContentEncoding = System.Text.Encoding.UTF8;
+            int pageSize = 10;
+
+            List<GiamGia> lst = dbKhuyenMai.DanhSachKhuyenMai();
+
+            // Lọc theo tìm kiếm
+            if (!string.IsNullOrEmpty(search))
+            {
+                lst = lst.Where(x =>
+                    x.TenMaGG.ToLower().Contains(search.ToLower()) ||
+                    (x.MoTa != null && x.MoTa.ToLower().Contains(search.ToLower()))
+                ).ToList();
+            }
+
+            // Lọc theo trạng thái
+            DateTime now = DateTime.Now;
+            if (status == "active")
+            {
+                // Đang hiệu lực: NgayBD <= now và NgayKT >= now (hoặc null)
+                lst = lst.Where(x =>
+                    (x.NgayBD == null || x.NgayBD <= now) &&
+                    (x.NgayKT == null || x.NgayKT >= now)
+                ).ToList();
+            }
+            else if (status == "expired")
+            {
+                // Hết hạn: NgayKT < now
+                lst = lst.Where(x => x.NgayKT != null && x.NgayKT < now).ToList();
+            }
+            else if (status == "upcoming")
+            {
+                // Sắp diễn ra: NgayBD > now
+                lst = lst.Where(x => x.NgayBD != null && x.NgayBD > now).ToList();
+            }
+            else if (status == "hidden")
+            {
+                // Đã ẩn: NgayKT < now (đã hết hạn)
+                lst = lst.Where(x => x.NgayKT != null && x.NgayKT < now).ToList();
+            }
+
+            // Tổng số item sau khi lọc
+            int totalItems = lst.Count;
+
+            // Phân trang
+            lst = lst.OrderByDescending(x => x.MaGiamGia)
+                     .Skip((page - 1) * pageSize)
+                     .Take(pageSize)
+                     .ToList();
+
+            // Gửi dữ liệu sang View
+            ViewBag.Page = page;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.From = totalItems == 0 ? 0 : ((page - 1) * pageSize + 1);
+            ViewBag.To = Math.Min(page * pageSize, totalItems);
+
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            return View(lst);
+        }
+
+        // GET: Thêm khuyến mãi
+        [HttpGet]
+        public ActionResult ThemKhuyenMai()
+        {
+            return View();
+        }
+
+        // POST: Thêm khuyến mãi
+        [HttpPost]
+        public ActionResult ThemKhuyenMai(GiamGia gg, string NgayBD, string NgayKT, string GiaTriGiam)
+        {
+            // Xử lý giá trị giảm từ form (parse với InvariantCulture để chấp nhận dấu chấm)
+            if (!string.IsNullOrEmpty(GiaTriGiam))
+            {
+                double parsedValue;
+                if (double.TryParse(GiaTriGiam, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedValue))
+                {
+                    gg.GiaTriGiam = parsedValue;
+                    // Xóa lỗi ModelState nếu có
+                    ModelState.Remove("GiaTriGiam");
+                }
+            }
+
+            // Xử lý datetime từ form
+            if (!string.IsNullOrEmpty(NgayBD))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayBD, out parsedDate))
+                {
+                    gg.NgayBD = parsedDate;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(NgayKT))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayKT, out parsedDate))
+                {
+                    gg.NgayKT = parsedDate;
+                }
+            }
+
+            // Xóa lỗi ModelState cho GiaTriGiam nếu có
+            if (ModelState.ContainsKey("GiaTriGiam"))
+            {
+                ModelState["GiaTriGiam"].Errors.Clear();
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Validate logic
+                if (gg.GiaTriGiam == null || gg.GiaTriGiam <= 0)
+                {
+                    ViewBag.Error = "Giá trị giảm phải lớn hơn 0!";
+                    return View(gg);
+                }
+
+                if (gg.NgayBD.HasValue && gg.NgayKT.HasValue && gg.NgayBD > gg.NgayKT)
+                {
+                    ViewBag.Error = "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!";
+                    return View(gg);
+                }
+
+                if (dbKhuyenMai.ThemKhuyenMai(gg))
+                {
+                    TempData["Success"] = "Thêm khuyến mãi thành công!";
+                    return RedirectToAction("QuanLyKhuyenMai");
+                }
+                else
+                {
+                    ViewBag.Error = "Có lỗi xảy ra khi thêm khuyến mãi!";
+                }
+            }
+
+            return View(gg);
+        }
+
+        // GET: Sửa khuyến mãi
+        [HttpGet]
+        public ActionResult SuaKhuyenMai(int id)
+        {
+            var gg = dbKhuyenMai.LayKhuyenMaiTheoMa(id);
+            if (gg == null)
+            {
+                return HttpNotFound();
+            }
+            return View(gg);
+        }
+
+        // POST: Sửa khuyến mãi
+        [HttpPost]
+        public ActionResult SuaKhuyenMai(GiamGia gg, string NgayBD, string NgayKT, string GiaTriGiam)
+        {
+            // Xử lý giá trị giảm từ form (parse với InvariantCulture để chấp nhận dấu chấm)
+            if (!string.IsNullOrEmpty(GiaTriGiam))
+            {
+                double parsedValue;
+                if (double.TryParse(GiaTriGiam, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedValue))
+                {
+                    gg.GiaTriGiam = parsedValue;
+                    // Xóa lỗi ModelState nếu có
+                    ModelState.Remove("GiaTriGiam");
+                }
+            }
+
+            // Xử lý datetime từ form
+            if (!string.IsNullOrEmpty(NgayBD))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayBD, out parsedDate))
+                {
+                    gg.NgayBD = parsedDate;
+                }
+            }
+            else
+            {
+                gg.NgayBD = null;
+            }
+
+            if (!string.IsNullOrEmpty(NgayKT))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayKT, out parsedDate))
+                {
+                    gg.NgayKT = parsedDate;
+                }
+            }
+            else
+            {
+                gg.NgayKT = null;
+            }
+
+            // Xóa lỗi ModelState cho GiaTriGiam nếu có
+            if (ModelState.ContainsKey("GiaTriGiam"))
+            {
+                ModelState["GiaTriGiam"].Errors.Clear();
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Validate logic
+                if (gg.GiaTriGiam == null || gg.GiaTriGiam <= 0)
+                {
+                    ViewBag.Error = "Giá trị giảm phải lớn hơn 0!";
+                    return View(gg);
+                }
+
+                if (gg.NgayBD.HasValue && gg.NgayKT.HasValue && gg.NgayBD > gg.NgayKT)
+                {
+                    ViewBag.Error = "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!";
+                    return View(gg);
+                }
+
+                if (dbKhuyenMai.SuaKhuyenMai(gg))
+                {
+                    TempData["Success"] = "Sửa khuyến mãi thành công!";
+                    return RedirectToAction("QuanLyKhuyenMai");
+                }
+                else
+                {
+                    ViewBag.Error = "Có lỗi xảy ra khi sửa khuyến mãi!";
+                }
+            }
+
+            return View(gg);
+        }
+
+        // Xóa khuyến mãi
+        [HttpPost]
+        public ActionResult XoaKhuyenMai(int id)
+        {
+            if (dbKhuyenMai.XoaKhuyenMai(id))
+            {
+                TempData["Success"] = "Xóa khuyến mãi thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Không thể xóa khuyến mãi này vì đã có đơn hàng sử dụng!";
+            }
+            return RedirectToAction("QuanLyKhuyenMai");
+        }
+
+        // Ẩn khuyến mãi
+        [HttpPost]
+        public ActionResult AnKhuyenMai(int id)
+        {
+            if (dbKhuyenMai.AnKhuyenMai(id))
+            {
+                TempData["Success"] = "Ẩn khuyến mãi thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi ẩn khuyến mãi!";
+            }
+            return RedirectToAction("QuanLyKhuyenMai");
+        }
+
+        // Hiện khuyến mãi
+        [HttpPost]
+        public ActionResult HienKhuyenMai(int id, DateTime? ngayKT)
+        {
+            if (dbKhuyenMai.HienKhuyenMai(id, ngayKT))
+            {
+                TempData["Success"] = "Hiện khuyến mãi thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi hiện khuyến mãi!";
+            }
+            return RedirectToAction("QuanLyKhuyenMai");
+        }
+
+        // Chi tiết khuyến mãi
+        public ActionResult ChiTietKhuyenMai(int id)
+        {
+            var gg = dbKhuyenMai.LayKhuyenMaiTheoMa(id);
+            if (gg == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Lấy danh sách đơn hàng đã sử dụng voucher này
+            var donHangs = gg.DonHangs?.ToList() ?? new List<DonHang>();
+            ViewBag.DonHangs = donHangs;
+            ViewBag.HieuLuc = dbKhuyenMai.KiemTraHieuLuc(id);
+
+            return View(gg);
         }
 
     }

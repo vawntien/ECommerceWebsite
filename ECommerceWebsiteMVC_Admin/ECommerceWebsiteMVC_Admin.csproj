@@ -196,6 +196,7 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DBQuanLyKhuyenMai.cs" />
     <Compile Include="Models\DBQuanLyNguoiDungHeThong.cs" />
     <Compile Include="Models\DBQuanLyNhanVien.cs" />
     <Compile Include="Models\DBQuanLyThongKe.cs" />
@@ -273,6 +274,10 @@
     <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietCuaHang.cshtml" />
     <Content Include="Views\QuanLyNguoiDungHeThong\QuanLyNguoiMua.cshtml" />
     <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietNguoiMua.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\QuanLyKhuyenMai.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\ThemKhuyenMai.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\SuaKhuyenMai.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietKhuyenMai.cshtml" />
     <Content Include="Views\Shared\_QuanLyThongKeLayout.cshtml" />
     <Content Include="Views\Shared\_QuanLyThongKeSidebar.cshtml" />
     <Content Include="Views\Shared\_QuanLyThongKeTopNavbar.cshtml" />
