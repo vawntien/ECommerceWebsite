@@ -216,14 +216,7 @@
             <div class="col-md-7 ps-md-4">
                 <h3 class="fw-normal mb-2">@Model.TenSanPham</h3>
 
-                @*<div class="d-flex align-items-center mb-3 fs-6">
-                    <span class="text-warning me-1"> @Model.SoSaoTrungBinh.ToString()</span>
-                    <div class="text-warning me-3">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    </div>
-                    <span class="border-start ps-3 me-3">219 <span class="text-muted">Đánh Giá</span></span>
-                    <span class="border-start ps-3">1.2k <span class="text-muted">Đã bán</span></span>
-                </div>*@
+          
                 <div class="d-flex align-items-center mb-3 fs-6">
                     @{
                         double diemDanhGia = Convert.ToDouble(Model.SoSaoTrungBinh);
@@ -255,8 +248,6 @@
                                 }
                                 else if (diemDanhGia >= i - 0.5)
                                 {
-                                    // 2. Sao Nửa (1.5, 2.5, 3.5...)
-                                    // Kỹ thuật: Vẽ sao xám, sau đó đè sao vàng lên và cắt 50% chiều rộng
                                     <div class="position-relative d-inline-block text-warning">
                                         <i class="fas fa-star text-secondary" style="opacity: 0.4;"></i>
 
@@ -279,9 +270,7 @@
                     <div>
                         <i class="fas fa-bolt"></i> FLASH SALE
                     </div>
-                    @*<div class="flash-sale-timer">
-                <i class="far fa-clock"></i> KẾT THÚC TRONG 00:06:47
-            </div>*@
+                    
                 </div>
 
                 <div class="price-section mb-4">
@@ -345,10 +334,7 @@
     <div class="bg-white-box p-4">
         <div class="d-flex align-items-center">
             <div class="shop-info-container d-flex align-items-center" style="width: 35%;">
-                @*<div class="position-relative me-3">
-                    <img src="@(string.IsNullOrEmpty(Model.CuaHang.NguoiBan.) ? "/images/default-shop.png" : Model.NguoiBan.HinhAnh)" class="shop-avatar" />
-                    <span class="badge bg-danger position-absolute bottom-0 start-50 translate-middle-x">Yêu thích</span>
-                </div>*@
+                
                 <div>
                     <h5 class="mb-1">@Model.CuaHang.TenCuaHang</h5>
                     <div class="mt-2">
@@ -357,20 +343,7 @@
                 </div>
             </div>
 
-            @*<div class="d-flex justify-content-around flex-grow-1 ps-4 text-secondary font-monospace" style="font-size: 14px;">
-                <div class="d-flex flex-column gap-3">
-                    <div><span class="text-muted">Đánh Giá</span> <span class="text-danger">2,7k</span></div>
-                    <div><span class="text-muted">Sản Phẩm</span> <span class="text-danger">55</span></div>
-                </div>
-                <div class="d-flex flex-column gap-3">
-                    <div><span class="text-muted">Tỉ Lệ Phản Hồi</span> <span class="text-danger">100%</span></div>
-                    <div><span class="text-muted">Thời Gian Phản Hồi</span> <span class="text-danger">trong vài giờ</span></div>
-                </div>
-                <div class="d-flex flex-column gap-3">
-                    <div><span class="text-muted">Tham Gia</span> <span class="text-danger">4 năm trước</span></div>
-                    <div><span class="text-muted">Người Theo Dõi</span> <span class="text-danger">4,6k</span></div>
-                </div>
-            </div>*@
+            
         </div>
     </div>
 
