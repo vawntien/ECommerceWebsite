@@ -15,7 +15,20 @@
     <div class="page-header">
         <h1 class="page-title">Đơn hàng</h1>
     </div>
-
+    @if (TempData["UpdateSuccess"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-bottom: 20px;">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["UpdateSuccess"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["UpdateError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 20px;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["UpdateError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     <!-- Tabs trạng thái đơn hàng -->
     <div class="order-tabs">
         <button class="order-tab-item @(currentTrangThai == "TatCa" ? "active" : "")" data-status="TatCa">
@@ -98,7 +111,7 @@
             {
                 <div class="order-card">
                     <div class="order-buyer-row">
-                        
+
                         <span style="font-size: 12px; color: #999">@order.TenNguoiMua</span>
                         <span style="margin-left:auto;font-size:12px;color:#999;">
                             @*@order.ThoiGianDat.ToString("dd/MM/yyyy HH:mm")*@
@@ -187,9 +200,34 @@
                             }
                             else if (order.TrangThaiDonHang == "Chờ giao hàng")
                             {
-                                <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-secondary">
-                                    Thông tin vận chuyển
-                                </a>
+                                @*<a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-secondary">
+                Thông tin vận chuyển
+            </a>
+
+            using (Html.BeginForm("XacNhanGiaoHangThanhCong", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", order.MaDonHang)
+                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Xác nhận đơn hàng này đã giao thành công tới khách hàng?');">
+                    <i class="bi bi-check-lg"></i> Xác nhận giao thành công
+                </button>
+            }*@
+                                <div class="action-buttons-stack">
+                                    <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-truck"></i> Thông tin vận chuyển
+                                    </a>
+
+                                    @using (Html.BeginForm("XacNhanGiaoHangThanhCong", "DonHang", FormMethod.Post, new { @class = "d-inline-block w-100" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("id", order.MaDonHang)
+                                        <button type="submit" class="btn btn-sm btn-outline-success"
+                                                onclick="return confirm('Xác nhận đơn hàng này đã giao thành công tới khách hàng?');">
+                                            <i class="bi bi-check-circle"></i> Xác nhận giao thành công
+                                        </button>
+                                    }
+                                </div>
                             }
                             else
                             {
@@ -241,3 +279,31 @@
         updatePlaceholder();
     })();
 </script>
+
+<style>
+    /* Class bao quanh 2 nút để xếp dọc và căn giữa */
+    .action-buttons-stack {
+        display: flex;
+        flex-direction: column; /* Xếp theo chiều dọc */
+        align-items: center; /* Căn giữa các nút theo trục ngang */
+        justify-content: center;
+        gap: 8px; /* Khoảng cách giữa 2 nút là 8px */
+        width: 100%;
+    }
+
+        /* Định dạng chung cho các nút trong nhóm này */
+        .action-buttons-stack .btn {
+            width: 100%; /* Để các nút dài bằng nhau */
+            min-width: 180px; /* Độ dài tối thiểu để nút trông cân đối */
+            border-radius: 2px; /* Bo tròn mềm mại hơn (tuỳ chọn) */
+            font-weight: 500;
+            padding: 6px 12px;
+        }
+
+        /* Đảm bảo form bao quanh nút cũng hiển thị đúng */
+        .action-buttons-stack form {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+</style>

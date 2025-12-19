@@ -384,5 +384,50 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult XacNhanGiaoHangThanhCong(int id)
+        {
+            if (Session["MaNguoiBan"] == null)
+            {
+                return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+            }
+
+            int maNguoiBan = (int)Session["MaNguoiBan"];
+            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            if (cuaHang == null) return Content("Bạn chưa tạo cửa hàng.");
+
+            int maCuaHang = cuaHang.MaCuaHang;
+
+            var donHang = db.DonHangs
+                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham))
+                .SingleOrDefault(dh => dh.MaDonHang == id);
+
+            // Kiểm tra quyền sở hữu
+            if (donHang == null || !donHang.ChiTietDonHangs.Any(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham.MaCuaHang == maCuaHang))
+            {
+                // Sử dụng TempData để báo lỗi thất bại
+                TempData["UpdateError"] = "Đơn hàng không tồn tại hoặc không thuộc cửa hàng của bạn.";
+                return RedirectToAction("Index");
+            }
+
+            // Kiểm tra trạng thái hợp lệ
+            if (donHang.TrangThaiDonHang != "Chờ giao hàng")
+            {
+                TempData["UpdateError"] = "Chỉ có thể xác nhận thành công cho đơn đang ở trạng thái 'Chờ giao hàng'.";
+                return RedirectToAction("Index");
+            }
+
+            // Cập nhật trạng thái
+            donHang.TrangThaiDonHang = "Đã giao";
+            donHang.TrangThaiThanhToan = true;
+            
+
+            db.SaveChanges();
+
+            TempData["UpdateSuccess"] = "Xác nhận giao hàng thành công!";
+            return RedirectToAction("Index");
+        }
     }
 }
