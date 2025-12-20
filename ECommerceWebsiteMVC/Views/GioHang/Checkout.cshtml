@@ -885,15 +885,48 @@
             // ===== LOGIC ĐỊA CHỈ (ĐÃ CẬP NHẬT) =====
             // ===============================================
 
-            // 1. Mở popup
+            // 1. Mở popup - Mở luôn form nhập địa chỉ mới
             $(document).on("click", "#btn-open-address", function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log("Click vào nút thay đổi địa chỉ");
                 $("#popup-address").css("display", "flex");
-                $("#view-list").show();
-                $("#view-form").hide();
-                loadAddressHistory();
+                
+                // Mở luôn form nhập địa chỉ mới, không hiển thị danh sách cũ
+                $("#view-list").hide();
+                $("#view-form").show();
+                
+                // Lấy thông tin từ user hiện tại để pre-fill (nếu có)
+                var currentName = $("#tennhan").text().trim();
+                var currentPhone = $("#sdtnhan").text().trim();
+                
+                // Pre-fill tên và SĐT nếu có
+                if (currentName && currentName !== "") {
+                    $("#new-name").val(currentName);
+                } else {
+                    $("#new-name").val("");
+                }
+                
+                if (currentPhone && currentPhone !== "") {
+                    $("#new-phone").val(currentPhone);
+                } else {
+                    $("#new-phone").val("");
+                }
+                
+                // Reset các field địa chỉ
+                selectedProvince = "";
+                selectedDistrict = "";
+                selectedWard = "";
+                $("#address-search").val("");
+                $("#selected-province").val("");
+                $("#selected-district").val("");
+                $("#selected-ward").val("");
+                $("#new-street").val("");
+                $("#address-selector").hide();
+                addressSelectorOpened = false;
+                currentTab = "province";
+                $(".address-tab").removeClass("active");
+                $(".address-tab[data-tab='province']").addClass("active");
             });
 
             // Gọi Ajax lấy lịch sử
@@ -1185,14 +1218,10 @@
             });
 
             $(document).on("click", "#btn-back-to-list, #btn-close-popup", function () {
-                if ($(this).attr("id") === "btn-close-popup") {
-                    $("#popup-address").hide();
-                    $("#address-selector").hide();
-                    addressSelectorOpened = false; // Reset khi đóng popup
-                } else { 
-                    $("#view-form").hide(); 
-                    $("#view-list").show(); 
-                }
+                // Đóng popup luôn, không quay lại danh sách
+                $("#popup-address").hide();
+                $("#address-selector").hide();
+                addressSelectorOpened = false; // Reset khi đóng popup
             });
 
             // Điền form để cập nhật
@@ -1322,12 +1351,17 @@
 
                     showAlert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi đặt hàng!");
 
-                    // 1. Mở Popup
+                    // 1. Mở Popup - Mở luôn form nhập địa chỉ mới
                     $("#popup-address").css("display", "flex");
-
-                    // 2. Chuyển thẳng sang FORM thêm mới (view-form) và ẩn danh sách lịch sử
                     $("#view-list").hide();
                     $("#view-form").show();
+                    
+                    // Pre-fill thông tin hiện tại nếu có
+                    var currentName = $("#tennhan").text().trim();
+                    var currentPhone = $("#sdtnhan").text().trim();
+                    if (currentName) $("#new-name").val(currentName);
+                    if (currentPhone) $("#new-phone").val(currentPhone);
+                    
                     return;
                 }
 
