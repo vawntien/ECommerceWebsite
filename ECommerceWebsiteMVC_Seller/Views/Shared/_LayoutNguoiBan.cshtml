@@ -29,13 +29,21 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://via.placeholder.com/30" class="rounded-circle me-2" alt="Avatar" width="30" height="30">
-                        username
+
+                        @(Session["TenShop"] != null ? Session["TenShop"].ToString() : "Tài khoản")
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
                         <li>
-                            <a class="dropdown-item" href="@Url.Action("DangXuatNguoiBan", "TaiKhoan")">Đăng xuất</a>
+                            <a class="dropdown-item d-flex align-items-center" href="@Url.Action("HoSoNguoiBan", "TaiKhoan")">
+                                <i class="fa-regular fa-user me-2" style="width: 20px; text-align: center;"></i>
+                                <span>Hồ sơ của tôi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center text-danger" href="@Url.Action("DangXuatNguoiBan", "TaiKhoan")">
+                                <i class="fa-solid fa-arrow-right-from-bracket me-2" style="width: 20px; text-align: center;"></i>
+                                <span>Đăng xuất</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
@@ -100,6 +108,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+  
 </body>
 </html>

@@ -10,10 +10,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Shopee - Đăng ký bán hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
     <style>
         body {
             background-color: #f5f5f5;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
         }
 
         .header {
@@ -24,98 +26,193 @@
         }
 
         .container-form {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             background: #fff;
             padding: 40px;
             border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
         }
 
         .form-control[readonly] {
-            background-color: #f9f9f9;
-            color: #666;
+            background-color: #eff0f1;
+            color: #757575;
             cursor: not-allowed;
+            border-color: #dbdbdb;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #333;
         }
 
         .btn-submit {
             background: #ee4d2d;
             color: #fff;
             width: 100%;
-            height: 45px;
+            height: 48px;
             border: none;
             font-size: 16px;
+            font-weight: 600;
             border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
         }
 
             .btn-submit:hover {
                 background: #d73211;
+                color: #fff;
             }
+
+            .btn-submit:disabled {
+                background: #f7937e;
+                cursor: not-allowed;
+            }
+
+        .input-highlight {
+            border-color: #ee4d2d !important;
+            box-shadow: 0 0 0 0.2rem rgba(238, 77, 45, 0.1) !important;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="container d-flex align-items-center">
-            <img src="~/assets/brand1.png" height="40" />
-            <span style="font-size: 24px; color: #ee4d2d; font-weight: 500; margin-left: 15px;">Đăng ký Bán hàng</span>
+            <a href="/">
+                <img src="~/assets/brand1.png" height="42" />
+            </a>
+            <span style="font-size: 22px; color: #ee4d2d; font-weight: 600; margin-left: 15px; padding-left: 15px; border-left: 1px solid #ddd;">
+                Đăng ký Trở thành Người bán
+            </span>
         </div>
     </div>
 
-    <div class="container">
+    <div class="container pb-5">
         <div class="container-form">
-            <h4 class="mb-4">Bổ sung thông tin định danh</h4>
-            <p class="text-muted small mb-4">
-                Xin chào <strong>@buyer.HoVaTen</strong>! Để trở thành người bán, vui lòng bổ sung số Căn cước công dân (CCCD).
+            <h4 class="mb-2 fw-bold">Thông tin định danh</h4>
+            <p class="text-muted mb-4">
+                Xin chào <span class="text-dark fw-bold">@buyer.HoVaTen</span>! Để bắt đầu kinh doanh, vui lòng xác thực số định danh cá nhân của bạn.
             </p>
 
             @if (ViewBag.Error != null)
             {
-                <div class="alert alert-danger small">@ViewBag.Error</div>
+                <div class="alert alert-danger d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <div>@ViewBag.Error</div>
+                </div>
             }
 
-            <form method="post" action="@Url.Action("HoanTatDangKyNguoiBan", "TaiKhoan")">
+            @using (Html.BeginForm("HoanTatDangKyNguoiBan", "TaiKhoan", FormMethod.Post, new { id = "registerForm" }))
+            {
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="MaNguoiMua" value="@buyer.MaNguoiMua" />
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label small text-muted">Họ và tên</label>
+                        <label class="form-label small">Họ và tên</label>
                         <input type="text" class="form-control" value="@buyer.HoVaTen" readonly />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted">Tài khoản</label>
+                        <label class="form-label small">Tên tài khoản</label>
                         <input type="text" class="form-control" value="@buyer.TaiKhoan" readonly />
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label small text-muted">Số điện thoại</label>
-                    <input type="text" class="form-control" value="@buyer.SDT" readonly />
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small">Số điện thoại</label>
+                        <input type="text" class="form-control" value="@buyer.SDT" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Email</label>
+                        <input type="text" class="form-control" value="@buyer.Email" readonly />
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label small text-muted">Email</label>
-                    <input type="text" class="form-control" value="@buyer.Email" readonly />
+                <div class="card bg-light border-0 mb-4 mt-4">
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Số Căn Cước Công Dân (12 chữ số) <span class="text-danger">*</span></label>
+                            <input type="text" name="CCCD" id="inputCCCD" class="form-control form-control-lg input-highlight"
+                                   placeholder="Nhập chính xác 12 số CCCD"
+                                   maxlength="12"
+                                   required pattern="[0-9]{12}"
+                                   title="Số CCCD phải gồm đúng 12 chữ số" />
+                        </div>
+                        <div class="text-muted" style="font-size: 12px;">
+                            <i class="fa-solid fa-shield-halved me-1"></i>
+                            Thông tin của bạn được Shopee bảo mật tuyệt đối theo Chính sách bảo mật.
+                        </div>
+                    </div>
                 </div>
 
-                <hr class="my-4" />
+                <button type="submit" class="btn btn-submit" id="btnSubmit">
+                    <span id="btnText">HOÀN TẤT ĐĂNG KÝ</span>
+                    <span class="spinner-border spinner-border-sm ms-2 d-none" id="btnLoader"></span>
+                </button>
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Số Căn Cước Công Dân (CCCD) <span class="text-danger">*</span></label>
-                    <input type="text" name="CCCD" class="form-control py-2 border-danger"
-                           placeholder="Nhập số CCCD của bạn"
-                           required pattern="[0-9]{12}" title="CCCD phải gồm 12 chữ số" />
-                    <div class="form-text text-muted small">Thông tin này dùng để xác minh danh tính người bán.</div>
+                <div class="text-center mt-4">
+                    <a href="@Url.Action("DangNhapNguoiBan", "TaiKhoan")" class="text-decoration-none text-secondary small">
+                        <i class="fa-solid fa-arrow-left-long me-1"></i> Quay lại trang đăng nhập
+                    </a>
                 </div>
-
-                <button type="submit" class="btn btn-submit">HOÀN TẤT ĐĂNG KÝ</button>
-
-                <div class="text-center mt-3">
-                    <a href="/TaiKhoan/DangNhapNguoiBan" class="text-decoration-none text-secondary small">Quay lại đăng nhập</a>
-                </div>
-            </form>
+            }
         </div>
     </div>
+
+    <script>
+        const form = document.getElementById("registerForm");
+        const btn = document.getElementById("btnSubmit");
+        const loader = document.getElementById("btnLoader");
+        const text = document.getElementById("btnText");
+        const inputCCCD = document.getElementById("inputCCCD");
+
+        // Hiệu ứng Loading
+        form.addEventListener("submit", function (e) {
+            // Kiểm tra lại pattern bằng JS để chắc chắn
+            if (inputCCCD.value.length === 12 && /^\d+$/.test(inputCCCD.value)) {
+                btn.disabled = true;
+                loader.classList.remove("d-none");
+                text.innerText = "ĐANG XỬ LÝ...";
+            }
+        });
+
+        // Chỉ cho phép nhập số vào ô CCCD
+        inputCCCD.addEventListener("input", function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+
+    <script>
+    // Kiểm tra nếu có dữ liệu Success từ TempData
+    @if (TempData["Success"] != null)
+    {
+        <text>
+        Swal.fire({
+            title: 'Thành công!',
+            text: '@TempData["Success"]',
+            icon: 'success',
+            confirmButtonColor: '#ee4d2d',
+            confirmButtonText: 'Bắt đầu bán hàng ngay'
+        });
+        </text>
+    }
+
+    // Hiệu ứng Loading cho nút Submit
+    const form = document.getElementById("registerForm");
+    if(form) {
+        form.addEventListener("submit", function() {
+            const btn = document.getElementById("btnSubmit");
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang xử lý...';
+            }
+        });
+    }
+    </script>
 
 </body>
 </html>

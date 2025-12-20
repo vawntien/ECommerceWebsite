@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\3. NĂM 3 ĐH\HK1 (2025)\CÔNG NGHỆ PHẦN MỀM\Ecommerce Website Project\ECommerceWebsite\ECommerceWebsiteMVC_Seller\Models\QL_BanHangModel.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\Nguyen_Ngoc_Thinh\CNPM\Ngay19_12\ECommerceWebsiteMVC_Seller\Models\QL_BanHangModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

@@ -361,6 +361,9 @@
     <Content Include="Views\TaiKhoan\HoanTatDangKyNguoiBan.cshtml" />
     <Content Include="Views\DonHang\Index.cshtml" />
     <Content Include="Views\DonHang\ChiTiet.cshtml" />
+    <Content Include="Views\TaiKhoan\HoSoNguoiBan.cshtml" />
+    <Content Include="Views\TaiKhoan\QuenMatKhau.cshtml" />
+    <Content Include="Views\TaiKhoan\DatLaiMatKhau.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
