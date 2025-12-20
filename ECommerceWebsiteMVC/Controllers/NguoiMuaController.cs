@@ -163,16 +163,18 @@ namespace ECommerceWebsiteMVC.Controllers
                     return Json(new { success = false, message = "Vui lòng đăng nhập để thực hiện thao tác này." });
                 }
 
-                // Tìm đơn hàng
-                var donHang = ql.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+                // ---Include các bảng liên quan để lấy được thông tin Biến thể sản phẩm ---
+                var donHang = ql.DonHangs
+                    .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham")
+                    .FirstOrDefault(d => d.MaDonHang == maDonHang);
 
                 if (donHang == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
                 }
 
-                // Kiểm tra quyền sở hữu
-                //if (donHang.MaNguoiMua != maNguoiMua.Value)
+                // Kiểm tra quyền sở hữu (bạn có thể bỏ comment nếu cần)
+                //if (donHang.ChiTietDonHangs.FirstOrDefault()?.ChiTietGioHang.GioHang.MaNguoiMua != maNguoiMua)
                 //{
                 //    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
                 //}
@@ -181,6 +183,25 @@ namespace ECommerceWebsiteMVC.Controllers
                 if (donHang.TrangThaiDonHang != "Chờ xác nhận")
                 {
                     return Json(new { success = false, message = "Chỉ có thể hủy đơn hàng đang ở trạng thái 'Chờ xác nhận'." });
+                }
+
+                if (donHang.ChiTietDonHangs != null)
+                {
+                    foreach (var chiTiet in donHang.ChiTietDonHangs)
+                    {
+                        // Lấy ra biến thể sản phẩm tương ứng
+                        var bienThe = chiTiet.ChiTietGioHang.BienTheSanPham;
+
+                        // Lấy số lượng khách đã mua trong đơn hàng này
+                        int soLuongMua = chiTiet.ChiTietGioHang.SoLuong;
+
+
+                        if (bienThe != null)
+                        {
+                            // Cộng lại vào kho
+                            bienThe.SoLuongTonKho = bienThe.SoLuongTonKho + soLuongMua;
+                        }
+                    }
                 }
 
                 // Cập nhật trạng thái đơn hàng

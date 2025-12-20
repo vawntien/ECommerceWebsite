@@ -8,14 +8,16 @@ namespace ECommerceWebsiteMVC.Models
 
     public class BienTheSanPhamViewModel
     {
+
         int _MaBienThe;
         string _TenBienThe;
         decimal _GiaBan;
         string _HinhAnh;
-        public int MaBienThe { get; set; }
         public string TenBienThe { get; set; }
         public decimal GiaBan { get; set; }
         public string HinhAnh { get; set; }
+        public int MaBienThe { get => _MaBienThe; set => _MaBienThe = value; }
+
         public BienTheSanPhamViewModel() { }    
     }
 
