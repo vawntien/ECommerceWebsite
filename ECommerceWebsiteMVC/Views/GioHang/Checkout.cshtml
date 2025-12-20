@@ -69,6 +69,40 @@
         border-radius: 4px;
         font-size: 16px;
     }
+
+    .payment-buttons-container {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .payment-button {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .payment-button.cod {
+        background: #ee4d2d;
+    }
+
+    .payment-button.cod:hover {
+        background: #d73211;
+    }
+
+    .payment-button.momo {
+        background: #a30101;
+    }
+
+    .payment-button.momo:hover {
+        background: #8a0000;
+    }
 </style>
 
 <style>
@@ -550,7 +584,12 @@
         <input type="hidden" name="MaDVVC" id="shippingHidden" value="@(Model.DanhSachDVVC != null && Model.DanhSachDVVC.Any() ? Model.DanhSachDVVC.FirstOrDefault()?.MaDVVC ?? 1 : 1)" />
         <input type="hidden" name="PhiShip" id="phiShipHidden" value="@Model.PhiVanChuyen" />
         <input type="hidden" name="GhiChu" id="ghiChuHidden" />
-        <button type="submit" class="confirm-button">Đặt hàng</button>
+        <input type="hidden" name="PaymentMethod" id="paymentMethodHidden" value="COD" />
+        
+        <div class="payment-buttons-container">
+            <button type="submit" class="payment-button cod" id="btn-cod-payment">Thanh toán COD</button>
+            <button type="button" class="payment-button momo" id="btn-momo-payment">Thanh toán Momo</button>
+        </div>
     </form>
 </div>
 
@@ -865,6 +904,59 @@
             // Cập nhật lời nhắn vào hidden input khi thay đổi
             $(document).on("input", "#order-note", function() {
                 $("#ghiChuHidden").val($(this).val());
+            });
+
+            // ===== XỬ LÝ THANH TOÁN MOMO =====
+            $(document).on("click", "#btn-momo-payment", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Kiểm tra thông tin địa chỉ
+                var ten = $("#hidden-ten").val().trim();
+                var sdt = $("#hidden-sdt").val().trim();
+                var diachi = $("#hidden-diachi").val().trim();
+
+                if (ten === "" || sdt === "" || diachi === "") {
+                    showAlert("Bạn chưa nhập địa chỉ nhận hàng. Vui lòng thêm địa chỉ trước khi thanh toán!");
+                    return;
+                }
+
+                // Set payment method
+                $("#paymentMethodHidden").val("MOMO");
+                
+                // Gửi request đến server xử lý thanh toán Momo
+                var formData = {
+                    NguoiNhan: ten,
+                    SDT: sdt,
+                    DiaChi: diachi,
+                    MaVoucher: $("#voucherHidden").val(),
+                    MaDVVC: $("#shippingHidden").val(),
+                    PhiShip: $("#phiShipHidden").val(),
+                    GhiChu: $("#ghiChuHidden").val(),
+                    TongThanhToan: $("#tong-thanh-toan").attr("data-raw"),
+                    PaymentMethod: "MOMO"
+                };
+
+                $.ajax({
+                    url: "/ThanhToan/ProcessMomoPayment",
+                    type: "POST",
+                    data: formData,
+                    success: function(res) {
+                        if (res.success) {
+                            // Chuyển hướng đến Momo hoặc xử lý thanh toán
+                            if (res.redirectUrl) {
+                                window.location.href = res.redirectUrl;
+                            } else {
+                                showShopeeAlert("Đang xử lý thanh toán Momo...");
+                            }
+                        } else {
+                            showShopeeAlert(res.message || "Lỗi xử lý thanh toán!");
+                        }
+                    },
+                    error: function() {
+                        showShopeeAlert("Lỗi kết nối server!");
+                    }
+                });
             });
 
             // Đóng address selector khi click bên ngoài (chỉ khi đã chọn đủ 3 trường)
@@ -1441,9 +1533,10 @@
                     $("#new-street").focus();
                     return;
                 }
-                // Nếu thông tin đầy đủ, form sẽ gửi đi bình thường.
+                
+                // Nếu phương thức là COD, form sẽ gửi đi bình thường
+                // Nếu là MOMO, nó sẽ được xử lý bởi event handler riêng
             });
-
         }); // End $(document).ready()
     </script>
 }
