@@ -23,5 +23,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public Nullable<System.DateTime> ThoiGian { get; set; }
     
         public virtual ChiTietDonHang ChiTietDonHang { get; set; }
+        //public virtual NguoiMua NguoiMua { get; set; }
+
     }
 }

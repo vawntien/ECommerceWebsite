@@ -19,6 +19,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
         {
             this.AnhSanPhams = new HashSet<AnhSanPham>();
             this.BienTheSanPhams = new HashSet<BienTheSanPham>();
+            //this.DanhGiaSanPhams = new HashSet<DanhGiaSanPham>();
         }
     
         public int MaSanPham { get; set; }
@@ -35,5 +36,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public virtual ICollection<BienTheSanPham> BienTheSanPhams { get; set; }
         public virtual CuaHang CuaHang { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
+        //public virtual ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
+
     }
 }

@@ -521,5 +521,72 @@ namespace ECommerceWebsiteMVC.Controllers
             return RedirectToAction("TatCaSanPham");
         }
 
+
+        //public ActionResult XemDanhGiaSanPham(int id)
+        //{
+        //    if (Session["MaNguoiBan"] == null)
+        //        return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+
+        //    int maNguoiBan = (int)Session["MaNguoiBan"];
+
+        //    // Lấy cửa hàng của người bán
+        //    var cuaHang = db.CuaHangs.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+        //    if (cuaHang == null)
+        //        return Content("Bạn chưa tạo cửa hàng.");
+
+        //    // Kiểm tra sản phẩm có thuộc shop này không
+        //    var sanPham = db.SanPhams
+        //        .Include("DanhGiaSanPhams.NguoiMua")
+        //        .FirstOrDefault(sp => sp.MaSanPham == id && sp.MaCuaHang == cuaHang.MaCuaHang);
+
+        //    if (sanPham == null)
+        //        return HttpNotFound("Sản phẩm không tồn tại hoặc không thuộc về bạn.");
+
+        //    return View(sanPham);
+        //}
+        public ActionResult XemDanhGiaSanPham(int id)
+        {
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+
+            int maNguoiBan = (int)Session["MaNguoiBan"];
+
+            var cuaHang = db.CuaHangs.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            if (cuaHang == null)
+                return Content("Bạn chưa tạo cửa hàng.");
+
+            var sanPham = db.SanPhams
+                .FirstOrDefault(sp => sp.MaSanPham == id && sp.MaCuaHang == cuaHang.MaCuaHang);
+
+            if (sanPham == null)
+                return HttpNotFound();
+
+            var danhGias = (
+                from dg in db.DanhGiaSanPhams
+                join ctdh in db.ChiTietDonHangs
+                    on dg.MaCTDH equals ctdh.MaCTDH
+                join ctgh in db.ChiTietGioHangs
+                    on ctdh.MaCTGH equals ctgh.MaCTGH
+                join bt in db.BienTheSanPhams
+                    on ctgh.MaBienThe equals bt.MaBienThe
+                where bt.MaSanPham == id
+                orderby dg.ThoiGian descending
+                select dg
+            ).ToList();
+
+            var vm = new XemDanhGiaSanPhamViewModel
+            {
+                MaSanPham = sanPham.MaSanPham,
+                TenSanPham = sanPham.TenSanPham,
+                DanhGias = danhGias
+            };
+
+            return View(vm);
+        }
+
+
+
+
+
     }
 }

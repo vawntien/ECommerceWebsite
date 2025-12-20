@@ -1,0 +1,27 @@
+﻿
+@model ECommerceWebsiteMVC_Seller.Models.XemDanhGiaSanPhamViewModel
+@{
+    ViewBag.Title = "XemDanhGiaSanPham";
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+}
+<h4>@Model.TenSanPham</h4>
+
+@if (!Model.DanhGias.Any())
+{
+    <div class="alert alert-info">
+        Chưa có đánh giá nào cho sản phẩm này
+    </div>
+}
+else
+{
+    foreach (var dg in Model.DanhGias)
+    {
+        <div class="border p-2 mb-2">
+            <strong>@dg.SoSao ⭐</strong><br />
+            <b>@dg.TieuDe</b><br />
+            @dg.NoiDung<br />
+            @*<small>@dg.ThoiGian.ToString("dd/MM/yyyy HH:mm")</small>*@
+        </div>
+    }
+}
+
