@@ -18,9 +18,8 @@ namespace ECommerceWebsiteMVC.Controllers
             return (int)Session["MaNguoiMua"];
         }
 
-        // ==========================================
         // 1. HIỂN THỊ GIỎ HÀNG
-        // ==========================================
+
         public ActionResult Index()
         {
             int userId = GetUserId();
@@ -39,41 +38,55 @@ namespace ECommerceWebsiteMVC.Controllers
                             .Include(c => c.BienTheSanPham)
                             .Include(c => c.BienTheSanPham.SanPham)
                             .Include(c => c.BienTheSanPham.SanPham.CuaHang)
+                            .OrderByDescending(c => c.MaCTGH) // Sắp xếp theo MaCTGH giảm dần để sản phẩm mới thêm vào hiển thị đầu tiên
                             .ToList();
 
-            var items = dbItems.Select(item => new GioHangItemViewModel
-            {
-                MaCTGH = item.MaCTGH,
-                MaBienThe = (int)item.MaBienThe,
-                MaCuaHang = item.BienTheSanPham.SanPham.CuaHang.MaCuaHang,
-                TenCuaHang = item.BienTheSanPham.SanPham.CuaHang.TenCuaHang,
-                TenSanPham = item.BienTheSanPham.SanPham.TenSanPham,
-                TenBienThe = item.BienTheSanPham.TenBienThe,
-                HinhAnh = item.BienTheSanPham.HinhAnh,
-                DonGia = (decimal)item.BienTheSanPham.GiaBan,
-                SoLuong = (int)item.SoLuong,
-                SoLuongTonKho = (int)item.BienTheSanPham.SoLuongTonKho,
-                BienTheList = db.BienTheSanPhams
-                                .Where(bt => bt.MaSanPham == item.BienTheSanPham.MaSanPham)
-                                .Select(bt => new BienTheSanPhamViewModel
-                                {
-                                    MaBienThe = bt.MaBienThe,
-                                    TenBienThe = bt.TenBienThe,
-                                    GiaBan = (decimal)bt.GiaBan,
-                                    HinhAnh = bt.HinhAnh
-                                }).ToList()
+            var items = dbItems.Select(item => {
+                // Áp dụng campaign discount nếu có
+                decimal giaGoc = (decimal)item.BienTheSanPham.GiaBan;
+                var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(db, (int)item.MaBienThe, giaGoc);
+                decimal giaApDung = priceResult.CoGiamGia ? priceResult.GiaSauGiam : giaGoc;
+                
+                return new GioHangItemViewModel
+                {
+                    MaCTGH = item.MaCTGH,
+                    MaBienThe = (int)item.MaBienThe,
+                    MaCuaHang = item.BienTheSanPham.SanPham.CuaHang.MaCuaHang,
+                    TenCuaHang = item.BienTheSanPham.SanPham.CuaHang.TenCuaHang,
+                    TenSanPham = item.BienTheSanPham.SanPham.TenSanPham,
+                    TenBienThe = item.BienTheSanPham.TenBienThe,
+                    HinhAnh = item.BienTheSanPham.HinhAnh,
+                    DonGia = giaApDung, // Giá sau khi áp dụng campaign
+                    GiaGoc = giaGoc, // Giá gốc
+                    CoGiamGia = priceResult.CoGiamGia,
+                    PhanTramGiam = priceResult.PhanTramGiam,
+                    SoLuong = (int)item.SoLuong,
+                    SoLuongTonKho = (int)item.BienTheSanPham.SoLuongTonKho,
+                    BienTheList = db.BienTheSanPhams
+                                    .Where(bt => bt.MaSanPham == item.BienTheSanPham.MaSanPham)
+                                    .Select(bt => new BienTheSanPhamViewModel
+                                    {
+                                        MaBienThe = bt.MaBienThe,
+                                        TenBienThe = bt.TenBienThe,
+                                        GiaBan = (decimal)bt.GiaBan,
+                                        HinhAnh = bt.HinhAnh
+                                    }).ToList()
+                };
             }).ToList();
 
             var grouped = items.GroupBy(x => x.MaCuaHang)
-                .Select(g => new ShopGroup { MaCuaHang = g.Key, TenCuaHang = g.First().TenCuaHang, Items = g.ToList() })
+                .Select(g => new ShopGroup 
+                { 
+                    MaCuaHang = g.Key, 
+                    TenCuaHang = g.First().TenCuaHang, 
+                    Items = g.OrderByDescending(i => i.MaCTGH).ToList() // Sắp xếp items trong mỗi shop theo MaCTGH giảm dần
+                })
                 .ToList();
 
             return View(new GioHangViewModel { Shops = grouped });
         }
 
-        // ==========================================
         // 2. CÁC HÀM XỬ LÝ GIỎ HÀNG (THÊM/SỬA/XÓA)
-        // ==========================================
         public ActionResult AddToCart(int maBienThe, int soLuong = 1)
         {
             int userId = GetUserId();
@@ -113,10 +126,10 @@ namespace ECommerceWebsiteMVC.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult MuaNgay(int maBienThe)
+        public ActionResult MuaNgay(int maBienThe, int soLuong = 1)
         {
-            AddToCart(maBienThe, 1);
-            return RedirectToAction("Index");
+            // Mua Ngay chỉ thêm vào giỏ hàng, không redirect đến thanh toán
+            return AddToCart(maBienThe, soLuong);
         }
 
         [HttpPost]
@@ -177,9 +190,7 @@ namespace ECommerceWebsiteMVC.Controllers
             return Json(new { success = true });
         }
 
-        // ==========================================
-        // 2.5 API LẤY SỐ LƯỢNG SẢN PHẨM TRONG GIỎ
-        // ==========================================
+        // 2 API LẤY SỐ LƯỢNG SẢN PHẨM TRONG GIỎ
         [HttpGet]
         public ActionResult GetCartCount()
         {
@@ -197,9 +208,7 @@ namespace ECommerceWebsiteMVC.Controllers
             return Json(new { count = count }, JsonRequestBehavior.AllowGet);
         }
 
-        // ==========================================
-        // 2.6 API LẤY DỮ LIỆU ĐỊA CHỈ VIỆT NAM
-        // ==========================================
+        // 2API LẤY DỮ LIỆU ĐỊA CHỈ VIỆT NAM
         [HttpGet]
         public ActionResult GetVietnamAddresses()
         {
@@ -220,9 +229,7 @@ namespace ECommerceWebsiteMVC.Controllers
             }
         }
 
-        // ==========================================
         // 3. CHECKOUT & THANH TOÁN
-        // ==========================================
         [HttpPost]
         public ActionResult Checkout(string chon)
         {
@@ -251,24 +258,53 @@ namespace ECommerceWebsiteMVC.Controllers
                             .Include(c => c.BienTheSanPham.SanPham)
                             .ToList();
 
-            var items = dbItems.Select(i => new CheckoutItemVM
-            {
-                MaCTGH = i.MaCTGH,
-                MaBienThe = (int)i.MaBienThe,
-                TenSanPham = i.BienTheSanPham.SanPham.TenSanPham,
-                PhanLoai = i.BienTheSanPham.TenBienThe,
-                DonGia = (decimal)i.BienTheSanPham.GiaBan,
-                SoLuong = (int)i.SoLuong,
-                HinhAnh = i.BienTheSanPham.HinhAnh
+            var items = dbItems.Select(i => {
+                decimal giaGoc = (decimal)i.BienTheSanPham.GiaBan;
+                // Áp dụng campaign nếu có
+                var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(db, i.MaBienThe, giaGoc);
+                decimal giaApDung = priceResult.CoGiamGia ? priceResult.GiaSauGiam : giaGoc;
+                
+                return new CheckoutItemVM
+                {
+                    MaCTGH = i.MaCTGH,
+                    MaBienThe = (int)i.MaBienThe,
+                    TenSanPham = i.BienTheSanPham.SanPham.TenSanPham,
+                    PhanLoai = i.BienTheSanPham.TenBienThe,
+                    DonGia = giaApDung, // Giá sau khi áp dụng campaign
+                    SoLuong = (int)i.SoLuong,
+                    HinhAnh = i.BienTheSanPham.HinhAnh
+                };
             }).ToList();
 
-            decimal tongTienHang = items.Sum(x => x.ThanhTien);
+            decimal tongTienHang = items.Sum(x => x.DonGia * x.SoLuong);
+
+            // Lấy thông tin từ đơn hàng gần nhất nếu user chưa có địa chỉ
+            string tenNguoiNhan = user != null ? user.HoVaTen : "";
+            string sdt = user != null ? user.SDT : "";
+            string diaChi = "";
+
+            // Nếu user có SDT, tìm đơn hàng gần nhất để lấy thông tin
+            if (user != null && !string.IsNullOrEmpty(user.SDT))
+            {
+                var donHangGanNhat = db.DonHangs
+                    .Where(d => d.SDT == user.SDT && !string.IsNullOrEmpty(d.DiaChi))
+                    .OrderByDescending(d => d.ThoiGianDat)
+                    .FirstOrDefault();
+
+                if (donHangGanNhat != null)
+                {
+                    // Lấy thông tin từ đơn hàng gần nhất
+                    tenNguoiNhan = donHangGanNhat.TenNguoiNhan ?? tenNguoiNhan;
+                    sdt = donHangGanNhat.SDT ?? sdt;
+                    diaChi = donHangGanNhat.DiaChi ?? diaChi;
+                }
+            }
 
             var model = new CheckoutViewModel
             {
-                TenNguoiNhan = user != null ? user.HoVaTen : "",
-                SDT = user != null ? user.SDT : "",
-                DiaChi = "", // Địa chỉ sẽ được người dùng nhập/chọn trong popup
+                TenNguoiNhan = tenNguoiNhan,
+                SDT = sdt,
+                DiaChi = diaChi, // Địa chỉ từ đơn hàng gần nhất hoặc để trống
                 Items = items,
 
                 // Lấy Voucher có thể áp dụng
@@ -413,9 +449,7 @@ namespace ECommerceWebsiteMVC.Controllers
         //        }
         //    }
         //}
-        // ==========================================
         // 9. API LẤY LỊCH SỬ ĐỊA CHỈ (Dựa trên SDT vì DonHang không có MaNguoiMua)
-        // ==========================================
         [HttpGet]
         public ActionResult GetDeliveryHistory()
         {
@@ -473,13 +507,11 @@ namespace ECommerceWebsiteMVC.Controllers
             return Json(new { success = true, data = list }, JsonRequestBehavior.AllowGet);
         }
 
-        // ==========================================
         // 7. THANH TOÁN (ORDER SUCCESS) - CHUẨN DB MỚI
-        // ==========================================
         [HttpPost]
         public ActionResult OrderSuccess(string NguoiNhan, string SDT, string DiaChi, string MaVoucher, int MaDVVC, decimal PhiShip, string GhiChu)
         {
-            int userId = GetUserId(); 
+            int userId = GetUserId();
 
             if (TempData["SelectedIds"] == null) return RedirectToAction("Index");
             var idList = TempData["SelectedIds"].ToString().Split(',').Select(int.Parse).ToList();
@@ -499,12 +531,16 @@ namespace ECommerceWebsiteMVC.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    // --- TÍNH TIỀN ---
+                    // --- TÍNH TIỀN (Áp dụng Campaign nếu có) ---
                     decimal tongTienHang = 0;
                     foreach (var item in cartItems)
                     {
                         var bt = db.BienTheSanPhams.Find(item.MaBienThe);
-                        tongTienHang += (decimal)(bt.GiaBan * item.SoLuong);
+                        decimal giaGoc = (decimal)bt.GiaBan;
+                        // Áp dụng campaign nếu có
+                        var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(db, item.MaBienThe, giaGoc);
+                        decimal giaApDung = priceResult.CoGiamGia ? priceResult.GiaSauGiam : giaGoc;
+                        tongTienHang += giaApDung * item.SoLuong;
                     }
 
                     // --- XỬ LÝ VOUCHER ---
@@ -527,7 +563,7 @@ namespace ECommerceWebsiteMVC.Controllers
                                     TempData["Error"] = "Voucher chưa đến thời gian áp dụng.";
                                     return RedirectToAction("Index");
                                 }
-                                
+
                                 // Kiểm tra ngày kết thúc
                                 if (vc.NgayKT != null && vc.NgayKT < DateTime.Now)
                                 {
@@ -535,7 +571,7 @@ namespace ECommerceWebsiteMVC.Controllers
                                     TempData["Error"] = "Voucher đã hết hạn.";
                                     return RedirectToAction("Index");
                                 }
-                                
+
                                 // Kiểm tra giá trị đơn hàng tối thiểu
                                 if (vc.GiaTriDonHangToiThieu > tongTienHang)
                                 {
@@ -543,7 +579,7 @@ namespace ECommerceWebsiteMVC.Controllers
                                     TempData["Error"] = "Đơn hàng chưa đủ điều kiện áp dụng voucher này.";
                                     return RedirectToAction("Index");
                                 }
-                                
+
                                 // Tính toán giảm giá
                                 maGiamGiaID = vID;
                                 if (vc.GiaTriGiam <= 1)
@@ -562,14 +598,14 @@ namespace ECommerceWebsiteMVC.Controllers
 
                     var dh = new DonHang
                     {
-                       
-                        MaDVVC = MaDVVC, 
+
+                        MaDVVC = MaDVVC,
 
                         TenNguoiNhan = NguoiNhan,
                         SDT = SDT,
                         DiaChi = DiaChi,
 
-                        ThoiGianDat = DateTime.Now, 
+                        ThoiGianDat = DateTime.Now,
 
                         TongTien = Math.Max(0, tongTienHang + PhiShip - giamGia), // Đảm bảo tổng tiền không âm
                         PhiVanChuyen = PhiShip,
@@ -578,9 +614,9 @@ namespace ECommerceWebsiteMVC.Controllers
 
                         TrangThaiDonHang = "Chờ xác nhận",
                         TrangThaiVanChuyen = "Chưa giao", 
-                        TrangThaiThanhToan = false,    
+                        TrangThaiThanhToan = false,
 
-                        GhiChu = GhiChu ?? "" 
+                        GhiChu = GhiChu ?? ""
                     };
 
                     db.DonHangs.Add(dh);
@@ -590,24 +626,40 @@ namespace ECommerceWebsiteMVC.Controllers
                     foreach (var item in cartItems)
                     {
                         var bt = db.BienTheSanPhams.Find(item.MaBienThe);
-                        if (bt.SoLuongTonKho < item.SoLuong)
+                        if (bt == null)
                         {
                             transaction.Rollback();
-                            TempData["Error"] = $"Sản phẩm {bt.TenBienThe} hết hàng!";
+                            TempData["Error"] = "Sản phẩm không tồn tại!";
                             return RedirectToAction("Index");
                         }
 
+                        // Kiểm tra số lượng tồn kho
+                        if (bt.SoLuongTonKho < item.SoLuong)
+                        {
+                            transaction.Rollback();
+                            TempData["Error"] = $"Sản phẩm {bt.TenBienThe} chỉ còn {bt.SoLuongTonKho} sản phẩm!";
+                            return RedirectToAction("Index");
+                        }
+
+                        // Trừ số lượng tồn kho
                         bt.SoLuongTonKho -= item.SoLuong;
+
+                        // Tính giá sau khi áp dụng campaign
+                        decimal giaGoc = (decimal)bt.GiaBan;
+                        var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(db, item.MaBienThe, giaGoc);
+                        decimal giaApDung = priceResult.CoGiamGia ? priceResult.GiaSauGiam : giaGoc;
+                        decimal thanhTien = giaApDung * item.SoLuong;
 
                         var ctdh = new ChiTietDonHang
                         {
                             MaDonHang = dh.MaDonHang,
-                            MaCTGH = item.MaCTGH, 
+                            MaCTGH = item.MaCTGH,
                             SoLuong = item.SoLuong,
                         };
 
-                        try { ctdh.GetType().GetProperty("DonGia").SetValue(ctdh, bt.GiaBan); } catch { }
-                        try { ctdh.GetType().GetProperty("ThanhTien").SetValue(ctdh, (decimal)(bt.GiaBan * item.SoLuong)); } catch { }
+                        // Lưu giá sau khi áp dụng campaign
+                        try { ctdh.GetType().GetProperty("DonGia").SetValue(ctdh, giaApDung); } catch { }
+                        try { ctdh.GetType().GetProperty("ThanhTien").SetValue(ctdh, thanhTien); } catch { }
 
                         db.ChiTietDonHangs.Add(ctdh);
                         item.TrangThai = false;
@@ -625,6 +677,18 @@ namespace ECommerceWebsiteMVC.Controllers
                     return RedirectToAction("Index");
                 }
             }
+        }
+
+        // 9. XEM ĐƠN HÀNG SAU KHI THANH TOÁN THÀNH CÔNG
+        public ActionResult ViewOrderSuccess(int id)
+        {
+            var donHang = db.DonHangs.Find(id);
+            if (donHang == null)
+            {
+                TempData["Error"] = "Đơn hàng không tồn tại!";
+                return RedirectToAction("Index");
+            }
+            return View("OrderSuccess", donHang);
         }
     }
 }

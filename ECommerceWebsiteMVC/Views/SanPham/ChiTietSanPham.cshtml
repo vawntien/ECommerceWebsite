@@ -4,6 +4,13 @@
     ViewBag.Title = "ChiTietSanPham";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
     var sanPhamLienQuan = ViewBag.SanPhamLienQuan as List<ECommerceWebsiteMVC.Models.SanPham>;
+    CampaignPriceResult priceResult = null;
+    decimal giaDauTien = 0;
+    using (var ql = new ECommerceWebsiteEntities())
+    {
+        giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+        priceResult = CampaignHelper.TinhGiaSauGiam(ql, Model.MaSanPham, (decimal)giaDauTien);
+    }
 }
 
 
@@ -267,21 +274,26 @@
                     }
                 </div>
 
-                <div class="flash-sale-banner mb-0">
-                    <div>
-                        <i class="fas fa-bolt"></i> FLASH SALE
+                @if (priceResult != null && priceResult.CoGiamGia)
+                {
+                    <div class="flash-sale-banner mb-0">
+                        <div>
+                            <i class="fas fa-bolt"></i> FLASH SALE
+                        </div>
                     </div>
+                }
 
-                </div>
-
-                <div class="price-section mb-4">
-                    @{
-                        // Lấy giá của biến thể đầu tiên (nếu có)
-                        var giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                <div class="price-section mb-4" id="price-section">
+                    @if (priceResult != null && priceResult.CoGiamGia)
+                    {
+                        <span class="original-price" id="original-price">@priceResult.GiaGoc.ToString("N0")₫</span>
+                        <span class="current-price" id="price">@priceResult.GiaSauGiam.ToString("N0")₫</span>
+                        <span class="discount-badge" id="discount-badge">Giảm @priceResult.PhanTramGiam.ToString("0")%</span>
                     }
-                    <span class="original-price">@giaDauTien.ToString("N0")₫</span>
-                    <span class="current-price" id="price">@giaDauTien.ToString("N0")₫</span>
-
+                    else
+                    {
+                        <span class="current-price" id="price">@giaDauTien.ToString("N0")₫</span>
+                    }
                 </div>
 
 
@@ -312,7 +324,7 @@
                         <div class="col-9 d-flex align-items-center">
                             <div class="input-group me-3" style="width: 120px;">
                                 <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
-                                <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+                                <input type="number" id="qty" class="form-control text-center" value="1" min="1" onchange="validateQty()" oninput="validateQty()">
                                 <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
                             </div>
                             <span class="text-secondary small" id="stock">Còn @Model.BienTheSanPhams.First().SoLuongTonKho sản phẩm</span>
@@ -436,7 +448,7 @@
 
 <script>
     const mainImg = document.getElementById("main-img");
-    const priceBox = document.getElementById("price");
+    let priceBox = document.getElementById("price");
     const stockBox = document.getElementById("stock");
     const qtyInput = document.getElementById("qty");
 
@@ -452,8 +464,36 @@
             let priceNumber = parseFloat(rawPrice);
             if (isNaN(priceNumber)) priceNumber = 0;
 
-            // Hiển thị giá
-            priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
+            // Lấy mã biến thể để tính giá sau giảm
+            let maBienThe = this.dataset.id;
+            const priceSection = document.getElementById("price-section");
+            
+            // Gọi API để lấy giá sau giảm (nếu có campaign)
+            fetch(`/SanPham/GetPriceWithCampaign?maBienThe=${maBienThe}&giaGoc=${priceNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.coGiamGia) {
+                        // Hiển thị giá gốc gạch ngang và giá sau giảm
+                        priceSection.innerHTML = `
+                            <span class="original-price">${parseFloat(data.giaGoc).toLocaleString('vi-VN')}₫</span>
+                            <span class="current-price" id="price">${parseFloat(data.giaSauGiam).toLocaleString('vi-VN')}₫</span>
+                            <span class="discount-badge">Giảm ${parseFloat(data.phanTramGiam).toFixed(0)}%</span>
+                        `;
+                        // Cập nhật lại reference cho priceBox
+                        priceBox = document.getElementById("price");
+                    } else {
+                        // Hiển thị giá gốc
+                        priceSection.innerHTML = `<span class="current-price" id="price">${priceNumber.toLocaleString('vi-VN')}₫</span>`;
+                        // Cập nhật lại reference cho priceBox
+                        priceBox = document.getElementById("price");
+                    }
+                })
+                .catch(() => {
+                    // Nếu lỗi, hiển thị giá gốc
+                    priceSection.innerHTML = `<span class="current-price" id="price">${priceNumber.toLocaleString('vi-VN')}₫</span>`;
+                    // Cập nhật lại reference cho priceBox
+                    priceBox = document.getElementById("price");
+                });
 
             // Đổi ảnh chính nếu biến thể có ảnh
             if (this.dataset.img) {
@@ -461,7 +501,17 @@
             }
 
             // Đổi tồn kho
-            stockBox.innerText = "Còn " + this.dataset.stock + " sản phẩm";
+            let stock = parseInt(this.dataset.stock) || 0;
+            stockBox.innerText = "Còn " + stock + " sản phẩm";
+
+            // Kiểm tra và điều chỉnh số lượng nếu vượt quá tồn kho
+            let currentQty = parseInt(qtyInput.value) || 1;
+            if (currentQty > stock) {
+                qtyInput.value = stock > 0 ? stock : 1;
+                qtyInput.max = stock;
+            } else {
+                qtyInput.max = stock;
+            }
 
             // Cập nhật ID cho nút mua
             let id = this.dataset.id;
@@ -472,40 +522,87 @@
 
     // 2. Logic Thay đổi số lượng (+/-)
     function changeQty(delta) {
+        let qtyInput = document.getElementById("qty");
         let currentVal = parseInt(qtyInput.value) || 1;
+        let maxQty = parseInt(qtyInput.max) || 999999;
         let newVal = currentVal + delta;
         if (newVal < 1) newVal = 1;
+        if (newVal > maxQty) newVal = maxQty;
         qtyInput.value = newVal;
     }
 
-    // 3. Logic Xử lý Mua hàng (Giữ nguyên logic cũ)
+    // Validate số lượng khi người dùng nhập trực tiếp
+    function validateQty() {
+        let qtyInput = document.getElementById("qty");
+        let currentVal = parseInt(qtyInput.value) || 1;
+        let maxQty = parseInt(qtyInput.max) || 999999;
+        
+        if (isNaN(currentVal) || currentVal < 1) {
+            qtyInput.value = 1;
+        } else if (currentVal > maxQty) {
+            // Thông báo trước khi set
+            alert(`Số lượng vượt quá tồn kho. Tối đa ${maxQty} sản phẩm.`);
+            setTimeout(function() {
+                qtyInput.value = maxQty;
+            }, 100);
+        }
+    }
+
+    // 3. Logic Xử lý Mua hàng
     function handleMuaHang(actionType) {
+        // Lấy số lượng từ input hiện tại (luôn lấy mới nhất)
+        let soLuongMua = parseInt(document.getElementById("qty").value) || 1;
+        
+        // Validate số lượng
+        if (isNaN(soLuongMua) || soLuongMua < 1) {
+            alert("Số lượng không hợp lệ!");
+            document.getElementById("qty").value = 1;
+            return;
+        }
+
         let btn = (actionType === 'add') ? document.getElementById("btnAddToCart") : document.getElementById("btnMuaNgay");
         let idBienThe = btn.getAttribute("data-id");
-        let soLuongMua = qtyInput ? parseInt(qtyInput.value) : 1;
 
         if (!idBienThe || idBienThe === "") {
             alert("Vui lòng chọn phân loại sản phẩm!");
             return;
         }
 
-        // Gọi API check kho (giữ nguyên logic gốc)
+        // Lấy tồn kho hiện tại
+        let stock = parseInt(document.getElementById("stock").textContent.replace(/[^0-9]/g, '')) || 0;
+        
+        // Kiểm tra số lượng với tồn kho
+        if (soLuongMua > stock) {
+            alert(`Số lượng vượt quá tồn kho. Hiện chỉ còn ${stock} sản phẩm.`);
+            // Sau khi người dùng nhấn OK, mới set lại số lượng
+            setTimeout(function() {
+                document.getElementById("qty").value = stock > 0 ? stock : 1;
+            }, 100);
+            return;
+        }
+
+        // Gọi API check kho
         fetch(`/SanPham/KiemTraTonKho?maBienThe=${idBienThe}&soLuong=${soLuongMua}`)
             .then(response => response.json())
             .then(data => {
                 if (data.coHang === true) {
+                    // Đảm bảo số lượng được truyền đúng
+                    let finalSoLuong = parseInt(soLuongMua);
                     if (actionType === 'add') {
-                        window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                        window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + finalSoLuong;
                     } else {
-                        window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                        window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + finalSoLuong;
                     }
                 }
                 else {
                     if (data.soLuongConLai <= 0) {
                         alert("Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
                     } else {
+                        // Thông báo trước, sau đó mới set lại số lượng
                         alert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.`);
-                        if (qtyInput) qtyInput.value = data.soLuongConLai;
+                        setTimeout(function() {
+                            document.getElementById("qty").value = data.soLuongConLai;
+                        }, 100);
                     }
                 }
             })

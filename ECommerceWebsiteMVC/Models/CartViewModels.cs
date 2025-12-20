@@ -42,6 +42,9 @@ namespace ECommerceWebsiteMVC.Models
         public string HinhAnh { get; set; }
 
         public decimal DonGia { get; set; }
+        public decimal GiaGoc { get; set; } // Giá gốc trước khi giảm
+        public bool CoGiamGia { get; set; } // Có campaign giảm giá không
+        public decimal PhanTramGiam { get; set; } // Phần trăm giảm
         public int SoLuong { get; set; }
 
         public int SoLuongTonKho { get; set; }

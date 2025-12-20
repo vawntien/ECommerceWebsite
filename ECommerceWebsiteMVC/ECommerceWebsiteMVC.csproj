@@ -263,6 +263,7 @@
     <Compile Include="Models\BienTheSanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CampaignHelper.cs" />
     <Compile Include="Models\CartViewModels.cs" />
     <Compile Include="Models\ChiTietDonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>

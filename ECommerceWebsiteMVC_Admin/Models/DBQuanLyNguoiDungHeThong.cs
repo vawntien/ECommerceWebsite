@@ -71,5 +71,15 @@ namespace ECommerceWebsiteMVC_Admin.Models
         {
             return db.NguoiMuas.ToList();
         }
+
+        public List<DanhMuc> DanhSachDanhMuc()
+        {
+            return db.DanhMucs.ToList();
+        }
+
+        public List<SanPham> DanhSachSanPham()
+        {
+            return db.SanPhams.ToList();
+        }
     }
 }

@@ -247,6 +247,12 @@
 
                         <div class="cart-col-price">
                             <span class="current-price">@item.DonGia.ToString("N0") đ</span>
+                            @if (item.CoGiamGia && item.PhanTramGiam > 0)
+                            {
+                                <span style="background-color: #ee4d2d; color: white; font-size: 10px; padding: 2px 4px; border-radius: 2px; margin-left: 5px;">
+                                    -@item.PhanTramGiam.ToString("F0")%
+                                </span>
+                            }
                         </div>
 
                         <div class="cart-col-qty">
