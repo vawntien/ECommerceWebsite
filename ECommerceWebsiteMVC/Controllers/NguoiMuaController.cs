@@ -27,7 +27,8 @@ namespace ECommerceWebsiteMVC.Controllers
             //.OrderBy(sp => sp.MaSanPham)
             //.Skip(skip)
             //.Take(24)
-            //.ToList();
+            //.ToList();    
+            ViewBag.SanPhamHot = GetTopSanPhamHot(10);
 
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
 
@@ -231,6 +232,33 @@ namespace ECommerceWebsiteMVC.Controllers
 
             return View("Index", sanPhamTimDuoc);
         }
+
+        private List<SanPham> GetTopSanPhamHot(int top = 7)
+        {
+            var sanPhamHot = ql.ChiTietDonHangs
+                .Where(ct =>
+                    ct.DonHang.TrangThaiDonHang == "Chờ giao hàng" ||
+                    ct.DonHang.TrangThaiDonHang == "Đã giao"
+                )
+                .GroupBy(ct => ct.ChiTietGioHang.BienTheSanPham.MaSanPham)
+                .Select(g => new
+                {
+                    MaSanPham = g.Key,
+                    SoLuongBan = g.Sum(x => x.SoLuong)
+                })
+                .OrderByDescending(x => x.SoLuongBan)
+                .Take(top)
+                .Join(
+                    ql.SanPhams.Include("AnhSanPhams"),
+                    hot => hot.MaSanPham,
+                    sp => sp.MaSanPham,
+                    (hot, sp) => sp
+                )
+                .ToList();
+
+            return sanPhamHot;
+        }
+
 
     }
 }

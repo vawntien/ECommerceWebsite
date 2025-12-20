@@ -27,6 +27,18 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             var sp = ql.SanPhams.Include("AnhSanPhams").Include("BienTheSanPhams").Where(s => s.MaSanPham == id).FirstOrDefault();
             if (sp == null) return HttpNotFound();
+
+            var sanPhamLienQuan = ql.SanPhams
+        .Include("AnhSanPhams")
+        .Where(x =>
+            x.MaDanhMuc == sp.MaDanhMuc &&
+            x.MaSanPham != sp.MaSanPham
+        )
+        .OrderBy(x => Guid.NewGuid()) 
+        .Take(5)
+        .ToList();
+
+            ViewBag.SanPhamLienQuan = sanPhamLienQuan;
             return View(sp);
         }
 

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "ChiTietSanPham";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
+    var sanPhamLienQuan = ViewBag.SanPhamLienQuan as List<ECommerceWebsiteMVC.Models.SanPham>;
 }
 
 
@@ -210,13 +211,13 @@
                     }
                 </div>
 
-              
+
             </div>
 
             <div class="col-md-7 ps-md-4">
                 <h3 class="fw-normal mb-2">@Model.TenSanPham</h3>
 
-          
+
                 <div class="d-flex align-items-center mb-3 fs-6">
                     @{
                         double diemDanhGia = Convert.ToDouble(Model.SoSaoTrungBinh);
@@ -270,7 +271,7 @@
                     <div>
                         <i class="fas fa-bolt"></i> FLASH SALE
                     </div>
-                    
+
                 </div>
 
                 <div class="price-section mb-4">
@@ -334,7 +335,7 @@
     <div class="bg-white-box p-4">
         <div class="d-flex align-items-center">
             <div class="shop-info-container d-flex align-items-center" style="width: 35%;">
-                
+
                 <div>
                     <h5 class="mb-1">@Model.CuaHang.TenCuaHang</h5>
                     <div class="mt-2">
@@ -343,7 +344,7 @@
                 </div>
             </div>
 
-            
+
         </div>
     </div>
 
@@ -382,6 +383,51 @@
             </div>
         </div>
     </div>
+
+    @if (sanPhamLienQuan != null && sanPhamLienQuan.Any())
+    {
+        <div class="bg-white-box mt-4">
+            <h5 class="mb-3 text-uppercase text-secondary fw-bold">
+                Sản phẩm liên quan
+            </h5>
+
+            <div class="row g-3">
+                @foreach (var item in sanPhamLienQuan)
+                {
+                    var macdinh = item.AnhSanPhams
+    .Where(x => x.MacDinh == true)
+    .Select(x => x.HinhAnh)
+    .FirstOrDefault()
+    ?? item.AnhSanPhams.Select(x => x.HinhAnh).FirstOrDefault();
+
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })"
+                           class="text-decoration-none">
+
+                            <div class="border rounded p-2 h-100">
+                                <img loading="lazy"
+                                     class="w-100 mb-2"
+                                     style="height: 150px; object-fit: cover;"
+                                     src="https://ecommerceshopstorage.blob.core.windows.net/products/@item.MaSanPham/@macdinh"
+                                     alt="@item.TenSanPham" />
+
+                                <div class="text-dark small text-truncate">
+                                    @item.TenSanPham
+                                </div>
+
+                                <div class="text-danger fw-bold mt-1">
+                                    @{
+                                        var gia = item.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                                    }
+                                    @gia.ToString("N0")₫
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 
     <div class="bg-white-box">
         @Html.Action("DanhGiaSanPhamPartial", "DanhGia", new { pMaSP = Model.MaSanPham })
