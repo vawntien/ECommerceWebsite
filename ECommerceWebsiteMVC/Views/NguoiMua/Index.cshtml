@@ -423,15 +423,29 @@
     </div>
 
     <!--===================================================================================-->
-
     <div class="container py-4" style="margin-top: 80px;">
 
         <h5 class="mb-3">Danh sách sản phẩm</h5>
 
         <div class="row">
+    @*<div class="container py-4" style="margin-top: 80px;">
+
+        @if (!string.IsNullOrEmpty(ViewBag.Keyword))
+        {
+            <h5 class="mb-3">
+                Kết quả tìm kiếm cho: <strong>@ViewBag.Keyword</strong>
+            </h5>
+        }
+        else
+        {
+            <h5 class="mb-3">Danh sách sản phẩm</h5>
+        }
+
+        <div class="row">*@
+
 
             <!-- ====================== SIDEBAR BÊN TRÁI ====================== -->
-            
+
             <div class="col-12 col-md-3">
                 @Html.Action("Sidebar", "DanhMuc", new { id = ViewBag.DanhMucDangChon })
 

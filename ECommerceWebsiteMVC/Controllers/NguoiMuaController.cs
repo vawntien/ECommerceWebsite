@@ -14,8 +14,48 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
+            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            //List<SanPham> dssp = ql.SanPhams.Include("AnhSanPhams").ToList();
+            //    int total = ql.SanPhams.Count();
+            //    if (total == 0)
+            //        return View(new List<SanPham>());
+
+            //    Random rnd = new Random();
+            //    int skip = rnd.Next(0, Math.Max(0, total - 24));
+            //    List<SanPham> dssp = ql.SanPhams
+            //.Include("AnhSanPhams")
+            //.OrderBy(sp => sp.MaSanPham)
+            //.Skip(skip)
+            //.Take(24)
+            //.ToList();
+
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
-            List<SanPham> dssp = ql.SanPhams.Include("AnhSanPhams").ToList();
+
+
+            var allIds = ql.SanPhams
+                .Select(sp => sp.MaSanPham)
+                .ToList();
+
+            if (!allIds.Any())
+                return View(new List<SanPham>());
+
+    
+            Random rnd = new Random();
+            var randomIds = allIds
+                .OrderBy(x => rnd.Next())
+                .Take(24) 
+                .ToList();
+
+            List<SanPham> dssp = ql.SanPhams
+                .Include("AnhSanPhams")
+                .Where(sp => randomIds.Contains(sp.MaSanPham))
+                .ToList();
+
+            dssp = dssp
+                .OrderBy(sp => randomIds.IndexOf(sp.MaSanPham))
+                .ToList();
+
+
             return View(dssp);
         }
 
@@ -163,5 +203,34 @@ namespace ECommerceWebsiteMVC.Controllers
 
             return View(donHang);
         }
+
+        public ActionResult TimKiem(string keyword)
+        {
+            ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            ViewBag.Keyword = keyword;
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                var tatCa = ql.SanPhams
+                    .Include("AnhSanPhams")
+                    .ToList();
+
+                return View("Index", tatCa);
+            }
+
+            keyword = keyword.Trim();
+
+            var sanPhamTimDuoc = ql.SanPhams
+                .Include("AnhSanPhams")
+                .Include("DanhMuc")
+                .Where(sp =>
+                    sp.TenSanPham.Contains(keyword) ||
+                    sp.DanhMuc.TenDanhMuc.Contains(keyword)
+                )
+                .ToList();
+
+            return View("Index", sanPhamTimDuoc);
+        }
+
     }
 }

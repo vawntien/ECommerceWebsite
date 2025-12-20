@@ -118,9 +118,20 @@
                 </div>
                 <div class="wrap-navbar-input">
                     <div class="wrap-search">
-                        <input type="text"
-                               class="form-control"
-                               placeholder="Tìm kiếm trong..." />
+                        @*<input type="text"
+        class="form-control"
+        placeholder="Tìm kiếm trong..." />*@
+                        <form action="/NguoiMua/TimKiem" method="get" class="wrap-search w-100">
+                            <input type="text"
+                                   name="keyword"
+                                   class="form-control"
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   value="@ViewBag.Keyword" />
+                            <button type="submit" class="wrap-icon-s border-0 bg-transparent">
+                                <img class="icon-media" src="~/assets/search.png" alt="" />
+                            </button>
+                        </form>
+
                         <div class="wrap-icon-s">
                             <img class="icon-media" src="~/assets/search.png" alt="" />
                         </div>
