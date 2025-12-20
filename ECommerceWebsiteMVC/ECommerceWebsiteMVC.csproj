@@ -384,6 +384,7 @@
     <Content Include="Views\TaiKhoan\DangKy.cshtml" />
     <Content Include="Views\TaiKhoan\DatLaiMatKhau.cshtml" />
     <Content Include="Views\TaiKhoan\QuenMatKhau.cshtml" />
+    <Content Include="Views\NguoiMua\_ProductListPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

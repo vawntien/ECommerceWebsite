@@ -14,48 +14,72 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
+            //ViewBag.SanPhamHot = GetTopSanPhamHot(10);
+
             //ViewBag.DanhMuc = ql.DanhMucs.ToList();
-            //List<SanPham> dssp = ql.SanPhams.Include("AnhSanPhams").ToList();
-            //    int total = ql.SanPhams.Count();
-            //    if (total == 0)
-            //        return View(new List<SanPham>());
 
-            //    Random rnd = new Random();
-            //    int skip = rnd.Next(0, Math.Max(0, total - 24));
-            //    List<SanPham> dssp = ql.SanPhams
-            //.Include("AnhSanPhams")
-            //.OrderBy(sp => sp.MaSanPham)
-            //.Skip(skip)
-            //.Take(24)
-            //.ToList();    
+
+            //var allIds = ql.SanPhams
+            //    .Select(sp => sp.MaSanPham)
+            //    .ToList();
+
+            //if (!allIds.Any())
+            //    return View(new List<SanPham>());
+
+
+            //Random rnd = new Random();
+            //var randomIds = allIds
+            //    .OrderBy(x => rnd.Next())
+            //    .Take(24) 
+            //    .ToList();
+
+            //List<SanPham> dssp = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Where(sp => randomIds.Contains(sp.MaSanPham))
+            //    .ToList();
+
+            //dssp = dssp
+            //    .OrderBy(sp => randomIds.IndexOf(sp.MaSanPham))
+            //    .ToList();
+
+
+            //return View(dssp);
+
+
             ViewBag.SanPhamHot = GetTopSanPhamHot(10);
-
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
 
+            // 🔥 RANDOM 1 LẦN DUY NHẤT
+            if (Session["RandomProductIds"] == null)
+            {
+                var allIds = ql.SanPhams
+                    .Select(sp => sp.MaSanPham)
+                    .ToList();
 
-            var allIds = ql.SanPhams
-                .Select(sp => sp.MaSanPham)
-                .ToList();
+                if (!allIds.Any())
+                    return View(new List<SanPham>());
 
-            if (!allIds.Any())
-                return View(new List<SanPham>());
+                Random rnd = new Random();
+                var shuffledIds = allIds
+                    .OrderBy(x => rnd.Next())
+                    .ToList();
 
-    
-            Random rnd = new Random();
-            var randomIds = allIds
-                .OrderBy(x => rnd.Next())
-                .Take(24) 
-                .ToList();
+                Session["RandomProductIds"] = shuffledIds;
+            }
+
+            var randomIds = Session["RandomProductIds"] as List<int>;
+
+            var firstIds = randomIds.Take(24).ToList();
 
             List<SanPham> dssp = ql.SanPhams
                 .Include("AnhSanPhams")
-                .Where(sp => randomIds.Contains(sp.MaSanPham))
+                .Where(sp => firstIds.Contains(sp.MaSanPham))
                 .ToList();
 
+            // giữ đúng thứ tự random
             dssp = dssp
-                .OrderBy(sp => randomIds.IndexOf(sp.MaSanPham))
+                .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
                 .ToList();
-
 
             return View(dssp);
         }
@@ -258,6 +282,35 @@ namespace ECommerceWebsiteMVC.Controllers
 
             return sanPhamHot;
         }
+
+
+        [HttpGet]
+        public ActionResult LoadMoreProducts(int skip)
+        {
+            var randomIds = Session["RandomProductIds"] as List<int>;
+            if (randomIds == null)
+                return Content("");
+
+            var nextIds = randomIds
+                .Skip(skip)
+                .Take(24)
+                .ToList();
+
+            if (!nextIds.Any())
+                return Content("");
+
+            var products = ql.SanPhams
+                .Include("AnhSanPhams")
+                .Where(sp => nextIds.Contains(sp.MaSanPham))
+                .ToList();
+
+            products = products
+                .OrderBy(sp => nextIds.IndexOf(sp.MaSanPham))
+                .ToList();
+
+            return PartialView("_ProductListPartial", products);
+        }
+
 
 
     }
