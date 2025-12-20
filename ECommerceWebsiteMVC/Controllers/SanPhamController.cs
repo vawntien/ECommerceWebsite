@@ -45,6 +45,27 @@ namespace ECommerceWebsiteMVC.Controllers
         // File: Controllers/SanPhamController.cs
 
         [HttpGet]
+        public JsonResult GetPriceWithCampaign(int maBienThe, decimal giaGoc)
+        {
+            try
+            {
+                var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(ql, maBienThe, giaGoc);
+                return Json(new
+                {
+                    coGiamGia = priceResult.CoGiamGia,
+                    giaGoc = priceResult.GiaGoc,
+                    giaSauGiam = priceResult.GiaSauGiam,
+                    phanTramGiam = priceResult.PhanTramGiam,
+                    tenCampaign = priceResult.TenCampaign
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { coGiamGia = false, giaGoc = giaGoc, giaSauGiam = giaGoc }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
         public JsonResult KiemTraTonKho(int maBienThe, int soLuong)
         {
             try

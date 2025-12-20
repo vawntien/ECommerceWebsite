@@ -9,6 +9,8 @@ namespace ECommerceWebsiteMVC.Controllers
 {
     public class ThanhToanController : Controller
     {
+        ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
+
         // GET: ThanhToan
         public ActionResult Index()
         {

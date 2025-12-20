@@ -269,9 +269,35 @@
                                     <div class="product-title">@item.TenSanPham</div>
 
                                     <div class="mt-1">
-                                        <span class="product-price">
-                                            @*@String.Format("{0:N0}đ", item.Gia)*@
-                                        </span>
+                                        @{
+                                            var giaDauTien = item.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                                            ECommerceWebsiteMVC.Models.CampaignPriceResult priceResult = null;
+                                            using (var db = new ECommerceWebsiteMVC.Models.ECommerceWebsiteEntities())
+                                            {
+                                                priceResult = ECommerceWebsiteMVC.Models.CampaignHelper.TinhGiaSauGiam(db, item.MaSanPham, (decimal)giaDauTien);
+                                            }
+                                        }
+                                        @if (priceResult != null && priceResult.CoGiamGia)
+                                        {
+                                            <div class="d-flex align-items-center flex-wrap">
+                                                <span style="text-decoration: line-through; color: #929292; font-size: 12px; margin-right: 5px;">
+                                                    @priceResult.GiaGoc.ToString("N0")₫
+                                                </span>
+                                                <span class="product-price">
+                                                    @priceResult.GiaSauGiam.ToString("N0")₫
+                                                </span>
+                                                @if (priceResult.PhanTramGiam > 0)
+                                                {
+                                                    <span class="badge badge-danger ml-2" style="font-size: 10px;">
+                                                        -@priceResult.PhanTramGiam.ToString("F0")%
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="product-price">@giaDauTien.ToString("N0")₫</span>
+                                        }
                                     </div>
 
 

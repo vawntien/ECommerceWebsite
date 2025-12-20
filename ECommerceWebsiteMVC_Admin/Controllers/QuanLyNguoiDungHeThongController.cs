@@ -11,6 +11,7 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
     {
         DBQuanLyNguoiDungHeThong db = new DBQuanLyNguoiDungHeThong();
         DBQuanLyKhuyenMai dbKhuyenMai = new DBQuanLyKhuyenMai();
+        DBQuanLyCampaign dbCampaign = new DBQuanLyCampaign();
         // GET: QuanLyKhachHang
         public ActionResult Index()
         {
@@ -208,14 +209,18 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             return View(nm);
         }
         // QUẢN LÝ KHUYẾN MÃI
-        // Danh sách khuyến mãi
-        public ActionResult QuanLyKhuyenMai(int page = 1, string search = "", string status = "")
+        // Danh sách khuyến mãi (bao gồm cả Voucher và Campaign)
+        public ActionResult QuanLyKhuyenMai(int page = 1, string search = "", string status = "", string tab = "voucher")
         {
             Response.Charset = "utf-8";
             Response.ContentEncoding = System.Text.Encoding.UTF8;
             int pageSize = 10;
+            DateTime now = DateTime.Now; // Khai báo một lần ở đầu method
 
             List<GiamGia> lst = dbKhuyenMai.DanhSachKhuyenMai();
+
+            // Lọc chỉ lấy Voucher (không phải Campaign) - Campaign có prefix [CAMPAIGN]
+            lst = lst.Where(x => x.TenMaGG == null || !x.TenMaGG.StartsWith("[CAMPAIGN]")).ToList();
 
             // Lọc theo tìm kiếm
             if (!string.IsNullOrEmpty(search))
@@ -226,8 +231,7 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
                 ).ToList();
             }
 
-            // Lọc theo trạng thái
-            DateTime now = DateTime.Now;
+            // Lọc theo trạng thái (sử dụng biến now đã khai báo ở đầu method)
             if (status == "active")
             {
                 // Đang hiệu lực: NgayBD <= now và NgayKT >= now (hoặc null)
@@ -271,6 +275,63 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
 
             ViewBag.Search = search;
             ViewBag.Status = status;
+            ViewBag.Tab = tab; // Tab hiện tại: "voucher" hoặc "campaign"
+
+            // Nếu tab là campaign, lấy danh sách campaign
+            if (tab == "campaign")
+            {
+                List<CampaignInfo> lstCampaign = dbCampaign.DanhSachCampaign();
+
+                // Lọc theo tìm kiếm
+                if (!string.IsNullOrEmpty(search))
+                {
+                    lstCampaign = lstCampaign.Where(x =>
+                        x.TenCampaign.ToLower().Contains(search.ToLower()) ||
+                        (x.MoTa != null && x.MoTa.ToLower().Contains(search.ToLower()))
+                    ).ToList();
+                }
+
+                // Lọc theo trạng thái (sử dụng biến now đã khai báo ở đầu method)
+                if (status == "active")
+                {
+                    lstCampaign = lstCampaign.Where(x =>
+                        x.TrangThai == true &&
+                        (x.NgayBD == null || x.NgayBD <= now) &&
+                        (x.NgayKT == null || x.NgayKT >= now)
+                    ).ToList();
+                }
+                else if (status == "expired")
+                {
+                    lstCampaign = lstCampaign.Where(x => x.NgayKT != null && x.NgayKT < now).ToList();
+                }
+                else if (status == "upcoming")
+                {
+                    lstCampaign = lstCampaign.Where(x => x.NgayBD != null && x.NgayBD > now).ToList();
+                }
+                else if (status == "inactive")
+                {
+                    lstCampaign = lstCampaign.Where(x => x.TrangThai == false).ToList();
+                }
+
+                // Tổng số item sau khi lọc
+                int totalItemsCampaign = lstCampaign.Count;
+
+                // Phân trang
+                lstCampaign = lstCampaign.Skip((page - 1) * pageSize)
+                                         .Take(pageSize)
+                                         .ToList();
+
+                ViewBag.Page = page;
+                ViewBag.TotalItems = totalItemsCampaign;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)totalItemsCampaign / pageSize);
+                ViewBag.From = totalItemsCampaign == 0 ? 0 : ((page - 1) * pageSize + 1);
+                ViewBag.To = Math.Min(page * pageSize, totalItemsCampaign);
+                ViewBag.Campaigns = lstCampaign;
+            }
+            else
+            {
+                ViewBag.Vouchers = lst;
+            }
 
             return View(lst);
         }
@@ -502,6 +563,282 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.HieuLuc = dbKhuyenMai.KiemTraHieuLuc(id);
 
             return View(gg);
+        }
+
+        // ======================
+        // QUẢN LÝ CAMPAIGN (Chương trình khuyến mãi chủ động)
+        // ======================
+
+        // Danh sách Campaign
+        public ActionResult QuanLyCampaign(int page = 1, string search = "", string status = "")
+        {
+            Response.Charset = "utf-8";
+            Response.ContentEncoding = System.Text.Encoding.UTF8;
+            int pageSize = 10;
+            DateTime now = DateTime.Now; // Khai báo ở đầu method
+
+            List<CampaignInfo> lst = dbCampaign.DanhSachCampaign();
+
+            // Lọc theo tìm kiếm
+            if (!string.IsNullOrEmpty(search))
+            {
+                lst = lst.Where(x =>
+                    x.TenCampaign.ToLower().Contains(search.ToLower()) ||
+                    (x.MoTa != null && x.MoTa.ToLower().Contains(search.ToLower()))
+                ).ToList();
+            }
+
+            // Lọc theo trạng thái (sử dụng biến now đã khai báo ở đầu method)
+            if (status == "active")
+            {
+                lst = lst.Where(x =>
+                    x.TrangThai == true &&
+                    (x.NgayBD == null || x.NgayBD <= now) &&
+                    (x.NgayKT == null || x.NgayKT >= now)
+                ).ToList();
+            }
+            else if (status == "expired")
+            {
+                lst = lst.Where(x => x.NgayKT != null && x.NgayKT < now).ToList();
+            }
+            else if (status == "upcoming")
+            {
+                lst = lst.Where(x => x.NgayBD != null && x.NgayBD > now).ToList();
+            }
+            else if (status == "inactive")
+            {
+                lst = lst.Where(x => x.TrangThai == false).ToList();
+            }
+
+            // Tổng số item sau khi lọc
+            int totalItems = lst.Count;
+
+            // Phân trang
+            lst = lst.Skip((page - 1) * pageSize)
+                     .Take(pageSize)
+                     .ToList();
+
+            // Gửi dữ liệu sang View
+            ViewBag.Page = page;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.From = totalItems == 0 ? 0 : ((page - 1) * pageSize + 1);
+            ViewBag.To = Math.Min(page * pageSize, totalItems);
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            return View(lst);
+        }
+
+        // GET: Thêm Campaign
+        [HttpGet]
+        public ActionResult ThemCampaign()
+        {
+            ViewBag.DanhMucs = db.DanhSachDanhMuc();
+            ViewBag.SanPhams = db.DanhSachSanPham();
+            return View();
+        }
+
+        // POST: Thêm Campaign
+        [HttpPost]
+        public ActionResult ThemCampaign(CampaignInfo campaign, string[] selectedSanPhams, string[] selectedDanhMucs, string NgayBD, string NgayKT)
+        {
+            ViewBag.DanhMucs = db.DanhSachDanhMuc();
+            ViewBag.SanPhams = db.DanhSachSanPham();
+
+            // Xử lý datetime
+            if (!string.IsNullOrEmpty(NgayBD))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayBD, out parsedDate))
+                {
+                    campaign.NgayBD = parsedDate;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(NgayKT))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayKT, out parsedDate))
+                {
+                    campaign.NgayKT = parsedDate;
+                }
+            }
+
+            // Validate
+            if (string.IsNullOrEmpty(campaign.TenCampaign))
+            {
+                ViewBag.Error = "Tên campaign không được để trống!";
+                return View(campaign);
+            }
+
+            if (campaign.NgayBD.HasValue && campaign.NgayKT.HasValue && campaign.NgayBD > campaign.NgayKT)
+            {
+                ViewBag.Error = "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!";
+                return View(campaign);
+            }
+
+            if ((selectedSanPhams == null || selectedSanPhams.Length == 0) && 
+                (selectedDanhMucs == null || selectedDanhMucs.Length == 0))
+            {
+                ViewBag.Error = "Vui lòng chọn ít nhất một sản phẩm hoặc một danh mục!";
+                return View(campaign);
+            }
+
+            // Lấy mã nhân viên từ session
+            var nhanVien = Session["NhanVien"] as NhanVien;
+            if (nhanVien != null)
+            {
+                campaign.NguoiTao = nhanVien.MaNhanVien;
+            }
+
+            campaign.LoaiCampaign = "Chủ động";
+            campaign.TrangThai = true;
+
+            // Chuyển đổi danh sách
+            List<int> danhSachSanPham = selectedSanPhams != null 
+                ? selectedSanPhams.Select(int.Parse).ToList() 
+                : new List<int>();
+            List<int> danhSachDanhMuc = selectedDanhMucs != null 
+                ? selectedDanhMucs.Select(int.Parse).ToList() 
+                : new List<int>();
+
+            if (dbCampaign.ThemCampaign(campaign, danhSachSanPham, danhSachDanhMuc))
+            {
+                TempData["Success"] = "Thêm campaign thành công!";
+                return RedirectToAction("QuanLyCampaign");
+            }
+            else
+            {
+                ViewBag.Error = "Có lỗi xảy ra khi thêm campaign!";
+                return View(campaign);
+            }
+        }
+
+        // GET: Sửa Campaign
+        [HttpGet]
+        public ActionResult SuaCampaign(int id)
+        {
+            var campaign = dbCampaign.LayCampaignTheoMa(id);
+            if (campaign == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.DanhMucs = db.DanhSachDanhMuc();
+            ViewBag.SanPhams = db.DanhSachSanPham();
+            ViewBag.SelectedSanPhams = dbCampaign.LayDanhSachSanPham(id);
+            ViewBag.SelectedDanhMucs = dbCampaign.LayDanhSachDanhMuc(id);
+
+            return View(campaign);
+        }
+
+        // POST: Sửa Campaign
+        [HttpPost]
+        public ActionResult SuaCampaign(CampaignInfo campaign, string[] selectedSanPhams, string[] selectedDanhMucs, string NgayBD, string NgayKT)
+        {
+            ViewBag.DanhMucs = db.DanhSachDanhMuc();
+            ViewBag.SanPhams = db.DanhSachSanPham();
+            ViewBag.SelectedSanPhams = selectedSanPhams != null ? selectedSanPhams.Select(int.Parse).ToList() : new List<int>();
+            ViewBag.SelectedDanhMucs = selectedDanhMucs != null ? selectedDanhMucs.Select(int.Parse).ToList() : new List<int>();
+
+            // Xử lý datetime
+            if (!string.IsNullOrEmpty(NgayBD))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayBD, out parsedDate))
+                {
+                    campaign.NgayBD = parsedDate;
+                }
+            }
+            else
+            {
+                campaign.NgayBD = null;
+            }
+
+            if (!string.IsNullOrEmpty(NgayKT))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(NgayKT, out parsedDate))
+                {
+                    campaign.NgayKT = parsedDate;
+                }
+            }
+            else
+            {
+                campaign.NgayKT = null;
+            }
+
+            // Validate
+            if (string.IsNullOrEmpty(campaign.TenCampaign))
+            {
+                ViewBag.Error = "Tên campaign không được để trống!";
+                return View(campaign);
+            }
+
+            if (campaign.NgayBD.HasValue && campaign.NgayKT.HasValue && campaign.NgayBD > campaign.NgayKT)
+            {
+                ViewBag.Error = "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!";
+                return View(campaign);
+            }
+
+            if ((selectedSanPhams == null || selectedSanPhams.Length == 0) && 
+                (selectedDanhMucs == null || selectedDanhMucs.Length == 0))
+            {
+                ViewBag.Error = "Vui lòng chọn ít nhất một sản phẩm hoặc một danh mục!";
+                return View(campaign);
+            }
+
+            // Chuyển đổi danh sách
+            List<int> danhSachSanPham = selectedSanPhams != null 
+                ? selectedSanPhams.Select(int.Parse).ToList() 
+                : new List<int>();
+            List<int> danhSachDanhMuc = selectedDanhMucs != null 
+                ? selectedDanhMucs.Select(int.Parse).ToList() 
+                : new List<int>();
+
+            if (dbCampaign.SuaCampaign(campaign, danhSachSanPham, danhSachDanhMuc))
+            {
+                TempData["Success"] = "Sửa campaign thành công!";
+                return RedirectToAction("QuanLyCampaign");
+            }
+            else
+            {
+                ViewBag.Error = "Có lỗi xảy ra khi sửa campaign!";
+                return View(campaign);
+            }
+        }
+
+        // Xóa Campaign
+        [HttpPost]
+        public ActionResult XoaCampaign(int id)
+        {
+            if (dbCampaign.XoaCampaign(id))
+            {
+                TempData["Success"] = "Xóa campaign thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi xóa campaign!";
+            }
+            return RedirectToAction("QuanLyCampaign");
+        }
+
+        // Chi tiết Campaign
+        public ActionResult ChiTietCampaign(int id)
+        {
+            var campaign = dbCampaign.LayCampaignTheoMa(id);
+            if (campaign == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.DanhSachSanPham = dbCampaign.LayDanhSachSanPham(id);
+            ViewBag.DanhSachDanhMuc = dbCampaign.LayDanhSachDanhMuc(id);
+            ViewBag.SanPhams = db.DanhSachSanPham();
+            ViewBag.DanhMucs = db.DanhSachDanhMuc();
+
+            return View(campaign);
         }
 
     }
