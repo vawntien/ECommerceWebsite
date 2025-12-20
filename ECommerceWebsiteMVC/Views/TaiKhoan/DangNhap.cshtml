@@ -1,6 +1,7 @@
 ﻿@{
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,142 +12,145 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .login-page body {
+
+        .login-page {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
             background: #fff;
         }
 
-        .login-page .top-header {
-            background: #fff;
-            padding: 12px 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,.05);
-        }
-
-        .login-page .hero {
-            background: #ee4d2d;
-            padding: 80px 0;
-        }
-
-        .login-page .hero-left {
-            text-align: center;
-            padding: 40px 20px;
-            color: #fff;
-        }
-
-            .login-page .hero-left img {
-                width: 160px;
+            /* HEADER */
+            .login-page .top-header {
+                background: #fff;
+                padding: 12px 0;
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
             }
 
-        .login-page .hero-slogan {
-            text-align: center;
-            color: #fff;
-            font-weight: 150;
-        }
+            /* HERO */
+            .login-page .hero {
+                background: #ee4d2d;
+                padding: 80px 0;
+            }
+
+            .login-page .hero-left {
+                text-align: center;
+                padding: 40px 20px;
+                color: #fff;
+            }
+
+                .login-page .hero-left img {
+                    width: 160px;
+                }
 
             .login-page .hero-slogan .line1,
             .login-page .hero-slogan .line2 {
                 white-space: nowrap;
                 font-size: clamp(26px, 4vw, 30px);
                 line-height: 1.3;
+                color: #fff;
             }
 
-        .login-page .login-box {
-            background: #fff;
-            border-radius: 4px;
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-            margin: auto;
-            box-shadow: 0 12px 30px rgba(0,0,0,.16);
-        }
-
-        .login-page .btn-next {
-            background: #ee4d2d;
-            color: #fff;
-            border: none;
-            height: 50px;
-            font-size: 16px;
-        }
-
-            .login-page .btn-next:hover {
-                background: #c5311d;
+            /* LOGIN BOX */
+            .login-page .login-box {
+                background: #fff;
+                border-radius: 4px;
+                padding: 40px;
+                width: 100%;
+                max-width: 420px;
+                box-shadow: 0 12px 30px rgba(0,0,0,.16);
             }
 
-        .login-page .login-link a {
-            color: #ee4d2d;
-            text-decoration: none;
-        }
-
-        .login-page footer {
-            background: #fafafa;
-            padding: 40px 0;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .login-page .footer-top a {
-            display: block;
-            text-align: left;
-            color: #555;
-            margin-bottom: 6px;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-            .login-page .footer-top a:hover {
-                color: #ee4d2d;
+            .login-page .btn-next {
+                background: #ee4d2d;
+                color: #fff;
+                border: none;
+                height: 50px;
+                font-size: 16px;
+                width: 100%;
             }
 
-        .footer-shopee {
-            background: #fff;
-            border-top: 1px solid #ddd;
-            padding: 20px 0;
-            font-size: 13px;
-            color: #777;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            white-space: nowrap;
-        }
+                .login-page .btn-next:hover {
+                    background: #c5311d;
+                }
 
-            .footer-shopee .footer-locations span {
+                .login-page .btn-next:disabled {
+                    opacity: 0.8;
+                }
+
+            .login-page .toggle-password {
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+            }
+
+            /* FOOTER */
+            .login-page footer {
+                background: #fafafa;
+                padding: 50px 0;
+                font-size: 13px;
+                color: #777;
+            }
+
+                .login-page footer a {
+                    display: block;
+                    color: #555;
+                    text-decoration: none;
+                    margin-bottom: 6px;
+                    font-size: 13px;
+                }
+
+                    .login-page footer a:hover {
+                        color: #ee4d2d;
+                    }
+
+            .login-page .footer-bottom {
+                background: #fff;
+                border-top: 1px solid #ddd;
+                padding: 20px 0;
+                font-size: 13px;
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+
+            .login-page .footer-locations span {
                 padding: 0 8px;
                 border-right: 1px solid #cfcfcf;
             }
 
-                .footer-shopee .footer-locations span:last-child {
+                .login-page .footer-locations span:last-child {
                     border-right: none;
                 }
     </style>
-
 </head>
 
 <body class="login-page">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <header class="top-header">
         <div class="d-flex align-items-center">
-            <a href="@Url.Action("Index", "NguoiMua")" style="text-decoration:none; display:flex; align-items:center; ">
+            <a href="@Url.Action("Index", "NguoiMua")"
+               style="text-decoration:none; display:flex; align-items:center;">
                 <img src="~/assets/brand1.png" style="margin-left:15px;" />
-                <span style="font-size: 22px; color: #ee4d2d; font-weight: 700; margin-left: 5px; margin-right: 20px;">Shopee</span>
+                <span style="font-size:22px;color:#ee4d2d;font-weight:700;margin-left:5px;margin-right:20px;">
+                    Shopee
+                </span>
             </a>
-
-            <span style="font-size:20px;color:black;font-weight:400;">
-                Đăng nhập
-            </span>
-
+            <span style="font-size:20px;">Đăng nhập</span>
         </div>
     </header>
 
+    <!-- HERO -->
     <section class="hero">
         <div class="container">
             <div class="row align-items-center">
 
-                <div class="col-lg-6 col-md-12 hero-left">
+                <!-- LEFT -->
+                <div class="col-lg-6 d-none d-lg-block hero-left">
                     <img src="~/assets/shope.png" />
                     <div class="hero-slogan">
                         <div class="line1">Nền tảng thương mại điện tử</div>
@@ -154,8 +158,10 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-12 d-flex justify-content-center">
+                <!-- RIGHT -->
+                <div class="col-lg-6 d-flex justify-content-center">
                     <div class="login-box">
+
                         <h3 class="mb-4">Đăng nhập</h3>
 
                         @if (ViewBag.Error != null)
@@ -163,30 +169,35 @@
                             <div class="alert alert-danger">@ViewBag.Error</div>
                         }
 
-                        @using (Html.BeginForm("DangNhap", "TaiKhoan", FormMethod.Post))
+                        @using (Html.BeginForm("DangNhap", "TaiKhoan", FormMethod.Post, new { id = "loginForm" }))
                         {
                             <div class="mb-3">
-                                <input type="text" name="TaiKhoan" class="form-control" placeholder="Tên tài khoản" required />
+                                <input type="text" name="TaiKhoan" class="form-control"
+                                       placeholder="Tên tài khoản" required />
                             </div>
 
                             <div class="mb-4 position-relative">
-                                <input type="password" name="MatKhau" id="passwordInput" class="form-control" placeholder="Mật khẩu" required />
-
-                                <span id="togglePassword"
-                                      style="position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer;">
-                                    ︶
-                                </span>
+                                <input type="password" name="MatKhau" id="passwordInput"
+                                       class="form-control" placeholder="Mật khẩu" required />
+                                <span id="togglePassword" class="toggle-password">︶</span>
                             </div>
 
                             <div class="d-flex justify-content-end mb-4">
-                                <a href="@Url.Action("QuenMatKhau", "TaiKhoan")" style="text-decoration:none; color:#0055AA; font-size:12px;">Quên mật khẩu?</a>
+                                <a href="@Url.Action("QuenMatKhau", "TaiKhoan")"
+                                   style="text-decoration:none;color:#0055AA;font-size:12px;">
+                                    Quên mật khẩu?
+                                </a>
                             </div>
 
-                            <button type="submit" class="btn btn-next w-100">ĐĂNG NHẬP</button>
+                            <button type="submit" class="btn btn-next" id="btnLogin">
+                                <span id="btnText">ĐĂNG NHẬP</span>
+                                <span class="spinner-border spinner-border-sm ms-2 d-none"
+                                      id="loginSpinner"></span>
+                            </button>
 
                             <div class="text-center mt-3">
                                 Bạn chưa có tài khoản?
-                                <a href='@Url.Action("DangKy","TaiKhoan")'>Đăng ký</a>
+                                <a href="@Url.Action("DangKy","TaiKhoan")">Đăng ký</a>
                             </div>
                         }
                     </div>
@@ -196,88 +207,73 @@
         </div>
     </section>
 
-    <footer class="footer-top" style="background:#fafafa; padding:60px 0;">
+    <!-- FOOTER -->
+    <footer>
         <div class="container">
             <div class="row">
-                <!-- 1. DỊCH VỤ KHÁCH HÀNG -->
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
+
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3">DỊCH VỤ KHÁCH HÀNG</h6>
-                    <a href="#">Trung Tâm Trợ Giúp Shopee</a>
-                    <a href="#">Shopee Blog</a>
-                    <a href="#">Shopee Mall</a>
-                    <a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a>
-                    <a href="#">Hướng Dẫn Bán Hàng</a>
-                    <a href="#">Ví ShopeePay</a>
-                    <a href="#">Shopee Xu</a>
-                    <a href="#">Đơn Hàng</a>
-                    <a href="#">Trả Hàng/Hoàn Tiền</a>
-                    <a href="#">Liên Hệ Shopee</a>
-                    <a href="#">Chính Sách Bảo Hành</a>
+                    <a href="#">Trung tâm trợ giúp</a>
+                    <a href="#">Hướng dẫn mua hàng</a>
+                    <a href="#">Trả hàng & hoàn tiền</a>
                 </div>
 
-                <!-- 2. SHOPEE VIỆT NAM -->
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3">SHOPEE VIỆT NAM</h6>
-                    <a href="#">Về Shopee</a>
-                    <a href="#">Tuyển Dụng</a>
-                    <a href="#">Điều Khoản Shopee</a>
-                    <a href="#">Chính Sách Bảo Mật</a>
-                    <a href="#">Shopee Mall</a>
-                    <a href="#">Kênh Người Bán</a>
-                    <a href="#">Flash Sale</a>
-                    <a href="#">Tiếp Thị Liên Kết</a>
-                    <a href="#">Liên Hệ Truyền Thông</a>
+                    <a href="#">Giới thiệu</a>
+                    <a href="#">Tuyển dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
                 </div>
 
-                <!-- 3. THANH TOÁN + VẬN CHUYỂN -->
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3">THANH TOÁN</h6>
                     <a href="#">COD</a>
-                    <h6 class="fw-bold mt-4 mb-3 text-start">ĐƠN VỊ VẬN CHUYỂN</h6>
-                    <img src="~/assets/33.png" />
                 </div>
 
-                <!-- 4. THEO DÕI SHOPEE -->
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3">THEO DÕI SHOPEE</h6>
-                    <a href="#"><img src="~/assets/facec.png" /> Facebook  </a>
-
+                    <a href="#">Facebook</a>
                 </div>
+
             </div>
         </div>
     </footer>
 
-
-    <!-- FOOTER GIỮA --> 
-    <div class="footer-shopee"> 
-        <span>© 2025 Shopee. Tất cả các quyền được bảo lưu.</span> 
-        <span> Quốc gia & Khu vực: 
-            <span class="footer-locations">            
-                <span>Argentina</span> 
-                <span>Singapore</span> 
-                <span>Indonesia</span> 
-                <span>Thái Lan</span> 
-                <span>Malaysia</span> 
-                <span>Việt Nam</span> 
-                <span>Philippines</span> 
-                <span>Brazil</span> 
-                <span>México</span> 
-                <span>Đài Loan</span> 
-            </span> 
-        </span> 
+    <div class="footer-bottom">
+        <span>© 2025 Shopee. Tất cả các quyền được bảo lưu.</span>
+        <span>
+            Quốc gia & Khu vực:
+            <span class="footer-locations">
+                <span>Singapore</span>
+                <span>Indonesia</span>
+                <span>Thái Lan</span>
+                <span>Việt Nam</span>
+            </span>
+        </span>
     </div>
 
     <script>
+        // Toggle password
         const passwordInput = document.getElementById("passwordInput");
         const togglePassword = document.getElementById("togglePassword");
 
         togglePassword.addEventListener("click", function () {
-            const type = passwordInput.getAttribute("type") === "password"
-                ? "text"
-                : "password";
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+            togglePassword.textContent = isPassword ? "👁" : "︶";
+        });
 
-            passwordInput.setAttribute("type", type);
-            togglePassword.textContent = type === "password" ? "︶" : "👁";
+        // Loading submit
+        const form = document.getElementById("loginForm");
+        const btn = document.getElementById("btnLogin");
+        const spinner = document.getElementById("loginSpinner");
+        const btnText = document.getElementById("btnText");
+
+        form.addEventListener("submit", function () {
+            btn.disabled = true;
+            spinner.classList.remove("d-none");
+            btnText.textContent = "Đang đăng nhập...";
         });
     </script>
 

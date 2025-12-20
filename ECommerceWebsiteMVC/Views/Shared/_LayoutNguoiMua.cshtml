@@ -65,19 +65,44 @@
                     }
                     else
                     {
-                        <div class="dropdown">
-                            <a class="login-link font-weight-bold dropdown-toggle"
-                               data-bs-toggle="dropdown"
-                               style="cursor:pointer;">
-                                @Session["HoVaTen"]
-                            </a>
+                <div class="dropdown">
+                    <a class="login-link font-weight-bold dropdown-toggle"
+                       data-bs-toggle="dropdown"
+                       style="cursor:pointer;">
+                        @Session["HoVaTen"]
+                    </a>
 
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="@Url.Action("ThongTinTaiKhoan","TaiKhoan")">Tài khoản của tôi</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("DonHang","NguoiMua")">Đơn hàng của tôi</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("DangXuat","TaiKhoan")">Đăng xuất</a></li>
-                            </ul>
-                        </div>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="@Url.Action("ThongTinTaiKhoan","TaiKhoan")">
+                                Tài khoản của tôi
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="@Url.Action("DonHang","NguoiMua")">
+                                Đơn hàng của tôi
+                            </a>
+                        </li>
+
+                        <li>
+                            <form id="logoutForm"
+                                  action="@Url.Action("DangXuat","TaiKhoan")"
+                                  method="post"
+                                  style="margin:0;">
+                                <button type="submit"
+                                        id="btnLogout"
+                                        class="dropdown-item text-danger"
+                                        style="width:100%; text-align:left; background:none; border:none;">
+                                    <span id="logoutText">Đăng xuất</span>
+                                    <span id="logoutSpinner"
+                                          class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
                     }
 
                 </div>
@@ -153,7 +178,7 @@
                     }
                 },
                 error: function () {
-                    // Có thể do chưa đăng nhập, không cần hiện lỗi
+
                     $('#cart-count-badge').hide();
                 }
             });
@@ -163,3 +188,4 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+

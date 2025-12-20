@@ -1,6 +1,7 @@
 ﻿@{
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,216 +12,236 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .login-page body {
+
+        .reset-page {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
             background: #fff;
         }
 
-        .login-page .top-header {
-            background: #fff;
-            padding: 12px 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,.05);
-        }
 
-        .login-page .hero {
-            background: #ee4d2d;
-            padding: 80px 0;
-        }
-
-        .login-page .hero-left {
-            text-align: center;
-            padding: 40px 20px;
-            color: #fff;
-        }
-
-            .login-page .hero-left img {
-                width: 160px;
+            .reset-page .top-header {
+                background: #fff;
+                padding: 12px 0;
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
             }
 
-        .login-page .hero-slogan {
-            text-align: center;
-            color: #fff;
-            font-weight: 150;
-        }
+            .reset-page .hero {
+                background: #ee4d2d;
+                padding: 80px 0;
+            }
 
-            .login-page .hero-slogan .line1,
-            .login-page .hero-slogan .line2 {
+            .reset-page .hero-left {
+                text-align: center;
+                padding: 40px 20px;
+                color: #fff;
+            }
+
+                .reset-page .hero-left img {
+                    width: 160px;
+                }
+
+            .reset-page .hero-slogan .line1,
+            .reset-page .hero-slogan .line2 {
                 white-space: nowrap;
                 font-size: clamp(26px, 4vw, 30px);
                 line-height: 1.3;
+                color: #fff;
+                font-weight: 300;
             }
 
-        .login-page .login-box {
-            background: #fff;
-            border-radius: 4px;
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-            margin: auto;
-            box-shadow: 0 12px 30px rgba(0,0,0,.16);
-        }
-
-        .login-page .btn-next {
-            background: #ee4d2d;
-            color: #fff;
-            border: none;
-            height: 50px;
-            font-size: 16px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-            .login-page .btn-next:hover {
-                background: #c5311d;
+            .reset-page .login-box {
+                background: #fff;
+                border-radius: 4px;
+                padding: 40px;
+                width: 100%;
+                max-width: 420px;
+                box-shadow: 0 12px 30px rgba(0,0,0,.16);
             }
 
-        .login-page footer {
-            background: #fafafa;
-            padding: 40px 0;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .login-page .footer-top a {
-            display: block;
-            text-align: left;
-            color: #555;
-            margin-bottom: 6px;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-            .login-page .footer-top a:hover {
-                color: #ee4d2d;
+            .reset-page .btn-next {
+                background: #ee4d2d;
+                color: #fff;
+                border: none;
+                height: 50px;
+                font-size: 16px;
+                font-weight: 500;
+                text-transform: uppercase;
             }
 
-        .footer-shopee {
-            background: #fff;
-            border-top: 1px solid #ddd;
-            padding: 20px 0;
-            font-size: 13px;
-            color: #777;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            white-space: nowrap;
-        }
+                .reset-page .btn-next:hover {
+                    background: #c5311d;
+                }
 
-            .footer-shopee .footer-locations span {
+                .reset-page .btn-next:disabled {
+                    opacity: 0.8;
+                }
+
+            .reset-page .toggle-password {
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .reset-page footer {
+                background: #fafafa;
+                padding: 60px 0;
+                font-size: 13px;
+                color: #777;
+                border-top: 1px solid #e0e0e0;
+            }
+
+                .reset-page footer a {
+                    display: block;
+                    color: #555;
+                    text-decoration: none;
+                    margin-bottom: 6px;
+                    font-size: 13px;
+                }
+
+                    .reset-page footer a:hover {
+                        color: #ee4d2d;
+                    }
+
+            .reset-page .footer-bottom {
+                background: #fff;
+                border-top: 1px solid #ddd;
+                padding: 40px 0;
+                font-size: 13px;
+                color: rgba(0,0,0,.54);
+            }
+
+            .reset-page .footer-locations span {
                 padding: 0 8px;
                 border-right: 1px solid #cfcfcf;
             }
 
-                .footer-shopee .footer-locations span:last-child {
+                .reset-page .footer-locations span:last-child {
                     border-right: none;
                 }
-
-        .toggle-password {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            user-select: none;
-        }
     </style>
 </head>
 
-<body class="login-page">
+<body class="reset-page">
 
     <header class="top-header">
         <div class="d-flex align-items-center">
-            <a href="@Url.Action("Index", "NguoiMua")" style="text-decoration:none; display:flex; align-items:center;">
+            <a href="@Url.Action("Index", "NguoiMua")"
+               style="text-decoration:none; display:flex; align-items:center;">
                 <img src="~/assets/brand1.png" style="margin-left:15px;" />
-                <span style="font-size: 22px; color: #ee4d2d; font-weight: 700; margin-left: 5px; margin-right: 20px;">Shopee</span>
+                <span style="font-size:22px;color:#ee4d2d;font-weight:700;margin-left:5px;margin-right:20px;">
+                    Shopee
+                </span>
             </a>
-            <span style="font-size:20px;color:black;font-weight:400; border-left: 1px solid #ccc; padding-left: 15px;">Thiết lập mật khẩu</span>
+            <span style="font-size:20px;border-left:1px solid #ccc;padding-left:15px;">
+                Thiết lập mật khẩu
+            </span>
         </div>
     </header>
 
+    <!-- HERO -->
     <section class="hero">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6 col-md-12 hero-left">
+
+                <!-- LEFT -->
+                <div class="col-lg-6 d-none d-lg-block hero-left">
                     <img src="~/assets/shope.png" />
                     <div class="hero-slogan">
-                        <div class="line1">Bảo mật tài khoản là ưu tiên</div>
-                        <div class="line2">hàng đầu của chúng tôi</div>
+                        <div class="line1">Bảo mật tài khoản</div>
+                        <div class="line2">là ưu tiên hàng đầu</div>
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-12 d-flex justify-content-center">
+                <!-- RIGHT -->
+                <div class="col-lg-6 d-flex justify-content-center">
                     <div class="login-box">
-                        <h3 class="mb-4" style="font-weight: 400;">Tạo mật khẩu mới</h3>
+                        <h3 class="mb-4 fw-normal">Tạo mật khẩu mới</h3>
+
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success text-center" id="successBox">
+                                Đặt lại mật khẩu thành công!<br />
+                                Đang chuyển sang trang đăng nhập...
+                            </div>
+                        }
 
                         @if (ViewBag.Error != null)
                         {
-                            <div class="alert alert-danger" style="font-size: 14px; border: none; background-color: #fff9fa; color: #ff424f;">
+                            <div class="alert alert-danger"
+                                 style="font-size:14px;background:#fff9fa;border:none;color:#ff424f;">
                                 ⚠️ @ViewBag.Error
                             </div>
                         }
 
-                        @using (Html.BeginForm("DatLaiMatKhau", "TaiKhoan", FormMethod.Post))
+                        @using (Html.BeginForm("DatLaiMatKhau", "TaiKhoan", FormMethod.Post, new { id = "resetForm" }))
                         {
                             <div class="mb-3 position-relative">
-                                <input type="password" name="MatKhauMoi" id="pass1" class="form-control shadow-none" placeholder="Mật khẩu mới" required style="height: 45px;" />
+                                <input type="password" name="MatKhauMoi" id="pass1"
+                                       class="form-control shadow-none"
+                                       placeholder="Mật khẩu mới" required />
                                 <span class="toggle-password" onclick="toggle('pass1', this)">︶</span>
                             </div>
 
                             <div class="mb-4 position-relative">
-                                <input type="password" name="XacNhanMatKhau" id="pass2" class="form-control shadow-none" placeholder="Xác nhận mật khẩu mới" required style="height: 45px;" />
+                                <input type="password" name="XacNhanMatKhau" id="pass2"
+                                       class="form-control shadow-none"
+                                       placeholder="Xác nhận mật khẩu mới" required />
                                 <span class="toggle-password" onclick="toggle('pass2', this)">︶</span>
                             </div>
 
-                            <button type="submit" class="btn btn-next w-100 shadow-none">Xác nhận</button>
+                            <button type="submit" class="btn btn-next w-100" id="btnSubmit">
+                                <span id="btnText">XÁC NHẬN</span>
+                                <span class="spinner-border spinner-border-sm ms-2 d-none"
+                                      id="loadingSpinner"></span>
+                            </button>
                         }
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
 
-    <footer class="footer-top" style="background:#fafafa; padding:60px 0; border-top: 1px solid #e0e0e0;">
+    <!-- FOOTER -->
+    <footer>
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
-                    <h6 class="fw-bold mb-3" style="font-size: 12px; color: rgba(0,0,0,.87);">DỊCH VỤ KHÁCH HÀNG</h6>
-                    <a href="#">Trung Tâm Trợ Giúp Shopee</a>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">DỊCH VỤ KHÁCH HÀNG</h6>
+                    <a href="#">Trung tâm trợ giúp</a>
                     <a href="#">Shopee Blog</a>
-                    <a href="#">Shopee Mall</a>
-                    <a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a>
-                    <a href="#">Hướng Dẫn Bán Hàng</a>
+                    <a href="#">Hướng dẫn mua hàng</a>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
-                    <h6 class="fw-bold mb-3" style="font-size: 12px; color: rgba(0,0,0,.87);">VỀ SHOPEE</h6>
-                    <a href="#">Giới Thiệu Về Shopee Việt Nam</a>
-                    <a href="#">Tuyển Dụng</a>
-                    <a href="#">Điều Khoản Shopee</a>
-                    <a href="#">Chính Sách Bảo Mật</a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">VỀ SHOPEE</h6>
+                    <a href="#">Giới thiệu</a>
+                    <a href="#">Tuyển dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
-                    <h6 class="fw-bold mb-3" style="font-size: 12px; color: rgba(0,0,0,.87);">THANH TOÁN</h6>
-                    <a href="#">Ví ShopeePay</a>
-                    <a href="#">Trả Góp</a>
-                    <h6 class="fw-bold mt-4 mb-3" style="font-size: 12px; color: rgba(0,0,0,.87);">ĐƠN VỊ VẬN CHUYỂN</h6>
-                    <img src="~/assets/33.png" style="max-width: 150px;" />
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">THANH TOÁN</h6>
+                    <a href="#">ShopeePay</a>
+                    <a href="#">Trả góp</a>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4 text-start">
-                    <h6 class="fw-bold mb-3" style="font-size: 12px; color: rgba(0,0,0,.87);">THEO DÕI CHÚNG TÔI</h6>
-                    <a href="#"><img src="~/assets/facec.png" style="width: 16px; margin-right: 8px;" /> Facebook</a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">THEO DÕI CHÚNG TÔI</h6>
+                    <a href="#"><img src="~/assets/facec.png" style="width:16px;margin-right:6px;" /> Facebook</a>
                 </div>
+
             </div>
         </div>
     </footer>
 
-    <div class="footer-shopee" style="padding: 40px 0; color: rgba(0,0,0,.54);">
+    <div class="footer-bottom">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
             <span>© 2025 Shopee. Tất cả các quyền được bảo lưu.</span>
             <div class="footer-locations mt-3 mt-md-0">
@@ -234,17 +255,37 @@
         </div>
     </div>
 
+    <!-- JS -->
     <script>
         function toggle(id, el) {
             const input = document.getElementById(id);
-            if (input.type === "password") {
-                input.type = "text";
-                el.textContent = "👁";
-            } else {
-                input.type = "password";
-                el.textContent = "︶";
-            }
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            el.textContent = isPassword ? "👁" : "︶";
+        }
+
+        // Loading submit
+        const form = document.getElementById("resetForm");
+        const btn = document.getElementById("btnSubmit");
+        const spinner = document.getElementById("loadingSpinner");
+        const btnText = document.getElementById("btnText");
+
+        if (form) {
+            form.addEventListener("submit", function () {
+                btn.disabled = true;
+                spinner.classList.remove("d-none");
+                btnText.textContent = "Đang xử lý...";
+            });
+        }
+
+        // Redirect sau khi thành công
+        const successBox = document.getElementById("successBox");
+        if (successBox) {
+            setTimeout(() => {
+                window.location.href = '@Url.Action("DangNhap", "TaiKhoan")';
+            }, 2000);
         }
     </script>
+
 </body>
 </html>
