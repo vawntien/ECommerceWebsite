@@ -165,46 +165,10 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
             return View(model);
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult HuyDonHangSeller(int id)
-        //{
-        //    if (Session["MaNguoiBan"] == null)
-        //    {
-        //        return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
-        //    }
-
-        //    int maNguoiBan = (int)Session["MaNguoiBan"];
-        //    var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
-        //    if (cuaHang == null)
-        //    {
-        //        return Content("Bạn chưa tạo cửa hàng.");
-        //    }
-
-        //    int maCuaHang = cuaHang.MaCuaHang;
-
-        //    var donHang = db.DonHangs
-        //        .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham))
-        //        .SingleOrDefault(dh => dh.MaDonHang == id);
-
-        //    if (donHang == null ||
-        //        !donHang.ChiTietDonHangs.Any(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham.MaCuaHang == maCuaHang))
-        //    {
-        //        return HttpNotFound("Đơn hàng không thuộc cửa hàng của bạn.");
-        //    }
-
-        //    if (donHang.TrangThaiDonHang != "Chờ xác nhận")
-        //    {
-        //        TempData["UpdateSuccess"] = "Chỉ có thể hủy đơn ở trạng thái 'Chờ xác nhận'.";
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    donHang.TrangThaiDonHang = "Đã hủy";
-        //    db.SaveChanges();
-
-        //    TempData["UpdateSuccess"] = "Đơn hàng đã được hủy.";
-        //    return RedirectToAction("Index");
-        //}
+        public ActionResult PhanTichBanHang() { 
+            
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

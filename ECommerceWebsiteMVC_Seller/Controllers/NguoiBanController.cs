@@ -165,6 +165,18 @@ namespace ECommerceWebsiteMVC.Controllers
 
         }
 
+        public ActionResult PhanTichBanHang()
+        {
+            int  id  = Session["MaNguoiBan"] != null ? (int)Session["MaNguoiBan"] : 0;
+            DBPhanTichBanHang db = new DBPhanTichBanHang();
+            ViewBag.DoanhThu6Thang = db.GetDoanhThu6Thang(id);
+            ViewBag.DonHang6Thang = db.GetSoDon6Thang(id);
+            ViewBag.TongDoanhThu = db.TongDoanhThu(id);
+            ViewBag.DonHangThanhCong = db.DonHangThanhCong(id);
+            ViewBag.DonHangThatBai = db.DonHangThatBai(id);
+            return View();
+        }
+
         public ActionResult ThemSanPham()
         {
             if (Session["MaNguoiBan"] == null)

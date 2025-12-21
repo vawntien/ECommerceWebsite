@@ -269,6 +269,7 @@
     <Compile Include="Models\DanhMuc.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DBPhanTichBanHang.cs" />
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -318,6 +319,7 @@
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ThongKeThang.cs" />
     <Compile Include="Models\WarningViewModel.cs" />
     <Compile Include="Models\XemDanhGiaSanPhamViewModel.cs" />
     <Compile Include="Models\XuLyAnhAzure.cs" />
@@ -367,6 +369,8 @@
     <Content Include="Views\TaiKhoan\DatLaiMatKhau.cshtml" />
     <Content Include="Views\NguoiBan\XemDanhGiaSanPham.cshtml" />
     <None Include="Properties\PublishProfiles\ECommerceWebsiteSeller - Web Deploy.pubxml" />
+    <Content Include="Views\DonHang\PhanTichBanHang.cshtml" />
+    <Content Include="Views\NguoiBan\PhanTichBanHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
