@@ -90,7 +90,7 @@ namespace ECommerceWebsiteMVC_Admin.Models
                         .Where(id => id > 0).ToList();
                 }
 
-                string tenCampaign = gg.TenMaGG.Replace(CAMPAIGN_PREFIX, "").Trim();
+                string tenCampaign = gg.TenMaGG != null ? gg.TenMaGG.Replace(CAMPAIGN_PREFIX, "").Trim() : "";
 
                 return new CampaignInfo
                 {
