@@ -72,7 +72,12 @@
             object-fit: cover;
             border-radius: 2px;
             margin-right: 12px;
+            transition: opacity 0.2s;
         }
+
+            .cart-col-product img:hover {
+                opacity: 0.8;
+            }
 
     .product-info {
         max-width: 260px;
@@ -85,6 +90,10 @@
         font-weight: bold;
         margin-bottom: 4px;
     }
+
+        .product-name:hover {
+            color: #ee4d2d !important;
+        }
 
     .current-price {
         color: #ee4d2d;
@@ -233,10 +242,14 @@
                                                 : (item.HinhAnh.StartsWith("http") ? item.HinhAnh : azureBaseUrl + item.HinhAnh);
                             }
 
-                            <img src="@imgSrc" alt="@item.TenSanPham"
-                                 onerror="this.src='/assets/no-image.jpg'" />
+                            <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })" style="text-decoration: none; color: inherit;">
+                                <img src="@imgSrc" alt="@item.TenSanPham"
+                                     onerror="this.src='/assets/no-image.jpg'" style="cursor: pointer;" />
+                            </a>
                             <div class="product-info">
-                                <div class="product-name">@item.TenSanPham</div>
+                                <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })" style="text-decoration: none; color: inherit;">
+                                    <div class="product-name" style="cursor: pointer; color: #333;">@item.TenSanPham</div>
+                                </a>
                             </div>
                         </div>
 
@@ -247,6 +260,12 @@
 
                         <div class="cart-col-price">
                             <span class="current-price">@item.DonGia.ToString("N0") đ</span>
+                            @if (item.CoGiamGia && item.PhanTramGiam > 0)
+                            {
+                                <span style="background-color: #ee4d2d; color: white; font-size: 10px; padding: 2px 4px; border-radius: 2px; margin-left: 5px;">
+                                    -@item.PhanTramGiam.ToString("F0")%
+                                </span>
+                            }
                         </div>
 
                         <div class="cart-col-qty">

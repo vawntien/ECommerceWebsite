@@ -170,16 +170,27 @@
                     </div>
 
                     <!-- Category -->
+                    @*<div class="form-section">
+            <h3>Ngành hàng <span class="required">*</span></h3>
+            <div class="category-breadcrumb">
+                <span>@(Model.DanhMuc?.TenDanhMuc ?? "Chưa chọn")</span>
+                <button type="button" class="btn-edit-category">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </div>
+            @Html.HiddenFor(m => m.MaDanhMuc)
+        </div>*@
                     <div class="form-section">
                         <h3>Ngành hàng <span class="required">*</span></h3>
-                        <div class="category-breadcrumb">
-                            <span>@(Model.DanhMuc?.TenDanhMuc ?? "Chưa chọn")</span>
-                            <button type="button" class="btn-edit-category">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                        </div>
-                        @Html.HiddenFor(m => m.MaDanhMuc)
+
+                        @Html.DropDownListFor(
+                                m => m.MaDanhMuc,
+                                new SelectList(danhMucs, "MaDanhMuc", "TenDanhMuc", Model.MaDanhMuc),
+                                "-- Chọn ngành hàng --",
+                                new { @class = "form-control" }
+                            )
                     </div>
+
 
                 </div>
 

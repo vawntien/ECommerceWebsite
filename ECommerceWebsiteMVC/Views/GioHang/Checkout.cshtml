@@ -3,6 +3,15 @@
 @{
     ViewBag.Title = "Thanh toán";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
+    
+    // Tính toán ngày nhận hàng: từ hôm nay đến 4 ngày sau
+    DateTime ngayBatDau = DateTime.Now;
+    DateTime ngayKetThuc = DateTime.Now.AddDays(4);
+    
+    // Format: "22 Th12" (ngày Tháng)
+    string formatNgayBatDau = ngayBatDau.Day + " Th" + ngayBatDau.Month;
+    string formatNgayKetThuc = ngayKetThuc.Day + " Th" + ngayKetThuc.Month;
+    string ngayNhanHang = formatNgayBatDau + " - " + formatNgayKetThuc;
 }
 
 <style>
@@ -512,7 +521,7 @@
                         <div id="selected-shipping-name" style="font-size: 14px; margin-top: 4px; font-weight: bold;">
                             @(Model.DanhSachDVVC != null && Model.DanhSachDVVC.Any() ? Model.DanhSachDVVC.FirstOrDefault()?.TenDVVC : "Vận Chuyển Nhanh")
                         </div>
-                        <div style="font-size: 12px; color: #888;">Nhận hàng vào 22 Th12 - 26 Th12</div>
+                        <div style="font-size: 12px; color: #888;">Nhận hàng vào @ngayNhanHang</div>
                     </div>
                     <div style="text-align: right;">
                         <button type="button" id="btn-change-shipping" style="background: none; border: none; color: #05a; font-size: 14px; cursor: pointer; text-transform: uppercase;">Thay đổi</button>
@@ -613,7 +622,7 @@
                                     <span style="font-size: 14px; color: #000;">@dv.TenDVVC</span>
                                     <span style="font-size: 14px; color: #000;">17.000đ</span>
                                 </div>
-                                <div style="font-size: 12px; color: #888; margin-top: 4px;">Nhận hàng vào 22 Th12 - 26 Th12</div>
+                                <div style="font-size: 12px; color: #888; margin-top: 4px;">Nhận hàng vào @ngayNhanHang</div>
                                 <div style="font-size: 12px; color: #888; margin-top: 2px;">Nhận Voucher trị giá 15.000đ nếu đơn hàng được giao đến bạn sau ngày 26 Tháng 12 2025.</div>
                             </div>
                         </div>

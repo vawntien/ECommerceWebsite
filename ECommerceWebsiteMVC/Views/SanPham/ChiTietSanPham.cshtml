@@ -4,6 +4,13 @@
     ViewBag.Title = "ChiTietSanPham";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
     var sanPhamLienQuan = ViewBag.SanPhamLienQuan as List<ECommerceWebsiteMVC.Models.SanPham>;
+    CampaignPriceResult priceResult = null;
+    decimal giaDauTien = 0;
+    using (var ql = new ECommerceWebsiteEntities())
+    {
+        giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+        priceResult = CampaignHelper.TinhGiaSauGiam(ql, Model.MaSanPham, (decimal)giaDauTien);
+    }
 }
 
 
@@ -183,6 +190,11 @@
         width: 140px;
         display: inline-block;
     }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 </style>
 
 <div class="container py-4 " style="margin-top:120px;">
@@ -267,21 +279,26 @@
                     }
                 </div>
 
-                <div class="flash-sale-banner mb-0">
-                    <div>
-                        <i class="fas fa-bolt"></i> FLASH SALE
+                @if (priceResult != null && priceResult.CoGiamGia)
+                {
+                    <div class="flash-sale-banner mb-0">
+                        <div>
+                            <i class="fas fa-bolt"></i> FLASH SALE
+                        </div>
                     </div>
+                }
 
-                </div>
-
-                <div class="price-section mb-4">
-                    @{
-                        // Lấy giá của biến thể đầu tiên (nếu có)
-                        var giaDauTien = Model.BienTheSanPhams.FirstOrDefault()?.GiaBan ?? 0;
+                <div class="price-section mb-4" id="price-section">
+                    @if (priceResult != null && priceResult.CoGiamGia)
+                    {
+                        <span class="original-price" id="original-price">@priceResult.GiaGoc.ToString("N0")₫</span>
+                        <span class="current-price" id="price">@priceResult.GiaSauGiam.ToString("N0")₫</span>
+                        <span class="discount-badge" id="discount-badge">Giảm @priceResult.PhanTramGiam.ToString("0")%</span>
                     }
-                    <span class="original-price">@giaDauTien.ToString("N0")₫</span>
-                    <span class="current-price" id="price">@giaDauTien.ToString("N0")₫</span>
-
+                    else
+                    {
+                        <span class="current-price" id="price">@giaDauTien.ToString("N0")₫</span>
+                    }
                 </div>
 
 
@@ -310,12 +327,19 @@
                     <div class="row align-items-center">
                         <div class="col-3 text-secondary">Số lượng</div>
                         <div class="col-9 d-flex align-items-center">
+                            @*<div class="input-group me-3" style="width: 120px;">
+            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
+            <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
+        </div>*@
                             <div class="input-group me-3" style="width: 120px;">
                                 <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
-                                <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+
+                                <input type="number" id="qty" class="form-control text-center bg-white" value="1" min="1" onkeydown="return false;" readonly>
+
                                 <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
                             </div>
-                            <span class="text-secondary small" id="stock">Còn @Model.BienTheSanPhams.First().SoLuongTonKho sản phẩm</span>
+                            <span class="text-secondary small" id="stock">Còn @Model.BienTheSanPhams.FirstOrDefault()?.SoLuongTonKho ?? 0 sản phẩm</span>
                         </div>
                     </div>
                 </div>
@@ -435,77 +459,181 @@
 </div>
 
 <script>
+
     const mainImg = document.getElementById("main-img");
-    const priceBox = document.getElementById("price");
+    let priceBox = document.getElementById("price");
     const stockBox = document.getElementById("stock");
     const qtyInput = document.getElementById("qty");
 
-    // 1. Logic Chọn biến thể
-    document.querySelectorAll(".variant-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-            // Highlight active
-            document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
-            this.classList.add("active");
+    //// 1. Logic Chọn biến thể
+    //document.querySelectorAll(".variant-btn").forEach(btn => {
+    //    btn.addEventListener("click", function () {
+    //        // Highlight active
+    //        document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
+    //        this.classList.add("active");
 
-            // Lấy giá
-            let rawPrice = this.getAttribute("data-price");
-            let priceNumber = parseFloat(rawPrice);
-            if (isNaN(priceNumber)) priceNumber = 0;
+    //        // Lấy giá
+    //        let rawPrice = this.getAttribute("data-price");
+    //        let priceNumber = parseFloat(rawPrice);
+    //        if (isNaN(priceNumber)) priceNumber = 0;
 
-            // Hiển thị giá
-            priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
+    //        // Hiển thị giá
+    //        priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
 
-            // Đổi ảnh chính nếu biến thể có ảnh
-            if (this.dataset.img) {
-                mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/variants/" + this.dataset.img;
-            }
+    //        // Đổi ảnh chính nếu biến thể có ảnh
+    //        if (this.dataset.img) {
+    //            mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/variants/" + this.dataset.img;
+    //        }
 
-            // Đổi tồn kho
-            stockBox.innerText = "Còn " + this.dataset.stock + " sản phẩm";
+    //        // Đổi tồn kho
+    //        stockBox.innerText = "Còn " + this.dataset.stock + " sản phẩm";
 
-            // Cập nhật ID cho nút mua
-            let id = this.dataset.id;
-            document.getElementById("btnAddToCart").setAttribute("data-id", id);
-            document.getElementById("btnMuaNgay").setAttribute("data-id", id);
+    //        // Cập nhật ID cho nút mua
+    //        let id = this.dataset.id;
+    //        document.getElementById("btnAddToCart").setAttribute("data-id", id);
+    //        document.getElementById("btnMuaNgay").setAttribute("data-id", id);
+    //    });
+    //});
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Khai báo các element cần thao tác
+        //const priceBox = document.getElementById("price");
+        //const stockBox = document.getElementById("stock"); // Thẻ hiển thị chữ "Còn ... sản phẩm"
+        //const mainImg = document.getElementById("main-img");
+        //const qtyInput = document.getElementById("qty");
+        //const btnAddToCart = document.getElementById("btnAddToCart");
+        //const btnMuaNgay = document.getElementById("btnMuaNgay");
+
+        // Lấy tất cả các nút biến thể
+        const variantBtns = document.querySelectorAll(".variant-btn");
+
+        // 1. Logic khi bấm chọn biến thể
+        variantBtns.forEach(btn => {
+            btn.addEventListener("click", function () {
+                // --- A. Xử lý giao diện nút active ---
+                variantBtns.forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+
+                // --- B. Cập nhật GIÁ ---
+                let rawPrice = this.getAttribute("data-price");
+                let priceNumber = parseFloat(rawPrice) || 0;
+                if (priceBox) priceBox.innerText = priceNumber.toLocaleString('vi-VN') + " ₫";
+
+                // --- C. Cập nhật ẢNH (nếu có) ---
+                if (this.dataset.img) {
+                    if (mainImg) mainImg.src = "https://ecommerceshopstorage.blob.core.windows.net/variants/" + this.dataset.img;
+                }
+
+                // --- D. CẬP NHẬT TỒN KHO (Phần bạn cần) ---
+                // Lấy số lượng từ attribute data-stock
+                let stockQty = this.getAttribute("data-stock");
+
+                // Cập nhật text hiển thị
+                if (stockBox) stockBox.innerText = "Còn " + stockQty + " sản phẩm";
+
+                // --- E. Cập nhật ID cho nút mua ---
+                //let id = this.getAttribute("data-id");
+                //if (btnAddToCart) btnAddToCart.setAttribute("data-id", id);
+                //if (btnMuaNgay) btnMuaNgay.setAttribute("data-id", id);
+
+                let id = this.dataset.id;
+                document.getElementById("btnAddToCart").setAttribute("data-id", id);
+                document.getElementById("btnMuaNgay").setAttribute("data-id", id);
+
+                // Reset số lượng mua về 1 cho an toàn
+                if (qtyInput) qtyInput.value = 1;
+            });
         });
+
+        // Tự động chọn biến thể đầu tiên khi mới vào trang để hiển thị đúng thông tin ngay lập tức
+        if (variantBtns.length > 0) {
+            variantBtns[0].click();
+        }
     });
 
     // 2. Logic Thay đổi số lượng (+/-)
     function changeQty(delta) {
+        let qtyInput = document.getElementById("qty");
         let currentVal = parseInt(qtyInput.value) || 1;
+        let maxQty = parseInt(qtyInput.max) || 999999;
         let newVal = currentVal + delta;
         if (newVal < 1) newVal = 1;
+        if (newVal > maxQty) newVal = maxQty;
         qtyInput.value = newVal;
     }
 
-    // 3. Logic Xử lý Mua hàng (Giữ nguyên logic cũ)
+    // Validate số lượng khi người dùng nhập trực tiếp
+    function validateQty() {
+        let qtyInput = document.getElementById("qty");
+        let currentVal = parseInt(qtyInput.value) || 1;
+        let maxQty = parseInt(qtyInput.max) || 999999;
+        
+        if (isNaN(currentVal) || currentVal < 1) {
+            qtyInput.value = 1;
+        } else if (currentVal > maxQty) {
+            // Thông báo trước khi set
+            alert(`Số lượng vượt quá tồn kho. Tối đa ${maxQty} sản phẩm.`);
+            setTimeout(function() {
+                qtyInput.value = maxQty;
+            }, 100);
+        }
+    }
+
+    // 3. Logic Xử lý Mua hàng
     function handleMuaHang(actionType) {
+        // Lấy số lượng từ input hiện tại (luôn lấy mới nhất)
+        let soLuongMua = parseInt(document.getElementById("qty").value) || 1;
+        
+        // Validate số lượng
+        if (isNaN(soLuongMua) || soLuongMua < 1) {
+            alert("Số lượng không hợp lệ!");
+            document.getElementById("qty").value = 1;
+            return;
+        }
+
         let btn = (actionType === 'add') ? document.getElementById("btnAddToCart") : document.getElementById("btnMuaNgay");
         let idBienThe = btn.getAttribute("data-id");
-        let soLuongMua = qtyInput ? parseInt(qtyInput.value) : 1;
 
         if (!idBienThe || idBienThe === "") {
             alert("Vui lòng chọn phân loại sản phẩm!");
             return;
         }
 
-        // Gọi API check kho (giữ nguyên logic gốc)
+        // Lấy tồn kho hiện tại
+        let stock = parseInt(document.getElementById("stock").textContent.replace(/[^0-9]/g, '')) || 0;
+        
+        // Kiểm tra số lượng với tồn kho
+        if (soLuongMua > stock) {
+            alert(`Số lượng vượt quá tồn kho. Hiện chỉ còn ${stock} sản phẩm.`);
+            // Sau khi người dùng nhấn OK, mới set lại số lượng
+            setTimeout(function() {
+                document.getElementById("qty").value = stock > 0 ? stock : 1;
+            }, 100);
+            return;
+        }
+
+        // Gọi API check kho
         fetch(`/SanPham/KiemTraTonKho?maBienThe=${idBienThe}&soLuong=${soLuongMua}`)
             .then(response => response.json())
             .then(data => {
                 if (data.coHang === true) {
+                    // Đảm bảo số lượng được truyền đúng
+                    let finalSoLuong = parseInt(soLuongMua);
                     if (actionType === 'add') {
-                        window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                        window.location.href = "/GioHang/AddToCart?maBienThe=" + idBienThe + "&soLuong=" + finalSoLuong;
                     } else {
-                        window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + soLuongMua;
+                        window.location.href = "/GioHang/MuaNgay?maBienThe=" + idBienThe + "&soLuong=" + finalSoLuong;
                     }
                 }
                 else {
                     if (data.soLuongConLai <= 0) {
                         alert("Sản phẩm này vừa hết hàng! Vui lòng chọn mẫu khác.");
                     } else {
+                        // Thông báo trước, sau đó mới set lại số lượng
                         alert(`Kho chỉ còn ${data.soLuongConLai} sản phẩm.`);
-                        if (qtyInput) qtyInput.value = data.soLuongConLai;
+                        setTimeout(function() {
+                            document.getElementById("qty").value = data.soLuongConLai;
+                        }, 100);
                     }
                 }
             })

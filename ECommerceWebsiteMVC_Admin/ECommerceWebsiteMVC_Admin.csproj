@@ -198,6 +198,7 @@
     </Compile>
     <Compile Include="Models\DBQuanLyKhuyenMai.cs" />
     <Compile Include="Models\DBQuanLyNguoiDungHeThong.cs" />
+    <Compile Include="Models\DBQuanLyCampaign.cs" />
     <Compile Include="Models\DBQuanLyNhanVien.cs" />
     <Compile Include="Models\DBQuanLyThongKe.cs" />
     <Compile Include="Models\DonHang.cs">

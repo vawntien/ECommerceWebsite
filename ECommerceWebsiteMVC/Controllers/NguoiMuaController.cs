@@ -14,42 +14,10 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            //ViewBag.SanPhamHot = GetTopSanPhamHot(10);
-
-            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
-
-
-            //var allIds = ql.SanPhams
-            //    .Select(sp => sp.MaSanPham)
-            //    .ToList();
-
-            //if (!allIds.Any())
-            //    return View(new List<SanPham>());
-
-
-            //Random rnd = new Random();
-            //var randomIds = allIds
-            //    .OrderBy(x => rnd.Next())
-            //    .Take(24) 
-            //    .ToList();
-
-            //List<SanPham> dssp = ql.SanPhams
-            //    .Include("AnhSanPhams")
-            //    .Where(sp => randomIds.Contains(sp.MaSanPham))
-            //    .ToList();
-
-            //dssp = dssp
-            //    .OrderBy(sp => randomIds.IndexOf(sp.MaSanPham))
-            //    .ToList();
-
-
-            //return View(dssp);
-
-
+            
             ViewBag.SanPhamHot = GetTopSanPhamHot(10);
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
 
-            // 🔥 RANDOM 1 LẦN DUY NHẤT
             if (Session["RandomProductIds"] == null)
             {
                 var allIds = ql.SanPhams
@@ -76,7 +44,6 @@ namespace ECommerceWebsiteMVC.Controllers
                 .Where(sp => firstIds.Contains(sp.MaSanPham))
                 .ToList();
 
-            // giữ đúng thứ tự random
             dssp = dssp
                 .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
                 .ToList();
@@ -163,16 +130,18 @@ namespace ECommerceWebsiteMVC.Controllers
                     return Json(new { success = false, message = "Vui lòng đăng nhập để thực hiện thao tác này." });
                 }
 
-                // Tìm đơn hàng
-                var donHang = ql.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+                // ---Include các bảng liên quan để lấy được thông tin Biến thể sản phẩm ---
+                var donHang = ql.DonHangs
+                    .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham")
+                    .FirstOrDefault(d => d.MaDonHang == maDonHang);
 
                 if (donHang == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
                 }
 
-                // Kiểm tra quyền sở hữu
-                //if (donHang.MaNguoiMua != maNguoiMua.Value)
+                // Kiểm tra quyền sở hữu (bạn có thể bỏ comment nếu cần)
+                //if (donHang.ChiTietDonHangs.FirstOrDefault()?.ChiTietGioHang.GioHang.MaNguoiMua != maNguoiMua)
                 //{
                 //    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
                 //}
@@ -181,6 +150,25 @@ namespace ECommerceWebsiteMVC.Controllers
                 if (donHang.TrangThaiDonHang != "Chờ xác nhận")
                 {
                     return Json(new { success = false, message = "Chỉ có thể hủy đơn hàng đang ở trạng thái 'Chờ xác nhận'." });
+                }
+
+                if (donHang.ChiTietDonHangs != null)
+                {
+                    foreach (var chiTiet in donHang.ChiTietDonHangs)
+                    {
+                        // Lấy ra biến thể sản phẩm tương ứng
+                        var bienThe = chiTiet.ChiTietGioHang.BienTheSanPham;
+
+                        // Lấy số lượng khách đã mua trong đơn hàng này
+                        int soLuongMua = chiTiet.ChiTietGioHang.SoLuong;
+
+
+                        if (bienThe != null)
+                        {
+                            // Cộng lại vào kho
+                            bienThe.SoLuongTonKho = bienThe.SoLuongTonKho + soLuongMua;
+                        }
+                    }
                 }
 
                 // Cập nhật trạng thái đơn hàng
@@ -257,7 +245,7 @@ namespace ECommerceWebsiteMVC.Controllers
             return View("Index", sanPhamTimDuoc);
         }
 
-        private List<SanPham> GetTopSanPhamHot(int top = 7)
+        private List<SanPham> GetTopSanPhamHot(int top = 10)
         {
             var sanPhamHot = ql.ChiTietDonHangs
                 .Where(ct =>
