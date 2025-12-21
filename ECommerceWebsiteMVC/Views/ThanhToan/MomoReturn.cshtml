@@ -1,8 +1,6 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Đặt hàng thành công";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
-    @model int
 }
 
 <style>
@@ -32,7 +30,7 @@
     <p>Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang chờ xác nhận.</p>
 
     <div style="margin-top:25px;">
-        <a href="/NguoiMua/ChiTietDonHang/@Model"
+        <a href="/NguoiMua/ChiTietDonHang/@ViewBag.OrderId"
            style="display:inline-block;
                   background:#28a745;color:#fff;
                   padding:12px 26px;

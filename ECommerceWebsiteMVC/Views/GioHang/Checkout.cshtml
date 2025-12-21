@@ -930,33 +930,27 @@
                     SDT: sdt,
                     DiaChi: diachi,
                     MaVoucher: $("#voucherHidden").val(),
-                    MaDVVC: $("#shippingHidden").val(),
-                    PhiShip: $("#phiShipHidden").val(),
-                    GhiChu: $("#ghiChuHidden").val(),
-                    TongThanhToan: $("#tong-thanh-toan").attr("data-raw"),
-                    PaymentMethod: "MOMO"
+                    MaDVVC: parseInt($("#shippingHidden").val()),
+                    PhiShip: parseFloat($("#phiShipHidden").val()),
+                    GhiChu: $("#ghiChuHidden").val()
                 };
 
                 $.ajax({
                     url: "/ThanhToan/ProcessMomoPayment",
                     type: "POST",
                     data: formData,
-                    success: function(res) {
-                        if (res.success) {
-                            // Chuyển hướng đến Momo hoặc xử lý thanh toán
-                            if (res.redirectUrl) {
-                                window.location.href = res.redirectUrl;
-                            } else {
-                                showShopeeAlert("Đang xử lý thanh toán Momo...");
-                            }
+                    success: function (res) {
+                        if (res.success && res.redirectUrl) {
+                            window.location.href = res.redirectUrl;
                         } else {
-                            showShopeeAlert(res.message || "Lỗi xử lý thanh toán!");
+                            alert(res.message || "Thanh toán thất bại");
                         }
                     },
-                    error: function() {
+                    error: function () {
                         showShopeeAlert("Lỗi kết nối server!");
                     }
                 });
+
             });
 
             // Đóng address selector khi click bên ngoài (chỉ khi đã chọn đủ 3 trường)
@@ -1087,15 +1081,60 @@
                     if (callback) callback();
                     return;
                 }
-                
+
+                // First try the controller endpoint
                 $.ajax({
                     url: "/GioHang/GetVietnamAddresses",
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
-                        // Chuyển đổi cấu trúc JSON thành format dễ sử dụng
-                        addressData = {};
+                        // If controller returned an object with 'error', treat as failure
+                        if (data && data.error) {
+                            console.warn('GetVietnamAddresses returned error:', data.error);
+                            // fallback to static file
+                            loadStaticAddressFile(callback);
+                            return;
+                        }
+
+                        // If controller served file bytes (file content), data may be the JSON
+                        var payload = data;
+                        // If controller used File(bytes, application/json) response, jQuery will parse JSON into 'data'
+
+                        if (payload && payload.provinces) {
+                            addressData = {};
+                            payload.provinces.forEach(function(province) {
+                                addressData[province.name] = {};
+                                if (province.districts) {
+                                    province.districts.forEach(function(district) {
+                                        addressData[province.name][district.name] = district.wards || [];
+                                    });
+                                }
+                            });
+                            addressDataLoaded = true;
+                            console.log("Đã tải dữ liệu địa chỉ thành công (controller):", Object.keys(addressData).length, "tỉnh/thành phố");
+                            if (callback) callback();
+                        } else {
+                            // fallback if structure unexpected
+                            console.warn('GetVietnamAddresses returned unexpected payload, falling back to static file.');
+                            loadStaticAddressFile(callback);
+                        }
+                    },
+                    error: function(xhr, status, err) {
+                        console.error("GetVietnamAddresses AJAX error:", status, err, xhr.responseText);
+                        // Fallback to static JSON file
+                        loadStaticAddressFile(callback);
+                    }
+                });
+            }
+
+            function loadStaticAddressFile(callback) {
+                $.ajax({
+                    url: "/Scripts/data/vietnam-addresses.json",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
                         if (data && data.provinces) {
+                            addressData = {};
                             data.provinces.forEach(function(province) {
                                 addressData[province.name] = {};
                                 if (province.districts) {
@@ -1104,26 +1143,22 @@
                                     });
                                 }
                             });
+                            addressDataLoaded = true;
+                            console.log("Đã tải dữ liệu địa chỉ thành công (static file):", Object.keys(addressData).length, "tỉnh/thành phố");
+                            if (callback) callback();
+                        } else {
+                            console.error('Static address file format invalid');
+                            // keep default fallback data
+                            addressDataLoaded = true;
+                            if (callback) callback();
                         }
-                        addressDataLoaded = true;
-                        console.log("Đã tải dữ liệu địa chỉ thành công:", Object.keys(addressData).length, "tỉnh/thành phố");
-                        if (callback) callback();
                     },
-                    error: function(xhr, status, error) {
-                        console.error("Không thể tải dữ liệu địa chỉ:", error);
-                        // Fallback với dữ liệu mẫu nếu không load được
+                    error: function(xhr, status, err) {
+                        console.error('Cannot load static address file:', status, err, xhr.responseText);
+                        // Use minimal fallback to avoid blocking UI
                         addressData = {
-                            "TP. Hồ Chí Minh": {
-                                "Quận Tân Phú": ["Phường Tây Thạnh", "Phường Sơn Kỳ", "Phường Tân Quý", "Phường Tân Sơn Nhì", "Phường Phú Thọ Hòa"],
-                                "Quận 1": ["Phường Bến Nghé", "Phường Đa Kao", "Phường Bến Thành", "Phường Nguyễn Thái Bình", "Phường Phạm Ngũ Lão"],
-                                "Quận 3": ["Phường Võ Thị Sáu", "Phường Đa Kao", "Phường Nguyễn Thái Bình", "Phường Cô Giang", "Phường Cầu Kho"],
-                                "Quận 7": ["Phường Tân Phong", "Phường Tân Phú", "Phường Tân Thuận Đông", "Phường Tân Thuận Tây", "Phường Bình Thuận"]
-                            },
-                            "Hà Nội": {
-                                "Quận Ba Đình": ["Phường Điện Biên", "Phường Đội Cấn", "Phường Giảng Võ", "Phường Kim Mã", "Phường Liễu Giai"],
-                                "Quận Hoàn Kiếm": ["Phường Chương Dương", "Phường Cửa Đông", "Phường Cửa Nam", "Phường Đồng Xuân", "Phường Hàng Bạc"],
-                                "Quận Đống Đa": ["Phường Cát Linh", "Phường Hàng Bột", "Phường Khâm Thiên", "Phường Khương Thượng", "Phường Kim Liên"]
-                            }
+                            "TP. Hồ Chí Minh": { "Quận 1": ["Phường Bến Nghé"] },
+                            "Hà Nội": { "Quận Ba Đình": ["Phường Điện Biên"] }
                         };
                         addressDataLoaded = true;
                         if (callback) callback();

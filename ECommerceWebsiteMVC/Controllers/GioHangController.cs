@@ -201,6 +201,7 @@ namespace ECommerceWebsiteMVC.Controllers
         // 2.6 API LẤY DỮ LIỆU ĐỊA CHỈ VIỆT NAM
         // ==========================================
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetVietnamAddresses()
         {
             try
@@ -208,9 +209,8 @@ namespace ECommerceWebsiteMVC.Controllers
                 var filePath = Server.MapPath("~/Scripts/data/vietnam-addresses.json");
                 if (System.IO.File.Exists(filePath))
                 {
-                    var jsonContent = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
-                    // Trả về JSON string trực tiếp với content type đúng
-                    return Content(jsonContent, "application/json");
+                    var bytes = System.IO.File.ReadAllBytes(filePath);
+                    return File(bytes, "application/json");
                 }
                 return Json(new { error = "File not found" }, JsonRequestBehavior.AllowGet);
             }
@@ -616,7 +616,7 @@ namespace ECommerceWebsiteMVC.Controllers
                     db.SaveChanges();
                     transaction.Commit();
 
-                    return View("OrderSuccess", dh);
+                    return View("OrderSuccess", dh.MaDonHang);
                 }
                 catch (Exception ex)
                 {
