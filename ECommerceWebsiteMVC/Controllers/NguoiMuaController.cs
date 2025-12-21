@@ -14,42 +14,10 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            //ViewBag.SanPhamHot = GetTopSanPhamHot(10);
-
-            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
-
-
-            //var allIds = ql.SanPhams
-            //    .Select(sp => sp.MaSanPham)
-            //    .ToList();
-
-            //if (!allIds.Any())
-            //    return View(new List<SanPham>());
-
-
-            //Random rnd = new Random();
-            //var randomIds = allIds
-            //    .OrderBy(x => rnd.Next())
-            //    .Take(24) 
-            //    .ToList();
-
-            //List<SanPham> dssp = ql.SanPhams
-            //    .Include("AnhSanPhams")
-            //    .Where(sp => randomIds.Contains(sp.MaSanPham))
-            //    .ToList();
-
-            //dssp = dssp
-            //    .OrderBy(sp => randomIds.IndexOf(sp.MaSanPham))
-            //    .ToList();
-
-
-            //return View(dssp);
-
-
+            
             ViewBag.SanPhamHot = GetTopSanPhamHot(10);
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
 
-            // 🔥 RANDOM 1 LẦN DUY NHẤT
             if (Session["RandomProductIds"] == null)
             {
                 var allIds = ql.SanPhams
@@ -76,7 +44,6 @@ namespace ECommerceWebsiteMVC.Controllers
                 .Where(sp => firstIds.Contains(sp.MaSanPham))
                 .ToList();
 
-            // giữ đúng thứ tự random
             dssp = dssp
                 .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
                 .ToList();
@@ -278,7 +245,7 @@ namespace ECommerceWebsiteMVC.Controllers
             return View("Index", sanPhamTimDuoc);
         }
 
-        private List<SanPham> GetTopSanPhamHot(int top = 7)
+        private List<SanPham> GetTopSanPhamHot(int top = 10)
         {
             var sanPhamHot = ql.ChiTietDonHangs
                 .Where(ct =>
