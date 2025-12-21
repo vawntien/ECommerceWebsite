@@ -17,7 +17,7 @@ namespace ECommerceWebsiteMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult DangNhap(string TaiKhoan, string MatKhau)
+        public ActionResult DangNhap(string TaiKhoan, string MatKhau, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(TaiKhoan) || string.IsNullOrWhiteSpace(MatKhau))
             {
@@ -45,6 +45,63 @@ namespace ECommerceWebsiteMVC.Controllers
             Session["Email"] = user.Email;
             Session["TaiKhoan"] = user.TaiKhoan;
             Session["SDT"] = user.SDT;
+
+            // Kiểm tra và xử lý sản phẩm đang chờ thêm vào giỏ hàng
+            if (Session["PendingAddToCart_MaBienThe"] != null)
+            {
+                int maBienThe = (int)Session["PendingAddToCart_MaBienThe"];
+                int soLuong = Session["PendingAddToCart_SoLuong"] != null ? (int)Session["PendingAddToCart_SoLuong"] : 1;
+
+                // Thêm sản phẩm vào giỏ hàng
+                var bt = db.BienTheSanPhams.Find(maBienThe);
+                if (bt != null && bt.SoLuongTonKho >= soLuong)
+                {
+                    var gio = db.GioHangs.FirstOrDefault(x => x.MaNguoiMua == user.MaNguoiMua);
+                    if (gio == null)
+                    {
+                        gio = new GioHang { MaNguoiMua = user.MaNguoiMua };
+                        db.GioHangs.Add(gio);
+                        db.SaveChanges();
+                    }
+
+                    var item = db.ChiTietGioHangs.FirstOrDefault(x => x.MaGioHang == gio.MaGioHang && x.MaBienThe == maBienThe && x.TrangThai == true);
+                    if (item == null)
+                    {
+                        item = new ChiTietGioHang { MaGioHang = gio.MaGioHang, MaBienThe = maBienThe, SoLuong = soLuong, TrangThai = true };
+                        db.ChiTietGioHangs.Add(item);
+                    }
+                    else
+                    {
+                        if (item.SoLuong + soLuong <= bt.SoLuongTonKho)
+                        {
+                            item.SoLuong += soLuong;
+                        }
+                    }
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch
+                    {
+                        // Nếu có lỗi, bỏ qua
+                    }
+                }
+
+                // Xóa Session sau khi xử lý
+                Session.Remove("PendingAddToCart_MaBienThe");
+                Session.Remove("PendingAddToCart_SoLuong");
+                Session.Remove("PendingAddToCart_ActionType");
+
+                // Redirect đến giỏ hàng sau khi thêm sản phẩm
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // Nếu có returnUrl và hợp lệ, redirect về đó
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "NguoiMua");
         }

@@ -91,7 +91,14 @@ namespace ECommerceWebsiteMVC.Controllers
         public ActionResult AddToCart(int maBienThe, int soLuong = 1)
         {
             int userId = GetUserId();
-            if (userId == -1) return RedirectToAction("DangNhap", "TaiKhoan");
+            if (userId == -1)
+            {
+                // Lưu thông tin sản phẩm vào Session để thêm vào giỏ hàng sau khi đăng nhập
+                Session["PendingAddToCart_MaBienThe"] = maBienThe;
+                Session["PendingAddToCart_SoLuong"] = soLuong;
+                Session["PendingAddToCart_ActionType"] = "add";
+                return RedirectToAction("DangNhap", "TaiKhoan");
+            }
 
             var bt = db.BienTheSanPhams.Find(maBienThe);
             if (bt == null || bt.SoLuongTonKho < soLuong)
@@ -129,6 +136,16 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult MuaNgay(int maBienThe, int soLuong = 1)
         {
+            int userId = GetUserId();
+            if (userId == -1)
+            {
+                // Lưu thông tin sản phẩm vào Session để thêm vào giỏ hàng sau khi đăng nhập
+                Session["PendingAddToCart_MaBienThe"] = maBienThe;
+                Session["PendingAddToCart_SoLuong"] = soLuong;
+                Session["PendingAddToCart_ActionType"] = "buy";
+                return RedirectToAction("DangNhap", "TaiKhoan");
+            }
+            
             // Mua Ngay chỉ thêm vào giỏ hàng, không redirect đến thanh toán
             return AddToCart(maBienThe, soLuong);
         }
