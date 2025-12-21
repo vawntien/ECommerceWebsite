@@ -300,6 +300,8 @@
     <Compile Include="Models\KhieuNai.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MomoIPNModel.cs" />
+    <Compile Include="Models\MomoSecurity.cs" />
     <Compile Include="Models\NguoiBan.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -387,6 +389,8 @@
     <Content Include="Views\TaiKhoan\DatLaiMatKhau.cshtml" />
     <Content Include="Views\TaiKhoan\QuenMatKhau.cshtml" />
     <Content Include="Views\NguoiMua\_ProductListPartial.cshtml" />
+    <None Include="Properties\PublishProfiles\ECommerceWebsite - Web Deploy.pubxml" />
+    <Content Include="Views\ThanhToan\MomoReturn.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -398,7 +402,6 @@
     <Folder Include="App_Code\" />
     <Folder Include="App_Data\" />
     <Folder Include="Views\DanhMuc\" />
-    <Folder Include="Views\ThanhToan\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
