@@ -49,17 +49,26 @@ namespace ECommerceWebsiteMVC_Admin.Models
 
         public CampaignInfo LayCampaignTheoMa(int maCampaign)
         {
-            var gg = db.GiamGias.FirstOrDefault(g => g.MaGiamGia == maCampaign 
-                && g.TenMaGG != null && g.TenMaGG.StartsWith(CAMPAIGN_PREFIX));
-            
-            if (gg == null) return null;
+            try
+            {
+                var gg = db.GiamGias.FirstOrDefault(g => g.MaGiamGia == maCampaign 
+                    && g.TenMaGG != null && g.TenMaGG.StartsWith(CAMPAIGN_PREFIX));
+                
+                if (gg == null) return null;
 
-            return ParseCampaignFromGiamGia(gg);
+                var result = ParseCampaignFromGiamGia(gg);
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private CampaignInfo ParseCampaignFromGiamGia(GiamGia gg)
         {
-            if (gg == null || string.IsNullOrEmpty(gg.MoTa)) return null;
+            if (gg == null || string.IsNullOrEmpty(gg.MoTa) || string.IsNullOrEmpty(gg.TenMaGG)) 
+                return null;
 
             try
             {
@@ -68,11 +77,11 @@ namespace ECommerceWebsiteMVC_Admin.Models
                 var parts = gg.MoTa.Split(new[] { SEPARATOR }, StringSplitOptions.None);
                 if (parts.Length < 3) return null;
 
-                string loaiGiamGia = parts[0];
+                string loaiGiamGia = parts[0] ?? "PhanTram";
                 decimal giaTriGiam;
                 if (!decimal.TryParse(parts[1], out giaTriGiam)) return null;
 
-                string moTaChiTiet = parts.Length > 2 ? parts[2] : "";
+                string moTaChiTiet = parts.Length > 2 ? (parts[2] ?? "") : "";
                 List<int> danhSachSanPham = new List<int>();
                 List<int> danhSachDanhMuc = new List<int>();
 
@@ -213,11 +222,11 @@ namespace ECommerceWebsiteMVC_Admin.Models
 
         public List<int> LayDanhSachSanPham(int maCampaign)
         {
-            var gg = db.GiamGias.Find(maCampaign);
-            if (gg == null || string.IsNullOrEmpty(gg.MoTa)) return new List<int>();
-
             try
             {
+                var gg = db.GiamGias.Find(maCampaign);
+                if (gg == null || string.IsNullOrEmpty(gg.MoTa)) return new List<int>();
+
                 var parts = gg.MoTa.Split(new[] { SEPARATOR }, StringSplitOptions.None);
                 if (parts.Length > 3 && !string.IsNullOrEmpty(parts[3]))
                 {
@@ -232,11 +241,11 @@ namespace ECommerceWebsiteMVC_Admin.Models
 
         public List<int> LayDanhSachDanhMuc(int maCampaign)
         {
-            var gg = db.GiamGias.Find(maCampaign);
-            if (gg == null || string.IsNullOrEmpty(gg.MoTa)) return new List<int>();
-
             try
             {
+                var gg = db.GiamGias.Find(maCampaign);
+                if (gg == null || string.IsNullOrEmpty(gg.MoTa)) return new List<int>();
+
                 var parts = gg.MoTa.Split(new[] { SEPARATOR }, StringSplitOptions.None);
                 if (parts.Length > 4 && !string.IsNullOrEmpty(parts[4]))
                 {

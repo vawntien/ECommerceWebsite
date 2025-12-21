@@ -739,8 +739,32 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
         {
             ViewBag.DanhMucs = db.DanhSachDanhMuc();
             ViewBag.SanPhams = db.DanhSachSanPham();
-            ViewBag.SelectedSanPhams = selectedSanPhams != null ? selectedSanPhams.Select(int.Parse).ToList() : new List<int>();
-            ViewBag.SelectedDanhMucs = selectedDanhMucs != null ? selectedDanhMucs.Select(int.Parse).ToList() : new List<int>();
+            
+            // Parse selectedSanPhams an toàn
+            List<int> selectedSP = new List<int>();
+            if (selectedSanPhams != null)
+            {
+                foreach (var sp in selectedSanPhams)
+                {
+                    int id;
+                    if (int.TryParse(sp, out id))
+                        selectedSP.Add(id);
+                }
+            }
+            ViewBag.SelectedSanPhams = selectedSP;
+            
+            // Parse selectedDanhMucs an toàn
+            List<int> selectedDM = new List<int>();
+            if (selectedDanhMucs != null)
+            {
+                foreach (var dm in selectedDanhMucs)
+                {
+                    int id;
+                    if (int.TryParse(dm, out id))
+                        selectedDM.Add(id);
+                }
+            }
+            ViewBag.SelectedDanhMucs = selectedDM;
 
             // Xử lý datetime
             if (!string.IsNullOrEmpty(NgayBD))
@@ -782,20 +806,15 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
                 return View(campaign);
             }
 
-            if ((selectedSanPhams == null || selectedSanPhams.Length == 0) && 
-                (selectedDanhMucs == null || selectedDanhMucs.Length == 0))
+            if (selectedSP.Count == 0 && selectedDM.Count == 0)
             {
                 ViewBag.Error = "Vui lòng chọn ít nhất một sản phẩm hoặc một danh mục!";
                 return View(campaign);
             }
 
-            // Chuyển đổi danh sách
-            List<int> danhSachSanPham = selectedSanPhams != null 
-                ? selectedSanPhams.Select(int.Parse).ToList() 
-                : new List<int>();
-            List<int> danhSachDanhMuc = selectedDanhMucs != null 
-                ? selectedDanhMucs.Select(int.Parse).ToList() 
-                : new List<int>();
+            // Sử dụng danh sách đã parse an toàn
+            List<int> danhSachSanPham = selectedSP;
+            List<int> danhSachDanhMuc = selectedDM;
 
             if (dbCampaign.SuaCampaign(campaign, danhSachSanPham, danhSachDanhMuc))
             {
