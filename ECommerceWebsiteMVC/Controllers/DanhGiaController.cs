@@ -87,17 +87,36 @@ namespace ECommerceWebsiteMVC.Controllers
             // 🔹 1. Kiểm tra xem MaCTDH này đã có đánh giá chưa
             var danhGia = db.DanhGiaSanPhams.FirstOrDefault(x => x.MaCTDH == model.MaCTDH);
 
+
+
+
+
             if (danhGia == null)
             {
                 // 👉 CHƯA có đánh giá -> tạo mới
                 danhGia = new DanhGiaSanPham
                 {
-                    MaCTDH = model.MaCTDH
+                    MaCTDH = model.MaCTDH,
+                    SoLan = 1
                 };
                 db.DanhGiaSanPhams.Add(danhGia);
+                ViewBag.ReviewError = "";
             }
 
-            // 🔹 2. Cập nhật thông tin đánh giá (cả thêm mới và sửa)
+
+            else
+            {
+                if (danhGia.SoLan == 2 || DateTime.Now >= danhGia.ThoiGian.Value.AddDays(40))
+                {
+                    danhGia.SoLan = 2;
+                    db.SaveChanges();
+                    TempData["ReviewError"] = "Không được sửa đánh giá!";
+                    return Redirect(ReturnUrl);
+                }
+                danhGia.SoLan = 2;
+            }
+
+                // 🔹 2. Cập nhật thông tin đánh giá (cả thêm mới và sửa)
             danhGia.SoSao = model.SoSao;
             danhGia.TieuDe = model.TieuDe;
             danhGia.NoiDung = model.NoiDung;

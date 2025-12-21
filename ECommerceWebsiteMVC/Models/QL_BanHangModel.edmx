@@ -25,19 +25,6 @@
           <Property Name="GiaBan" Type="money" Nullable="false" />
           <Property Name="SoLuongTonKho" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="CuaHang">
-          <Key>
-            <PropertyRef Name="MaCuaHang" />
-          </Key>
-          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaNguoiBan" Type="int" Nullable="false" />
-          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="NgayDangKy" Type="date" />
-          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
-          <Property Name="TrangThai" Type="bit" Nullable="false" />
-        </EntityType>
         <EntityType Name="ChiTietDonHang">
           <Key>
             <PropertyRef Name="MaCTDH" />
@@ -59,6 +46,19 @@
           <Property Name="SoLuong" Type="int" Nullable="false" />
           <Property Name="TrangThai" Type="bit" />
         </EntityType>
+        <EntityType Name="CuaHang">
+          <Key>
+            <PropertyRef Name="MaCuaHang" />
+          </Key>
+          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaNguoiBan" Type="int" Nullable="false" />
+          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="NgayDangKy" Type="date" />
+          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="DanhGiaSanPham">
           <Key>
             <PropertyRef Name="MaDG" />
@@ -70,6 +70,7 @@
           <Property Name="NoiDung" Type="nvarchar" MaxLength="250" />
           <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
           <Property Name="ThoiGian" Type="datetime" />
+          <Property Name="SoLan" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -370,9 +371,9 @@
         <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietDonHang" EntityType="Self.ChiTietDonHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietGioHang" EntityType="Self.ChiTietGioHang" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhGiaSanPham" EntityType="Self.DanhGiaSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
@@ -522,6 +523,7 @@
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="ThoiGian" Type="DateTime" Precision="3" />
           <NavigationProperty Name="ChiTietDonHang" Relationship="Self.FK_DanhGiaSanPham_ChiTietDonHang" FromRole="DanhGiaSanPham" ToRole="ChiTietDonHang" />
+          <Property Name="SoLan" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -972,6 +974,7 @@
           <EntitySetMapping Name="DanhGiaSanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhGiaSanPham">
               <MappingFragment StoreEntitySet="DanhGiaSanPham">
+                <ScalarProperty Name="SoLan" ColumnName="SoLan" />
                 <ScalarProperty Name="MaDG" ColumnName="MaDG" />
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
                 <ScalarProperty Name="SoSao" ColumnName="SoSao" />
