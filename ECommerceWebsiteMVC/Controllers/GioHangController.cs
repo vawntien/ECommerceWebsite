@@ -51,6 +51,7 @@ namespace ECommerceWebsiteMVC.Controllers
                 {
                     MaCTGH = item.MaCTGH,
                     MaBienThe = (int)item.MaBienThe,
+                    MaSanPham = item.BienTheSanPham.SanPham.MaSanPham, // Thêm MaSanPham để link đến trang chi tiết
                     MaCuaHang = item.BienTheSanPham.SanPham.CuaHang.MaCuaHang,
                     TenCuaHang = item.BienTheSanPham.SanPham.CuaHang.TenCuaHang,
                     TenSanPham = item.BienTheSanPham.SanPham.TenSanPham,
@@ -467,8 +468,6 @@ namespace ECommerceWebsiteMVC.Controllers
                 {
                     HoTen = user.HoVaTen,
                     SDT = user.SDT,
-                    // Nếu bảng NguoiMua trong code chưa cập nhật cột DiaChi thì dòng dưới có thể lỗi
-                    // Nếu lỗi, hãy xóa đoạn "user.DiaChi" thay bằng ""
                     DiaChi = (user.GetType().GetProperty("DiaChi") != null) ? (string)user.GetType().GetProperty("DiaChi").GetValue(user, null) : "",
                     IsDefault = true
                 });
@@ -555,7 +554,6 @@ namespace ECommerceWebsiteMVC.Controllers
                             var vc = db.GiamGias.Find(vID);
                             if (vc != null)
                             {
-                                // KIỂM TRA LẠI ĐIỀU KIỆN VOUCHER KHI ĐẶT HÀNG (Bảo mật nghiệp vụ)
                                 // Kiểm tra ngày bắt đầu
                                 if (vc.NgayBD != null && vc.NgayBD > DateTime.Now)
                                 {

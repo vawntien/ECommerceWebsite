@@ -34,7 +34,7 @@ namespace ECommerceWebsiteMVC.Controllers
             };
 
             db.DonHangs.Add(order);
-            db.SaveChanges(); // 🔴 CẦN để lấy MaDonHang
+             db.SaveChanges(); // 🔴 CẦN để lấy MaDonHang
 
             // 3. CHUYỂN SANG ACTION TẠO REQUEST MOMO
             return RedirectToAction("CreateMomoPayment", new { orderId = order.MaDonHang });
