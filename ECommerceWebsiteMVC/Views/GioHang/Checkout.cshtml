@@ -655,11 +655,26 @@
                 {
                     foreach (var vc in Model.DanhSachVoucher)
                     {
-                        var g = Convert.ToDecimal(vc.GiaTriGiam);
+                        var g = vc.GiaTriGiam.HasValue ? (double)vc.GiaTriGiam.Value : 0;
+                        string displayText = "";
+                        if (g > 0 && g <= 1)
+                        {
+                            // Giảm theo phần trăm
+                            displayText = (g * 100).ToString("N0") + "%";
+                        }
+                        else if (g > 1)
+                        {
+                            // Giảm theo số tiền
+                            displayText = ((decimal)g).ToString("N0") + "₫";
+                        }
+                        else
+                        {
+                            displayText = "0₫";
+                        }
                         <div class="addr-item" style="background: #fff; margin-bottom: 15px; border: 1px solid #e8e8e8; border-radius: 2px; padding: 15px; display: flex; align-items: center; cursor: pointer;" onclick="$(this).find('input').prop('checked', true)">
                             <div style="width: 100px; height: 100px; background: #ee4d2d; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-right: 15px;">
                                 <div style="font-size: 12px;">Giảm</div>
-                                <div style="font-size: 18px; font-weight: bold;">@g.ToString("N0")đ</div>
+                                <div style="font-size: 18px; font-weight: bold;">@displayText</div>
                             </div>
                             <div style="flex: 1;">
                                 <div style="font-weight: 500; font-size: 16px;">@vc.TenMaGG</div>

@@ -565,6 +565,56 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             return View(gg);
         }
 
+        // Thống kê khuyến mãi
+        public ActionResult ThongKeKhuyenMai(string tuNgay = "", string denNgay = "", int? maVoucher = null)
+        {
+            Response.Charset = "utf-8";
+            Response.ContentEncoding = System.Text.Encoding.UTF8;
+
+            DateTime? tuNgayFilter = null;
+            DateTime? denNgayFilter = null;
+
+            if (!string.IsNullOrEmpty(tuNgay))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(tuNgay, out parsedDate))
+                {
+                    tuNgayFilter = parsedDate;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(denNgay))
+            {
+                DateTime parsedDate;
+                if (DateTime.TryParse(denNgay, out parsedDate))
+                {
+                    denNgayFilter = parsedDate.AddDays(1);
+                }
+            }
+
+            var thongKe = dbKhuyenMai.LayThongKeKhuyenMai(tuNgayFilter, denNgayFilter, maVoucher);
+
+            ViewBag.TuNgay = tuNgay;
+            ViewBag.DenNgay = denNgay;
+            ViewBag.MaVoucher = maVoucher;
+            
+            // Lấy thông tin voucher được chọn để hiển thị loại giảm giá
+            ViewBag.VoucherSelected = null; // Reset về null
+            if (maVoucher.HasValue && maVoucher.Value > 0)
+            {
+                var voucher = dbKhuyenMai.LayKhuyenMaiTheoMa(maVoucher.Value);
+                if (voucher != null)
+                {
+                    ViewBag.VoucherSelected = voucher;
+                }
+            }
+
+            var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            ViewBag.DuLieuVoucherJson = serializer.Serialize(thongKe.XepHangVoucher?.Take(10).ToList() ?? new List<VoucherHieuQua>());
+
+            return View(thongKe);
+        }
+
         // ======================
         // QUẢN LÝ CAMPAIGN (Chương trình khuyến mãi chủ động)
         // ======================

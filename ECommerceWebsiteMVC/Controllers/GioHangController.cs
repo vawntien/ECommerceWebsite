@@ -325,11 +325,6 @@ namespace ECommerceWebsiteMVC.Controllers
                 DiaChi = diaChi, // Địa chỉ từ đơn hàng gần nhất hoặc để trống
                 Items = items,
 
-                // Lấy Voucher có thể áp dụng
-                // Điều kiện: 
-                // 1. NgayBD <= DateTime.Now (voucher đã bắt đầu) hoặc NgayBD null
-                // 2. NgayKT >= DateTime.Now (voucher chưa hết hạn) hoặc NgayKT null
-                // 3. GiaTriDonHangToiThieu <= tongTienHang (đơn hàng đủ giá trị tối thiểu)
                 DanhSachVoucher = db.GiamGias
                                     .Where(v => (v.NgayBD == null || v.NgayBD <= DateTime.Now) 
                                              && (v.NgayKT == null || v.NgayKT >= DateTime.Now) 
@@ -348,7 +343,6 @@ namespace ECommerceWebsiteMVC.Controllers
             return View("Checkout", model);
         }
 
-        // --- HÀM API CHO VOUCHER (Mới thêm) ---
         [HttpPost]
         public ActionResult ApplyVoucher(int maVoucher, decimal tongTienHang, decimal phiShip)
         {
@@ -559,7 +553,6 @@ namespace ECommerceWebsiteMVC.Controllers
                         tongTienHang += giaApDung * item.SoLuong;
                     }
 
-                    // --- XỬ LÝ VOUCHER ---
                     decimal giamGia = 0;
                     int? maGiamGiaID = null;
 
@@ -571,7 +564,6 @@ namespace ECommerceWebsiteMVC.Controllers
                             var vc = db.GiamGias.Find(vID);
                             if (vc != null)
                             {
-                                // Kiểm tra ngày bắt đầu
                                 if (vc.NgayBD != null && vc.NgayBD > DateTime.Now)
                                 {
                                     transaction.Rollback();
@@ -579,7 +571,6 @@ namespace ECommerceWebsiteMVC.Controllers
                                     return RedirectToAction("Index");
                                 }
 
-                                // Kiểm tra ngày kết thúc
                                 if (vc.NgayKT != null && vc.NgayKT < DateTime.Now)
                                 {
                                     transaction.Rollback();
@@ -587,7 +578,6 @@ namespace ECommerceWebsiteMVC.Controllers
                                     return RedirectToAction("Index");
                                 }
 
-                                // Kiểm tra giá trị đơn hàng tối thiểu
                                 if (vc.GiaTriDonHangToiThieu > tongTienHang)
                                 {
                                     transaction.Rollback();
@@ -595,7 +585,6 @@ namespace ECommerceWebsiteMVC.Controllers
                                     return RedirectToAction("Index");
                                 }
 
-                                // Tính toán giảm giá
                                 maGiamGiaID = vID;
                                 if (vc.GiaTriGiam <= 1)
                                 {
