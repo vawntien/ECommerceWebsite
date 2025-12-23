@@ -404,7 +404,15 @@
 {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            alert(@Html.Raw(Json.Encode(TempData["ReviewError"])));
+            Swal.fire({
+                icon: 'error',
+                title: 'Không thể đánh giá',
+                text: @Html.Raw(Json.Encode(TempData["ReviewError"])),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ee4d2d'
+            });
         });
     </script>
 }
+
+
