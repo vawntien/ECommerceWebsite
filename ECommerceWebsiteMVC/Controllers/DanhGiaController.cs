@@ -155,15 +155,15 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult DanhGiaSanPhamPartial(int pMaSP)
         {
-            var param = new SqlParameter("@MaSanPham", pMaSP);
+            var result =
+                        (from dg in db.DanhGiaSanPhams
+                         join dh in db.ChiTietDonHangs on dg.MaCTDH equals dh.MaCTDH
+                         join gh in db.ChiTietGioHangs on dh.MaCTGH equals gh.MaCTGH
+                         join bt in db.BienTheSanPhams on gh.MaBienThe equals bt.MaBienThe
+                         where bt.MaSanPham == pMaSP
+                         select dg)
+                        .ToList();
 
-            // Gọi TVF: SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)
-            List<DanhGiaSanPham> lstdg = db.Database
-                .SqlQuery<DanhGiaSanPham>(
-                    "SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)",
-                    param
-                )
-                .ToList();
             double saoTB = 0;
             var sp = db.SanPhams.SingleOrDefault(s => s.MaSanPham == pMaSP);
             if (sp != null && sp.SoSaoTrungBinh.HasValue)
@@ -173,7 +173,7 @@ namespace ECommerceWebsiteMVC.Controllers
 
             ViewBag.SaoTrungBinhSP = saoTB;
 
-            return PartialView("DanhGiaSanPhamPartial", lstdg);
+            return PartialView("DanhGiaSanPhamPartial", result);
         }
 
 
