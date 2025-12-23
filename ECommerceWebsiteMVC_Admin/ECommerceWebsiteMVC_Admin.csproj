@@ -252,6 +252,7 @@
     <Compile Include="Models\ThongKeDoanhThuNganhHang.cs" />
     <Compile Include="Models\ThongKeDoanhThuNguoiBan.cs" />
     <Compile Include="Models\ThongKeDonHang.cs" />
+    <Compile Include="Models\ThongKeKhuyenMai.cs" />
     <Compile Include="Models\ThongKeThang.cs" />
     <Compile Include="Models\XuLyAnhAzure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

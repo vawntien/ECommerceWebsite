@@ -158,7 +158,6 @@ namespace ECommerceWebsiteMVC.Controllers
                         tongTienHang += (decimal)(bt.GiaBan * item.SoLuong);
                     }
 
-                    // ===== XỬ LÝ VOUCHER (GIỮ NGUYÊN LOGIC CỦA BẠN) =====
                     decimal giamGia = 0;
                     int? maGiamGiaID = null;
 
