@@ -371,6 +371,7 @@
     <None Include="Properties\PublishProfiles\ECommerceWebsiteSeller - Web Deploy.pubxml" />
     <Content Include="Views\DonHang\PhanTichBanHang.cshtml" />
     <Content Include="Views\NguoiBan\PhanTichBanHang.cshtml" />
+    <Content Include="Views\NguoiBan\TongQuan.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

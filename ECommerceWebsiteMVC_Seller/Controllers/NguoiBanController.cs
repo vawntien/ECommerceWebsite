@@ -165,7 +165,7 @@ namespace ECommerceWebsiteMVC.Controllers
 
         }
 
-        public ActionResult PhanTichBanHang()
+        public ActionResult TongQuan()
         {
             int  id  = Session["MaNguoiBan"] != null ? (int)Session["MaNguoiBan"] : 0;
             DBPhanTichBanHang db = new DBPhanTichBanHang();
