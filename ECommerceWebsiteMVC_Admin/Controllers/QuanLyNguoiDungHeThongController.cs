@@ -18,6 +18,46 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
         {
             return View();
         }
+        public ActionResult ChiTietDanhGiaCuaHang(int pMaCH)
+        {
+            CuaHang ch = db.DanhSachCuaHang().Where(t => t.MaCuaHang == pMaCH).First();
+            List<DonHang> dsdh = db.DanhSachDonHangTheoCuaHang(ch.MaCuaHang);
+
+
+            ViewBag.DanhSachDanhGia = dtbs.DanhGiaSanPhams.Where(t => t.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.MaCuaHang == pMaCH).ToList();
+            return View(ch);
+        }
+        public ActionResult ChiTietDanhGia(int pMaDG)
+        {
+            var danhGia = dtbs.DanhGiaSanPhams
+                .FirstOrDefault(t => t.MaDG == pMaDG);
+            
+            if (danhGia == null)
+                return HttpNotFound();
+            
+            // Nếu là AJAX request, trả về partial view
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("ChiTietDanhGia", danhGia);
+            }
+            
+            // Nếu không, trả về view thông thường
+            return View(danhGia);
+        }
+        [HttpPost]
+        public JsonResult XoaDanhGia(int pMaDG)
+        {
+            var danhGia = dtbs.DanhGiaSanPhams.FirstOrDefault(x => x.MaDG == pMaDG);
+            if (danhGia == null)
+                return Json(new { success = false });
+
+            dtbs.DanhGiaSanPhams.Remove(danhGia);
+            dtbs.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+
         public ActionResult TongQuan()
         {
             ViewBag.TongSoNguoiBan = db.TongSoNguoiBan();
@@ -113,6 +153,7 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.LichSuDonHang = dsdh;
             return View(ch);
         }
+
         public ActionResult ThayDoiTrangThaiCuaHang(int pMaCH, string pURL)
         {
             string message;
