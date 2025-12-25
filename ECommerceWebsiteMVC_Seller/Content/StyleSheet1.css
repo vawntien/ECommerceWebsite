@@ -37,9 +37,9 @@ body {
 
 /* ===== 2. BODY WRAPPER (flex layout) ===== */
 .seller-body-wrapper {
-    padding-top: calc(var(--header-height) + 20px);
+    padding-top: calc(var(--header-height));
     display: flex;
-    margin-top: 100px;
+    margin-top: 0px;
 }
 
 /* ===== 3. SIDEBAR ===== */
