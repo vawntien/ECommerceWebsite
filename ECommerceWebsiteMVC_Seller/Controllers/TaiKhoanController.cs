@@ -1,13 +1,14 @@
 ﻿using ECommerceWebsiteMVC_Seller.Models;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 
 namespace ECommerceWebsiteMVC_Seller.Controllers
 {
     public class TaiKhoanController : Controller
     {
-        private ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
+        private readonly ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
 
         [HttpGet]
         public ActionResult DangNhapNguoiBan()
@@ -19,27 +20,29 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DangNhapNguoiBan(string TaiKhoan, string MatKhau)
         {
-            var seller = db.NguoiBans.SingleOrDefault(x => x.TaiKhoan == TaiKhoan && x.MatKhau == MatKhau);
+            var seller = db.NguoiBans
+                .SingleOrDefault(x => x.TaiKhoan == TaiKhoan && x.MatKhau == MatKhau);
 
             if (seller != null)
             {
-                if (seller.TrangThai == false)
+                if (!seller.TrangThai)
                 {
-                    ViewBag.Error = "Tài khoản người bán của bạn đang bị khóa. Vui lòng liên hệ Admin!";
+                    ViewBag.Error = "Tài khoản người bán đang bị khóa!";
                     return View();
                 }
 
                 Session["MaNguoiBan"] = seller.MaNguoiBan;
-                Session["TenShop"] = seller.HoVaTen;
-                return RedirectToAction("Index", "NguoiBan");
+                return RedirectToAction("KiemTraCuaHang");
             }
 
-            var buyer = db.NguoiMuas.SingleOrDefault(x => x.TaiKhoan == TaiKhoan && x.MatKhau == MatKhau);
+            var buyer = db.NguoiMuas
+                .SingleOrDefault(x => x.TaiKhoan == TaiKhoan && x.MatKhau == MatKhau);
+
             if (buyer != null)
             {
-                if (buyer.TrangThai == false)
+                if (!buyer.TrangThai)
                 {
-                    ViewBag.Error = "Tài khoản của bạn đang bị khóa, không thể đăng ký bán hàng!";
+                    ViewBag.Error = "Tài khoản đang bị khóa, không thể đăng ký bán!";
                     return View();
                 }
 
@@ -50,19 +53,79 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
             return View();
         }
 
-        public ActionResult DangXuatNguoiBan()
+        public ActionResult KiemTraCuaHang()
         {
-            Session.Clear();
-            return RedirectToAction("DangNhapNguoiBan");
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan");
+
+            int sellerId = (int)Session["MaNguoiBan"];
+
+            using (var shopDb = new DB_CuaHang())
+            {
+                if (shopDb.HasShop(sellerId))
+                {
+                    Session["TenShop"] = shopDb.GetShopName(sellerId);
+                    return RedirectToAction("Index", "NguoiBan");
+                }
+                else
+                {
+                    return RedirectToAction("DangKyCuaHang");
+                }
+            }
         }
 
+        [HttpGet]
+        public ActionResult DangKyCuaHang()
+        {
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan");
 
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DangKyCuaHang(string TenCuaHang, string DiaChi, string MaSoThue)
+        {
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan");
+
+            if (string.IsNullOrWhiteSpace(TenCuaHang))
+            {
+                ViewBag.Error = "Tên cửa hàng không được để trống!";
+                return View();
+            }
+
+            int sellerId = (int)Session["MaNguoiBan"];
+            string message;
+
+            using (var shopDb = new DB_CuaHang())
+            {
+                bool ok = shopDb.RegisterNewShop(
+                    sellerId,
+                    TenCuaHang,
+                    DiaChi,
+                    MaSoThue,
+                    out message
+                );
+
+                if (!ok)
+                {
+                    ViewBag.Error = message;
+                    return View();
+                }
+
+                Session["TenShop"] = TenCuaHang;
+                TempData["Success"] = message;
+                return RedirectToAction("Index", "NguoiBan");
+            }
+        }
 
         [HttpGet]
         public ActionResult HoanTatDangKyNguoiBan(int idNguoiMua)
         {
             var buyer = db.NguoiMuas.Find(idNguoiMua);
-            if (buyer == null || buyer.TrangThai == false)
+            if (buyer == null || !buyer.TrangThai)
                 return RedirectToAction("DangNhapNguoiBan");
 
             ViewBag.NguoiMua = buyer;
@@ -73,29 +136,26 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult HoanTatDangKyNguoiBan(int MaNguoiMua, string CCCD)
         {
-            
             var buyer = db.NguoiMuas.Find(MaNguoiMua);
             if (buyer == null) return RedirectToAction("DangNhapNguoiBan");
 
-            if (string.IsNullOrEmpty(CCCD) || !System.Text.RegularExpressions.Regex.IsMatch(CCCD, "^[0-9]{12}$"))
+            if (string.IsNullOrEmpty(CCCD) || !Regex.IsMatch(CCCD, "^[0-9]{12}$"))
             {
-                ViewBag.Error = "Số CCCD không hợp lệ! Phải gồm đúng 12 chữ số.";
+                ViewBag.Error = "CCCD phải gồm đúng 12 chữ số!";
                 ViewBag.NguoiMua = buyer;
                 return View();
             }
 
-
             if (db.NguoiBans.Any(x => x.CCCD == CCCD))
             {
-                ViewBag.Error = "Số CCCD này đã được đăng ký bởi người bán khác!";
+                ViewBag.Error = "CCCD đã tồn tại!";
                 ViewBag.NguoiMua = buyer;
                 return View();
             }
 
             try
             {
-
-                NguoiBan newSeller = new NguoiBan
+                var newSeller = new NguoiBan
                 {
                     HoVaTen = buyer.HoVaTen,
                     Email = buyer.Email,
@@ -103,17 +163,14 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                     TaiKhoan = buyer.TaiKhoan,
                     MatKhau = buyer.MatKhau,
                     CCCD = CCCD,
-                    TrangThai = true 
+                    TrangThai = true
                 };
 
                 db.NguoiBans.Add(newSeller);
                 db.SaveChanges();
+
                 Session["MaNguoiBan"] = newSeller.MaNguoiBan;
-                Session["TenShop"] = newSeller.HoVaTen;
-
-
-                TempData["Success"] = "Chúc mừng! Bạn đã đăng ký trở thành Người bán thành công.";
-                return RedirectToAction("Index", "NguoiBan");
+                return RedirectToAction("KiemTraCuaHang");
             }
             catch (Exception ex)
             {
@@ -123,70 +180,10 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult QuenMatKhau()
+        public ActionResult DangXuatNguoiBan()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult QuenMatKhau(string TaiKhoan, string Email, string SDT, string CCCD)
-        {
-            if (string.IsNullOrWhiteSpace(TaiKhoan) || string.IsNullOrWhiteSpace(Email) ||
-                string.IsNullOrWhiteSpace(SDT) || string.IsNullOrWhiteSpace(CCCD))
-            {
-                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin để xác thực!";
-                return View();
-            }
-
-            var seller = db.NguoiBans.FirstOrDefault(x => x.TaiKhoan == TaiKhoan.Trim()
-                                                         && x.Email == Email.Trim()
-                                                         && x.SDT == SDT.Trim()
-                                                         && x.CCCD == CCCD.Trim());
-
-            if (seller == null || seller.TrangThai == false)
-            {
-                ViewBag.Error = "Thông tin xác thực không chính xác hoặc tài khoản đã bị khóa!";
-                return View();
-            }
-
-            Session["ResetPassword_SellerId"] = seller.MaNguoiBan;
-
-            return RedirectToAction("DatLaiMatKhau");
-        }
-
-        [HttpGet]
-        public ActionResult DatLaiMatKhau()
-        {
-            if (Session["ResetPassword_SellerId"] == null)
-            {
-                return RedirectToAction("QuenMatKhau");
-            }
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DatLaiMatKhau(string MatKhauMoi, string XacNhanMatKhau)
-        {
-            if (Session["ResetPassword_SellerId"] == null) return RedirectToAction("QuenMatKhau");
-
-            int sellerId = (int)Session["ResetPassword_SellerId"];
-            var seller = db.NguoiBans.Find(sellerId);
-
-            if (seller != null && seller.TrangThai== true)
-            {
-                seller.MatKhau = MatKhauMoi;
-                db.SaveChanges();
-                Session.Remove("ResetPassword_SellerId");
-                TempData["Success"] = "Đặt lại mật khẩu thành công!";
-            }
-            else
-            {
-                ViewBag.Error = "Không thể thực hiện tác vụ này!";
-            }
-
-            return View();
+            Session.Clear();
+            return RedirectToAction("DangNhapNguoiBan");
         }
 
         [HttpGet]
@@ -196,8 +193,7 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                 return RedirectToAction("DangNhapNguoiBan");
 
             int id = (int)Session["MaNguoiBan"];
-            var seller = db.NguoiBans.Find(id); 
-
+            var seller = db.NguoiBans.Find(id);
             if (seller == null) return HttpNotFound();
 
             return View(seller);
@@ -208,29 +204,19 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
         public ActionResult HoSoNguoiBan(NguoiBan model)
         {
             if (Session["MaNguoiBan"] == null)
-            {
                 return RedirectToAction("DangNhapNguoiBan");
-            }
-            int id = Convert.ToInt32(Session["MaNguoiBan"]);
+
+            int id = (int)Session["MaNguoiBan"];
             var seller = db.NguoiBans.Find(id);
 
             if (seller != null)
             {
-                try
-                {
-                    seller.HoVaTen = model.HoVaTen;
-                    seller.Email = model.Email;
-                    seller.SDT = model.SDT;
+                seller.HoVaTen = model.HoVaTen;
+                seller.Email = model.Email;
+                seller.SDT = model.SDT;
+                db.SaveChanges();
 
-                    db.SaveChanges();
-                    Session["TenShop"] = seller.HoVaTen;
-
-                    TempData["Success"] = "Cập nhật thông tin shop thành công!";
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "Có lỗi xảy ra: " + ex.Message;
-                }
+                TempData["Success"] = "Cập nhật hồ sơ thành công!";
             }
 
             return RedirectToAction("HoSoNguoiBan");

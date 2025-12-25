@@ -64,7 +64,12 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.TongSoNguoiMua = db.TongSoNguoiMua();
             ViewBag.SoCuaHangBiKhoa = db.SoCuaHangBiKhoa();
             ViewBag.TongSoNhanVien = db.TongSoNhanVien();
-            return View();
+            NhanVien a = Session["NhanVien"] as NhanVien;
+            return View(a);
+        }
+        public ActionResult QuanLyDanhGiaSanPham()
+        {
+            return View(dtbs.DanhGiaSanPhams.ToList());
         }
         //public ActionResult QuanLyCuaHang(int page = 1)
         //{
@@ -151,9 +156,21 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
 
         public ActionResult ThayDoiTrangThaiCuaHang(int pMaCH, string pURL)
         {
-            db.ThayDoiTrangThaiCuaHang(pMaCH);
+            string message;
+            bool result = db.ThayDoiTrangThaiCuaHang(pMaCH, out message);
+
+            if (result)
+            {
+                TempData["Success"] = message;
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+
             return Redirect(pURL);
         }
+
         public ActionResult QuanLyNguoiMua(string keyword = "", string filterType = "email", int page = 1)
         {
             int pageSize = 10;  // mỗi trang 10 người mua
@@ -250,6 +267,20 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
 
             return View(nm);
         }
+
+        public ActionResult ThayDoiTrangThaiNguoiMua(int pMaNM, string returnUrl)
+        {
+            db.ThayDoiTrangThaiNguoiMua(pMaNM);
+            return Redirect(returnUrl);
+        }
+
+        public ActionResult ThayDoiTrangThaiNguoiBan(int pMaNB, string returnUrl)
+        {
+            db.ThayDoiTrangThaiNguoiBan(pMaNB);
+            return Redirect(returnUrl);
+        }
+
+
         // QUẢN LÝ KHUYẾN MÃI
         // Danh sách khuyến mãi (bao gồm cả Voucher và Campaign)
         public ActionResult QuanLyKhuyenMai(int page = 1, string search = "", string status = "", string tab = "voucher")

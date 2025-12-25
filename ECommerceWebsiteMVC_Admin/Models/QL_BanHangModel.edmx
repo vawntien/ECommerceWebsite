@@ -25,6 +25,19 @@
           <Property Name="GiaBan" Type="money" Nullable="false" />
           <Property Name="SoLuongTonKho" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="CuaHang">
+          <Key>
+            <PropertyRef Name="MaCuaHang" />
+          </Key>
+          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaNguoiBan" Type="int" Nullable="false" />
+          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="NgayDangKy" Type="date" />
+          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="ChiTietDonHang">
           <Key>
             <PropertyRef Name="MaCTDH" />
@@ -45,19 +58,6 @@
           <Property Name="MaBienThe" Type="int" Nullable="false" />
           <Property Name="SoLuong" Type="int" Nullable="false" />
           <Property Name="TrangThai" Type="bit" />
-        </EntityType>
-        <EntityType Name="CuaHang">
-          <Key>
-            <PropertyRef Name="MaCuaHang" />
-          </Key>
-          <Property Name="MaCuaHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaNguoiBan" Type="int" Nullable="false" />
-          <Property Name="TenCuaHang" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
-          <Property Name="DiaChi" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="NgayDangKy" Type="date" />
-          <Property Name="MaSoThue" Type="char" MaxLength="12" Nullable="false" />
-          <Property Name="TrangThai" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhGiaSanPham">
           <Key>
@@ -389,9 +389,9 @@
         <EntityContainer Name="ECommerceWebsiteModelStoreContainer">
           <EntitySet Name="AnhSanPham" EntityType="Self.AnhSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BienTheSanPham" EntityType="Self.BienTheSanPham" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietDonHang" EntityType="Self.ChiTietDonHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChiTietGioHang" EntityType="Self.ChiTietGioHang" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CuaHang" EntityType="Self.CuaHang" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhGiaSanPham" EntityType="Self.DanhGiaSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
