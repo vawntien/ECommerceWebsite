@@ -45,6 +45,24 @@ namespace ECommerceWebsiteMVC_Admin.Models
                      select dh;
             return rs.ToList();
         }
+
+        public bool ThayDoiTrangThaiNguoiMua(int maNguoiMua)
+        {
+            try
+            {
+                var nm = db.NguoiMuas.FirstOrDefault(x => x.MaNguoiMua == maNguoiMua);
+                if (nm == null) return false;
+
+                nm.TrangThai = !nm.TrangThai;
+                db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public List<DonHang> DanhSachDonHangTheoNguoiMua(int pMaNM)
         {
             var rs = from dh in db.DonHangs
@@ -67,6 +85,24 @@ namespace ECommerceWebsiteMVC_Admin.Models
             }
             catch { return false; }
         }
+
+        public bool ThayDoiTrangThaiNguoiBan(int pMaNguoiBan)
+        {
+            try
+            {
+                var nb = db.NguoiBans.FirstOrDefault(x => x.MaNguoiBan == pMaNguoiBan);
+                if (nb == null) return false;
+
+                nb.TrangThai = !nb.TrangThai;
+                db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public List<NguoiMua> DanhSachNguoiMua()
         {
             return db.NguoiMuas.ToList();

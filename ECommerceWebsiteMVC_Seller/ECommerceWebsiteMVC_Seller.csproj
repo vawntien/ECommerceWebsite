@@ -270,6 +270,7 @@
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBPhanTichBanHang.cs" />
+    <Compile Include="Models\DB_CuaHang.cs" />
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -372,6 +373,7 @@
     <Content Include="Views\DonHang\PhanTichBanHang.cshtml" />
     <Content Include="Views\NguoiBan\PhanTichBanHang.cshtml" />
     <Content Include="Views\NguoiBan\TongQuan.cshtml" />
+    <Content Include="Views\TaiKhoan\DangKyCuaHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
