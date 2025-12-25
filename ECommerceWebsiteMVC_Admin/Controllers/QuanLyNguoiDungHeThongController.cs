@@ -115,9 +115,21 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
         }
         public ActionResult ThayDoiTrangThaiCuaHang(int pMaCH, string pURL)
         {
-            db.ThayDoiTrangThaiCuaHang(pMaCH);
+            string message;
+            bool result = db.ThayDoiTrangThaiCuaHang(pMaCH, out message);
+
+            if (result)
+            {
+                TempData["Success"] = message;
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+
             return Redirect(pURL);
         }
+
         public ActionResult QuanLyNguoiMua(string keyword = "", string filterType = "email", int page = 1)
         {
             int pageSize = 10;  // mỗi trang 10 người mua
