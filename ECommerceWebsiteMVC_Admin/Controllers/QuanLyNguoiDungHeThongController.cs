@@ -12,6 +12,7 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
         DBQuanLyNguoiDungHeThong db = new DBQuanLyNguoiDungHeThong();
         DBQuanLyKhuyenMai dbKhuyenMai = new DBQuanLyKhuyenMai();
         DBQuanLyCampaign dbCampaign = new DBQuanLyCampaign();
+        ECommerceWebsiteEntities dtbs = new ECommerceWebsiteEntities();
         // GET: QuanLyKhachHang
         public ActionResult Index()
         {
@@ -25,6 +26,10 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.TongSoNhanVien = db.TongSoNhanVien();
             NhanVien a = Session["NhanVien"] as NhanVien;
             return View(a);
+        }
+        public ActionResult QuanLyDanhGiaSanPham()
+        {
+            return View(dtbs.DanhGiaSanPhams.ToList());
         }
         //public ActionResult QuanLyCuaHang(int page = 1)
         //{
