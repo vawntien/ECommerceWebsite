@@ -296,6 +296,7 @@
     <Content Include="Views\TaiKhoan\DangNhap.cshtml" />
     <None Include="Properties\PublishProfiles\ECommerceWebsiteAdmin - Web Deploy.pubxml" />
     <Content Include="Views\QuanLyNguoiDungHeThong\QuanLyDanhGiaSanPham.cshtml" />
+    <Content Include="Views\QuanLyNguoiDungHeThong\ChiTietDonHangCuaHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

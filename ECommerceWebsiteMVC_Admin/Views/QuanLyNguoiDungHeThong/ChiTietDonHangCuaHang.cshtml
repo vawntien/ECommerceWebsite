@@ -52,7 +52,7 @@
                 </div>
 
                 <button class="flex items-center justify-center rounded-md h-10 px-5 bg-red-500 text-white text-sm font-bold hover:bg-red-600">
-                    
+
                     @Html.ActionLink((Model.TrangThai ? "Khóa cửa hàng" : "Mở khóa cửa hàng"), "ThayDoiTrangThaiCuaHang", "QuanLyNguoiDungHeThong", new { @pMaCH = Model.MaCuaHang, @pURL = Request.Url }, null)
 
                 </button>
@@ -81,16 +81,16 @@
                 </p>
 
                 @*<p class="text-stone-500 dark:text-stone-400 text-sm">
-                    Trạng thái tài khoản:
-                    @if (Model.TrangThai)
-                    {
-                        <span class="text-green-600 font-semibold">Đang hoạt động</span>
-                    }
-                    else
-                    {
-                        <span class="text-red-600 font-semibold">Đã khóa</span>
-                    }
-                </p>*@
+                        Trạng thái tài khoản:
+                        @if (Model.TrangThai)
+                        {
+                            <span class="text-green-600 font-semibold">Đang hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="text-red-600 font-semibold">Đã khóa</span>
+                        }
+                    </p>*@
 
             </div>
 
@@ -108,79 +108,79 @@
                 </a>
 
                 @*<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary">
-                    <p class="text-sm font-semibold">Lịch sử vi phạm</p>
-                </a>
+                            <p class="text-sm font-semibold">Lịch sử vi phạm</p>
+                        </a>
 
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary">
-                    <p class="text-sm font-semibold">Danh sách cửa hàng</p>
-                </a>
-                    
-            </div>*@
-        </div>
+                        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary">
+                            <p class="text-sm font-semibold">Danh sách cửa hàng</p>
+                        </a>
 
-
-
-        <!-- =================================================================== -->
-        <!-- LỊCH SỬ ĐƠN HÀNG -->
-        <!-- =================================================================== -->
-        <div class="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900">
-            <div class="overflow-x-auto">
-
-                <table class="w-full text-left text-sm text-stone-600 dark:text-stone-300">
-                    <thead class="bg-stone-50 text-xs uppercase text-stone-700 dark:bg-stone-800 dark:text-stone-400">
-                        <tr>
-                            <th class="px-6 py-3 font-medium">Mã Đơn Hàng</th>
-                            <th class="px-6 py-3 font-medium">Ngày Tạo</th>
-                            <th class="px-6 py-3 font-medium">Khách Hàng</th>
-                            <th class="px-6 py-3 font-medium text-right">Tổng Tiền</th>
-                            <th class="px-6 py-3 font-medium text-center">Trạng Thái</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var dh in lstDH)
-                        {
-                            <tr class="border-b border-stone-200/80 dark:border-stone-700/50">
-
-                                <td class="px-6 py-4 font-medium text-stone-900 dark:text-white">
-                                    @dh.MaDonHang
-                                </td>
-
-                                <td class="px-6 py-4">@dh.ThoiGianDat.ToString("dd/MM/yyyy")</td>
-
-                                <td class="px-6 py-4">@dh.TenNguoiNhan</td>
-
-                                <td class="px-6 py-4 text-right">@dh.TongTien.ToString("N0") đ</td>
-
-                                <td class="px-6 py-4 text-center">
-                                    @if (dh.TrangThaiDonHang == "Đã giao")
-                                    {
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                            @dh.TrangThaiDonHang
-                                        </span>
-                                    }
-                                    else if (dh.TrangThaiDonHang == "Đã hủy")
-                                    {
-                                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                                        @dh.TrangThaiDonHang
-                                    </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
-                                            @dh.TrangThaiDonHang
-                                        </span>
-                                    }
-                                </td>
-
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
+                    </div>*@
             </div>
-        </div>
 
-    </div>
+
+
+            <!-- =================================================================== -->
+            <!-- LỊCH SỬ ĐƠN HÀNG -->
+            <!-- =================================================================== -->
+            <div class="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900">
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left text-sm text-stone-600 dark:text-stone-300">
+                        <thead class="bg-stone-50 text-xs uppercase text-stone-700 dark:bg-stone-800 dark:text-stone-400">
+                            <tr>
+                                <th class="px-6 py-3 font-medium">Mã Đơn Hàng</th>
+                                <th class="px-6 py-3 font-medium">Ngày Tạo</th>
+                                <th class="px-6 py-3 font-medium">Khách Hàng</th>
+                                <th class="px-6 py-3 font-medium text-right">Tổng Tiền</th>
+                                <th class="px-6 py-3 font-medium text-center">Trạng Thái</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var dh in lstDH)
+                            {
+                                <tr class="border-b border-stone-200/80 dark:border-stone-700/50">
+
+                                    <td class="px-6 py-4 font-medium text-stone-900 dark:text-white">
+                                        @dh.MaDonHang
+                                    </td>
+
+                                    <td class="px-6 py-4">@dh.ThoiGianDat.ToString("dd/MM/yyyy")</td>
+
+                                    <td class="px-6 py-4">@dh.TenNguoiNhan</td>
+
+                                    <td class="px-6 py-4 text-right">@dh.TongTien.ToString("N0") đ</td>
+
+                                    <td class="px-6 py-4 text-center">
+                                        @if (dh.TrangThaiDonHang == "Đã giao")
+                                        {
+                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                @dh.TrangThaiDonHang
+                                            </span>
+                                        }
+                                        else if (dh.TrangThaiDonHang == "Đã hủy")
+                                        {
+                                            <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                                                @dh.TrangThaiDonHang
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                                @dh.TrangThaiDonHang
+                                            </span>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
 
 </main>

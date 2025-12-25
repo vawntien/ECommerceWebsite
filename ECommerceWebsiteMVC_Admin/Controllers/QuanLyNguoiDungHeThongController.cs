@@ -113,6 +113,14 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.LichSuDonHang = dsdh;
             return View(ch);
         }
+        public ActionResult ChiTietDonHangCuaHang(int pMaCH)
+        {
+
+            CuaHang ch = db.DanhSachCuaHang().Where(t => t.MaCuaHang == pMaCH).First();
+            ViewBag.DanhSachSanPham = db.DanhSachSanPham().Where(t => t.MaCuaHang == pMaCH).ToList();
+
+            return View(ch);
+        }
         public ActionResult ThayDoiTrangThaiCuaHang(int pMaCH, string pURL)
         {
             db.ThayDoiTrangThaiCuaHang(pMaCH);
