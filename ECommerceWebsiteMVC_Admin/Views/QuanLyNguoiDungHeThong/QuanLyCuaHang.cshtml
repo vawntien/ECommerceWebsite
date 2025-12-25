@@ -9,6 +9,23 @@
 <main class="flex-1 p-6">
     <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
 
+        <!-- ================= THÔNG BÁO ================= -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="mb-5 flex items-center rounded-lg bg-green-100 px-4 py-3 text-green-800">
+                <span class="material-symbols-outlined mr-2">check_circle</span>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="mb-5 flex items-center rounded-lg bg-red-100 px-4 py-3 text-red-800">
+                <span class="material-symbols-outlined mr-2">error</span>
+                @TempData["Error"]
+            </div>
+        }
+
         <!-- ================= TÌM KIẾM + BỘ LỌC ================= -->
         <form method="get"
               action="@Url.Action("QuanLyCuaHang")"
@@ -60,58 +77,69 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var it in Model)
+                    @if (Model != null && Model.Any())
                     {
-                        <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                        foreach (var it in Model)
+                        {
+                            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
 
-                            <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
-                                @it.MaCuaHang
-                            </td>
+                                <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                                    @it.MaCuaHang
+                                </td>
 
-                            <td class="px-6 py-4">@it.TenCuaHang</td>
-                            <td class="px-6 py-4">@it.NguoiBan.Email</td>
-                            <td class="px-6 py-4">@it.NguoiBan.SDT</td>
+                                <td class="px-6 py-4">@it.TenCuaHang</td>
+                                <td class="px-6 py-4">@it.NguoiBan.Email</td>
+                                <td class="px-6 py-4">@it.NguoiBan.SDT</td>
 
-                            <td class="px-6 py-4">
-                                @if (it.TrangThai)
-                                {
-                                    <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                                        Đang hoạt động
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
-                                        Bị khóa
-                                    </span>
-                                }
-                            </td>
+                                <td class="px-6 py-4">
+                                    @if (it.TrangThai)
+                                    {
+                                        <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                                            Đang hoạt động
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                                            Bị khóa
+                                        </span>
+                                    }
+                                </td>
 
-                            <td class="px-6 py-4">
-                                @(it.NgayDangKy.HasValue ? it.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")
-                            </td>
+                                <td class="px-6 py-4">
+                                    @(it.NgayDangKy.HasValue ? it.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")
+                                </td>
 
-                            <!-- HÀNH ĐỘNG -->
-                            <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
+                                <!-- HÀNH ĐỘNG -->
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
 
-                                    <a href="@Url.Action("ChiTietCuaHang", new { pMaCH = it.MaCuaHang })"
-                                       class="px-3 py-1 text-xs rounded-md border
-                                              bg-white dark:bg-gray-700
-                                              hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        Xem chi tiết
-                                    </a>
+                                        <a href="@Url.Action("ChiTietCuaHang", new { pMaCH = it.MaCuaHang })"
+                                           class="px-3 py-1 text-xs rounded-md border
+                                                  bg-white dark:bg-gray-700
+                                                  hover:bg-gray-100 dark:hover:bg-gray-600">
+                                            Xem chi tiết
+                                        </a>
 
-                                    <button type="button"
-                                            onclick="openConfirmModal(@it.MaCuaHang, @(it.TrangThai ? "true" : "false"))"
-                                            class="px-3 py-1 text-xs rounded-md text-white
-                                                   @(it.TrangThai
-                                                     ? "bg-red-500 hover:bg-red-600"
-                                                     : "bg-primary hover:bg-orange-600")">
-                                        @(it.TrangThai ? "Khóa" : "Mở khóa")
-                                    </button>
+                                        <button type="button"
+                                                onclick="openConfirmModal(@it.MaCuaHang, @(it.TrangThai ? "true" : "false"))"
+                                                class="px-3 py-1 text-xs rounded-md text-white
+                                                       @(it.TrangThai
+                                                         ? "bg-red-500 hover:bg-red-600"
+                                                         : "bg-primary hover:bg-orange-600")">
+                                            @(it.TrangThai ? "Khóa" : "Mở khóa")
+                                        </button>
 
-                                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="px-6 py-6 text-center text-slate-500">
+                                Không có cửa hàng nào
                             </td>
                         </tr>
                     }
@@ -186,7 +214,7 @@
         const btn = document.getElementById("confirmActionBtn");
 
         msg.innerText = isActive
-            ? "Bạn có chắc chắn muốn KHÓA cửa hàng này? Người bán sẽ không thể hoạt động."
+            ? "Bạn có chắc chắn muốn KHÓA cửa hàng này?"
             : "Bạn có chắc chắn muốn MỞ KHÓA cửa hàng này?";
 
         btn.href = `/QuanLyNguoiDungHeThong/ThayDoiTrangThaiCuaHang?pMaCH=${maCH}&pURL=${encodeURIComponent(window.location.href)}`;
