@@ -70,6 +70,7 @@
           <Property Name="NoiDung" Type="nvarchar" MaxLength="250" />
           <Property Name="HinhAnh" Type="varchar" MaxLength="200" />
           <Property Name="ThoiGian" Type="datetime" />
+          <Property Name="SoLan" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -147,6 +148,7 @@
           <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="CCCD" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="NguoiMua">
           <Key>
@@ -158,6 +160,7 @@
           <Property Name="TaiKhoan" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="MatKhau" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="SDT" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="NhanVien">
           <Key>
@@ -544,6 +547,7 @@
           <Property Name="HinhAnh" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="ThoiGian" Type="DateTime" Precision="3" />
           <NavigationProperty Name="ChiTietDonHang" Relationship="Self.FK_DanhGiaSanPham_ChiTietDonHang" FromRole="DanhGiaSanPham" ToRole="ChiTietDonHang" />
+          <Property Name="SoLan" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -632,6 +636,7 @@
           <Property Name="MatKhau" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="CCCD" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
           <NavigationProperty Name="CuaHangs" Relationship="Self.FK_CuaHang_NguoiBan" FromRole="NguoiBan" ToRole="CuaHang" />
+          <Property Name="TrangThai" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="NguoiMua">
           <Key>
@@ -644,6 +649,7 @@
           <Property Name="MatKhau" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="SDT" Type="String" MaxLength="10" FixedLength="true" Unicode="false" Nullable="false" />
           <NavigationProperty Name="GioHangs" Relationship="Self.FK_GIOHANG_NGUOIMUA" FromRole="NguoiMua" ToRole="GioHang" />
+          <Property Name="TrangThai" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SanPham">
           <Key>
@@ -1023,6 +1029,7 @@
           <EntitySetMapping Name="DanhGiaSanPhams">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.DanhGiaSanPham">
               <MappingFragment StoreEntitySet="DanhGiaSanPham">
+                <ScalarProperty Name="SoLan" ColumnName="SoLan" />
                 <ScalarProperty Name="MaDG" ColumnName="MaDG" />
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
                 <ScalarProperty Name="SoSao" ColumnName="SoSao" />
@@ -1107,6 +1114,7 @@
           <EntitySetMapping Name="NguoiBans">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiBan">
               <MappingFragment StoreEntitySet="NguoiBan">
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
                 <ScalarProperty Name="MaNguoiBan" ColumnName="MaNguoiBan" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
@@ -1120,6 +1128,7 @@
           <EntitySetMapping Name="NguoiMuas">
             <EntityTypeMapping TypeName="ECommerceWebsiteModel.NguoiMua">
               <MappingFragment StoreEntitySet="NguoiMua">
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
                 <ScalarProperty Name="MaNguoiMua" ColumnName="MaNguoiMua" />
                 <ScalarProperty Name="HoVaTen" ColumnName="HoVaTen" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

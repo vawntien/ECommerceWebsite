@@ -103,19 +103,15 @@
         <div class="mb-6">
             <div class="flex border-b border-stone-200 dark:border-stone-800">
 
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary px-4 pb-3 pt-4">
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary px-4 pb-3 pt-4" href="@Url.Action("ChiTietCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
                     <p class="text-primary text-sm font-semibold">Lịch sử đơn hàng</p>
                 </a>
 
-                @*<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary">
-                    <p class="text-sm font-semibold">Lịch sử vi phạm</p>
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary" href="@Url.Action("ChiTietDanhGiaCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
+                    <p class="text-sm font-semibold">Danh sách đánh giá sản phẩm</p>
                 </a>
 
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary">
-                    <p class="text-sm font-semibold">Danh sách cửa hàng</p>
-                </a>
-
-            </div>*@
+            </div>
         </div>
 
 
