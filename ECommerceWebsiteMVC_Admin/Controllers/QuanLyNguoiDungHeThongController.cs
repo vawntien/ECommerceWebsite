@@ -23,7 +23,8 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.TongSoNguoiMua = db.TongSoNguoiMua();
             ViewBag.SoCuaHangBiKhoa = db.SoCuaHangBiKhoa();
             ViewBag.TongSoNhanVien = db.TongSoNhanVien();
-            return View();
+            NhanVien a = Session["NhanVien"] as NhanVien;
+            return View(a);
         }
         //public ActionResult QuanLyCuaHang(int page = 1)
         //{
