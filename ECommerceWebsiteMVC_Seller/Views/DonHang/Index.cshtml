@@ -170,48 +170,67 @@
                         <div class="order-actions text-end">
                             @if (order.TrangThaiDonHang == "Chờ xác nhận")
                             {
-                                using (Html.BeginForm("HuyDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    @Html.Hidden("id", order.MaDonHang)
-                                    <button type="submit" class="btn btn-sm btn-outline-danger me-1" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
-                                        Hủy đơn
-                                    </button>
-                                }
-                                using (Html.BeginForm("XacNhanDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    @Html.Hidden("id", order.MaDonHang)
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        Xác nhận
-                                    </button>
-                                }
+                                @*using (Html.BeginForm("HuyDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+            {
+                <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="text-primary justify-content-center" >Xem chi tiết</a>
+                <br />
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", order.MaDonHang)
+                <button type="submit" class="btn btn-sm btn-outline-danger me-1" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
+                    Hủy đơn
+                </button>
+            }
+            using (Html.BeginForm("XacNhanDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", order.MaDonHang)
+                <button type="submit" class="btn btn-sm btn-outline-success">
+                    Xác nhận
+                </button>
+            }*@
+
+                                <div class="action-buttons-stack">
+
+                                    <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-primary" style="background-color: #f7f7f7; color: #0d6efd; border-color: #ccc; font-weight: 500;">
+                                        Xem chi tiết
+                                    </a>
+
+                                    @using (Html.BeginForm("HuyDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block w-100" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("id", order.MaDonHang)
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
+                                            Hủy đơn
+                                        </button>
+                                    }
+
+                                    @using (Html.BeginForm("XacNhanDonHangSeller", "DonHang", FormMethod.Post, new { @class = "d-inline-block w-100" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("id", order.MaDonHang)
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            Xác nhận
+                                        </button>
+                                    }
+                                </div>
                             }
                             else if (order.TrangThaiDonHang == "Chờ lấy hàng")
                             {
-                                using (Html.BeginForm("DaBanGiaoHang", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
-                                {
+                                <div class="action-buttons-stack">
+                                    @using (Html.BeginForm("DaBanGiaoHang", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
+                                    {
                                     @Html.AntiForgeryToken()
                                     @Html.Hidden("id", order.MaDonHang)
                                     <button type="submit" class="btn btn-sm btn-outline-primary">
                                         Đã bàn giao hàng
                                     </button>
-                                }
+                                    }
+                                </div>
+                                
                             }
                             else if (order.TrangThaiDonHang == "Chờ giao hàng")
                             {
-                                @*<a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-secondary">
-                Thông tin vận chuyển
-            </a>
 
-            using (Html.BeginForm("XacNhanGiaoHangThanhCong", "DonHang", FormMethod.Post, new { @class = "d-inline-block" }))
-            {
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id", order.MaDonHang)
-                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Xác nhận đơn hàng này đã giao thành công tới khách hàng?');">
-                    <i class="bi bi-check-lg"></i> Xác nhận giao thành công
-                </button>
-            }*@
                                 <div class="action-buttons-stack">
                                     <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })"
                                        class="btn btn-sm btn-outline-secondary">
@@ -231,7 +250,12 @@
                             }
                             else
                             {
-                                <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="text-primary">Xem chi tiết</a>
+                                <div class="action-buttons-stack">
+                                    <a href="@Url.Action("ChiTiet", "DonHang", new { id = order.MaDonHang })" class="btn btn-sm btn-outline-primary" style="background-color: #f7f7f7; color: #0d6efd; border-color: #ccc; font-weight: 500;">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+                                
                             }
                         </div>
                     </div>
