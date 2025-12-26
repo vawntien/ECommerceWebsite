@@ -12,18 +12,64 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
         DBQuanLyNguoiDungHeThong db = new DBQuanLyNguoiDungHeThong();
         DBQuanLyKhuyenMai dbKhuyenMai = new DBQuanLyKhuyenMai();
         DBQuanLyCampaign dbCampaign = new DBQuanLyCampaign();
+        ECommerceWebsiteEntities dtbs = new ECommerceWebsiteEntities();
         // GET: QuanLyKhachHang
         public ActionResult Index()
         {
             return View();
         }
+        public ActionResult ChiTietDanhGiaCuaHang(int pMaCH)
+        {
+            CuaHang ch = db.DanhSachCuaHang().Where(t => t.MaCuaHang == pMaCH).First();
+            List<DonHang> dsdh = db.DanhSachDonHangTheoCuaHang(ch.MaCuaHang);
+
+
+            ViewBag.DanhSachDanhGia = dtbs.DanhGiaSanPhams.Where(t => t.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.MaCuaHang == pMaCH).ToList();
+            return View(ch);
+        }
+        public ActionResult ChiTietDanhGia(int pMaDG)
+        {
+            var danhGia = dtbs.DanhGiaSanPhams
+                .FirstOrDefault(t => t.MaDG == pMaDG);
+            
+            if (danhGia == null)
+                return HttpNotFound();
+            
+            // Nếu là AJAX request, trả về partial view
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("ChiTietDanhGia", danhGia);
+            }
+            
+            // Nếu không, trả về view thông thường
+            return View(danhGia);
+        }
+        [HttpPost]
+        public JsonResult XoaDanhGia(int pMaDG)
+        {
+            var danhGia = dtbs.DanhGiaSanPhams.FirstOrDefault(x => x.MaDG == pMaDG);
+            if (danhGia == null)
+                return Json(new { success = false });
+
+            dtbs.DanhGiaSanPhams.Remove(danhGia);
+            dtbs.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+
         public ActionResult TongQuan()
         {
             ViewBag.TongSoNguoiBan = db.TongSoNguoiBan();
             ViewBag.TongSoNguoiMua = db.TongSoNguoiMua();
             ViewBag.SoCuaHangBiKhoa = db.SoCuaHangBiKhoa();
             ViewBag.TongSoNhanVien = db.TongSoNhanVien();
-            return View();
+            NhanVien a = Session["NhanVien"] as NhanVien;
+            return View(a);
+        }
+        public ActionResult QuanLyDanhGiaSanPham()
+        {
+            return View(dtbs.DanhGiaSanPhams.ToList());
         }
         //public ActionResult QuanLyCuaHang(int page = 1)
         //{
@@ -107,11 +153,24 @@ namespace ECommerceWebsiteMVC_Admin.Controllers
             ViewBag.LichSuDonHang = dsdh;
             return View(ch);
         }
+
         public ActionResult ThayDoiTrangThaiCuaHang(int pMaCH, string pURL)
         {
-            db.ThayDoiTrangThaiCuaHang(pMaCH);
+            string message;
+            bool result = db.ThayDoiTrangThaiCuaHang(pMaCH, out message);
+
+            if (result)
+            {
+                TempData["Success"] = message;
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+
             return Redirect(pURL);
         }
+
         public ActionResult QuanLyNguoiMua(string keyword = "", string filterType = "email", int page = 1)
         {
             int pageSize = 10;  // mỗi trang 10 người mua

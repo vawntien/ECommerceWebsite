@@ -74,26 +74,77 @@ namespace ECommerceWebsiteMVC_Admin.Models
                      select dh;
             return rs.ToList();
         }
-        public bool ThayDoiTrangThaiCuaHang(int pMaCuaHang)
+        public bool ThayDoiTrangThaiCuaHang(int pMaCuaHang, out string message)
         {
+            message = "";
+
             try
             {
+                // 1. Lấy cửa hàng
                 CuaHang ch = db.CuaHangs.FirstOrDefault(t => t.MaCuaHang == pMaCuaHang);
-                ch.TrangThai = !ch.TrangThai;
+                if (ch == null)
+                {
+                    message = "Cửa hàng không tồn tại!";
+                    return false;
+                }
+
+                // 2. Nếu đang MỞ → cho KHÓA luôn
+                if (ch.TrangThai == true)
+                {
+                    ch.TrangThai = false;
+                    db.SaveChanges();
+                    message = "Đã khóa cửa hàng thành công.";
+                    return true;
+                }
+
+                // 3. Nếu đang KHÓA → kiểm tra người bán
+                var nguoiBan = db.NguoiBans.FirstOrDefault(nb => nb.MaNguoiBan == ch.MaNguoiBan);
+
+                if (nguoiBan == null || nguoiBan.TrangThai == false)
+                {
+                    message = "Không thể mở cửa hàng vì người bán đang bị khóa. Vui lòng mở người bán trước!";
+                    return false;
+                }
+
+                // 4. Người bán đang hoạt động → cho mở cửa hàng
+                ch.TrangThai = true;
                 db.SaveChanges();
+                message = "Đã mở khóa cửa hàng thành công.";
                 return true;
             }
-            catch { return false; }
+            catch
+            {
+                message = "Có lỗi xảy ra khi thay đổi trạng thái cửa hàng!";
+                return false;
+            }
         }
 
-        public bool ThayDoiTrangThaiNguoiBan(int pMaNguoiBan)
+
+        public bool ThayDoiTrangThaiNguoiBan(int maNguoiBan)
         {
             try
             {
-                var nb = db.NguoiBans.FirstOrDefault(x => x.MaNguoiBan == pMaNguoiBan);
-                if (nb == null) return false;
+                // 1. Lấy người bán
+                var nguoiBan = db.NguoiBans.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+                if (nguoiBan == null) return false;
 
-                nb.TrangThai = !nb.TrangThai;
+                // 2. Đảo trạng thái người bán
+                bool trangThaiMoi = !nguoiBan.TrangThai;
+                nguoiBan.TrangThai = trangThaiMoi;
+
+                // 3. Nếu KHÓA người bán → KHÓA toàn bộ cửa hàng
+                if (trangThaiMoi == false)
+                {
+                    var dsCuaHang = db.CuaHangs
+                                      .Where(ch => ch.MaNguoiBan == maNguoiBan)
+                                      .ToList();
+
+                    foreach (var ch in dsCuaHang)
+                    {
+                        ch.TrangThai = false;
+                    }
+                }
+
                 db.SaveChanges();
                 return true;
             }

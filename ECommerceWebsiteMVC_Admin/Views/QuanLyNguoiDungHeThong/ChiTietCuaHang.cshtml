@@ -10,9 +10,22 @@
 <main class="p-6 lg:p-10">
     <div class="mx-auto max-w-5xl">
 
-        <!-- ================================================= -->
-        <!-- 🟦 THÔNG TIN CỬA HÀNG -->
-        <!-- ================================================= -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="mb-6 flex items-center rounded-lg bg-green-100 px-4 py-3 text-green-800">
+                <span class="material-symbols-outlined mr-2">check_circle</span>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="mb-6 flex items-center rounded-lg bg-red-100 px-4 py-3 text-red-800">
+                <span class="material-symbols-outlined mr-2">error</span>
+                @TempData["Error"]
+            </div>
+        }
+
         <div class="mb-10 rounded-lg border border-stone-200 bg-white p-6 shadow-sm
                     dark:border-stone-800 dark:bg-stone-900">
 
@@ -23,7 +36,6 @@
             <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 
                 <div class="flex items-center gap-6">
-                    <!-- Avatar -->
                     <div class="h-24 w-24 rounded-full bg-cover bg-center"
                          style="background-image:url('https://e7.pngegg.com/pngimages/81/570/png-clipart-profile-logo-computer-icons-user-user-blue-heroes-thumbnail.png')">
                     </div>
@@ -63,27 +75,23 @@
                 </div>
 
                 <!-- NÚT KHÓA / MỞ CỬA HÀNG -->
-                <div>
-                    <a href="@Url.Action(
-                                "ThayDoiTrangThaiCuaHang",
-                                "QuanLyNguoiDungHeThong",
-                                new {
-                                    pMaCH = Model.MaCuaHang,
-                                    pURL = Request.RawUrl
-                                })"
-                       class="inline-flex h-10 items-center justify-center rounded-md px-5
-                              @(Model.TrangThai ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700")
-                              text-sm font-bold text-white">
-                        @(Model.TrangThai ? "Khóa cửa hàng" : "Mở khóa cửa hàng")
-                    </a>
-                </div>
+                <a href="@Url.Action(
+                            "ThayDoiTrangThaiCuaHang",
+                            "QuanLyNguoiDungHeThong",
+                            new {
+                                pMaCH = Model.MaCuaHang,
+                                pURL = Request.RawUrl
+                            })"
+                   class="inline-flex h-10 items-center justify-center rounded-md px-5
+                          @(Model.TrangThai ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700")
+                          text-sm font-bold text-white">
+                    @(Model.TrangThai ? "Khóa cửa hàng" : "Mở khóa cửa hàng")
+                </a>
 
             </div>
         </div>
 
-        <!-- ================================================= -->
-        <!-- 🟧 THÔNG TIN NGƯỜI BÁN -->
-        <!-- ================================================= -->
+
         <div class="mb-10 rounded-lg border border-stone-200 bg-white p-6 shadow-sm
                     dark:border-stone-800 dark:bg-stone-900">
 
@@ -120,27 +128,41 @@
                 </div>
 
                 <!-- NÚT KHÓA / MỞ NGƯỜI BÁN -->
-                <div>
-                    <a href="@Url.Action(
-                                "ThayDoiTrangThaiNguoiBan",
-                                "QuanLyNguoiDungHeThong",
-                                new {
-                                    pMaNB = Model.NguoiBan.MaNguoiBan,
-                                    returnUrl = Request.RawUrl
-                                })"
-                       class="inline-flex h-10 items-center justify-center rounded-md px-5
-                              @(Model.NguoiBan.TrangThai ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700")
-                              text-sm font-bold text-white">
-                        @(Model.NguoiBan.TrangThai ? "Khóa người bán" : "Mở khóa người bán")
-                    </a>
-                </div>
+                <a href="@Url.Action(
+                            "ThayDoiTrangThaiNguoiBan",
+                            "QuanLyNguoiDungHeThong",
+                            new {
+                                pMaNB = Model.NguoiBan.MaNguoiBan,
+                                returnUrl = Request.RawUrl
+                            })"
+                   class="inline-flex h-10 items-center justify-center rounded-md px-5
+                          @(Model.NguoiBan.TrangThai ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700")
+                          text-sm font-bold text-white">
+                    @(Model.NguoiBan.TrangThai ? "Khóa người bán" : "Mở khóa người bán")
+                </a>
 
             </div>
         </div>
 
-        <!-- ================================================= -->
-        <!-- 📦 LỊCH SỬ ĐƠN HÀNG -->
-        <!-- ================================================= -->
+
+        <!-- =================================================================== -->
+        <!-- TAB MENU -->
+        <!-- =================================================================== -->
+        <div class="mb-6">
+            <div class="flex border-b border-stone-200 dark:border-stone-800">
+
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary px-4 pb-3 pt-4" href="@Url.Action("ChiTietCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
+                    <p class="text-primary text-sm font-semibold">Lịch sử đơn hàng</p>
+                </a>
+
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary" href="@Url.Action("ChiTietDanhGiaCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
+                    <p class="text-sm font-semibold">Danh sách đánh giá sản phẩm</p>
+                </a>
+
+            </div>
+        </div>
+
+
         <div class="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm
                     dark:border-stone-800 dark:bg-stone-900">
 
@@ -156,20 +178,31 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var dh in lstDH)
+                    @if (lstDH != null && lstDH.Any())
                     {
-                        <tr class="border-t dark:border-stone-700">
-                            <td class="px-6 py-4 font-medium">@dh.MaDonHang</td>
-                            <td class="px-6 py-4">@dh.ThoiGianDat.ToString("dd/MM/yyyy")</td>
-                            <td class="px-6 py-4">@dh.TenNguoiNhan</td>
-                            <td class="px-6 py-4 text-right">@dh.TongTien.ToString("N0") đ</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
-                                    @(dh.TrangThaiDonHang == "Đã giao" ? "bg-green-100 text-green-800"
-                                      : dh.TrangThaiDonHang == "Đã hủy" ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-red-100 text-red-800")">
-                                    @dh.TrangThaiDonHang
-                                </span>
+                        foreach (var dh in lstDH)
+                        {
+                            <tr class="border-t dark:border-stone-700">
+                                <td class="px-6 py-4 font-medium">@dh.MaDonHang</td>
+                                <td class="px-6 py-4">@dh.ThoiGianDat.ToString("dd/MM/yyyy")</td>
+                                <td class="px-6 py-4">@dh.TenNguoiNhan</td>
+                                <td class="px-6 py-4 text-right">@dh.TongTien.ToString("N0") đ</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
+                                        @(dh.TrangThaiDonHang == "Đã giao" ? "bg-green-100 text-green-800"
+                                          : dh.TrangThaiDonHang == "Đã hủy" ? "bg-yellow-100 text-yellow-800"
+                                          : "bg-red-100 text-red-800")">
+                                        @dh.TrangThaiDonHang
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="px-6 py-6 text-center text-stone-500">
+                                Chưa có đơn hàng
                             </td>
                         </tr>
                     }
