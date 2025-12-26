@@ -65,7 +65,7 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                 if (shopDb.HasShop(sellerId))
                 {
                     Session["TenShop"] = shopDb.GetShopName(sellerId);
-                    return RedirectToAction("Index", "NguoiBan");
+                    return RedirectToAction("TongQuan", "NguoiBan");
                 }
                 else
                 {
