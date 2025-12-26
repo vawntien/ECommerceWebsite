@@ -14,37 +14,73 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            
+
+            //ViewBag.SanPhamHot = GetTopSanPhamHot(10);
+            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
+
+            //if (Session["RandomProductIds"] == null)
+            //{
+            //    var allIds = ql.SanPhams
+            //        .Select(sp => sp.MaSanPham)
+            //        .ToList();
+
+            //    if (!allIds.Any())
+            //        return View(new List<SanPham>());
+
+            //    Random rnd = new Random();
+            //    var shuffledIds = allIds
+            //        .OrderBy(x => rnd.Next())
+            //        .ToList();
+
+            //    Session["RandomProductIds"] = shuffledIds;
+            //}
+
+            //var randomIds = Session["RandomProductIds"] as List<int>;
+
+            //var firstIds = randomIds.Take(24).ToList();
+
+            //List<SanPham> dssp = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Where(sp => firstIds.Contains(sp.MaSanPham))
+            //    .ToList();
+
+            //dssp = dssp
+            //    .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
+            //    .ToList();
+
+            //return View(dssp);
+            //Session.Remove("RandomProductIds");
             ViewBag.SanPhamHot = GetTopSanPhamHot(10);
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
 
             if (Session["RandomProductIds"] == null)
             {
                 var allIds = ql.SanPhams
+                    .Include(sp => sp.CuaHang)
+                    .Where(sp => sp.CuaHang.TrangThai == true)
                     .Select(sp => sp.MaSanPham)
                     .ToList();
 
                 if (!allIds.Any())
                     return View(new List<SanPham>());
 
-                Random rnd = new Random();
-                var shuffledIds = allIds
+                var rnd = new Random();
+                Session["RandomProductIds"] = allIds
                     .OrderBy(x => rnd.Next())
                     .ToList();
-
-                Session["RandomProductIds"] = shuffledIds;
             }
 
             var randomIds = Session["RandomProductIds"] as List<int>;
-
             var firstIds = randomIds.Take(24).ToList();
 
-            List<SanPham> dssp = ql.SanPhams
-                .Include("AnhSanPhams")
-                .Where(sp => firstIds.Contains(sp.MaSanPham))
-                .ToList();
-
-            dssp = dssp
+            var dssp = ql.SanPhams
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.CuaHang)
+                .Where(sp =>
+                    firstIds.Contains(sp.MaSanPham) &&
+                    sp.CuaHang.TrangThai == true
+                )
+                .ToList()
                 .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
                 .ToList();
 
@@ -219,13 +255,39 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult TimKiem(string keyword)
         {
+            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            //ViewBag.Keyword = keyword;
+
+            //if (string.IsNullOrWhiteSpace(keyword))
+            //{
+            //    var tatCa = ql.SanPhams
+            //        .Include("AnhSanPhams")
+            //        .ToList();
+
+            //    return View("Index", tatCa);
+            //}
+
+            //keyword = keyword.Trim();
+
+            //var sanPhamTimDuoc = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Include("DanhMuc")
+            //    .Where(sp =>
+            //        (sp.TenSanPham.Contains(keyword) ||
+            //        sp.DanhMuc.TenDanhMuc.Contains(keyword)&& sp.CuaHang.TrangThai == true)
+            //    )
+            //    .ToList();
+
+            //return View("Index", sanPhamTimDuoc);
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
             ViewBag.Keyword = keyword;
 
             if (string.IsNullOrWhiteSpace(keyword))
             {
                 var tatCa = ql.SanPhams
-                    .Include("AnhSanPhams")
+                    .Include(sp => sp.AnhSanPhams)
+                    .Include(sp => sp.CuaHang)
+                    .Where(sp => sp.CuaHang.TrangThai == true)
                     .ToList();
 
                 return View("Index", tatCa);
@@ -234,11 +296,15 @@ namespace ECommerceWebsiteMVC.Controllers
             keyword = keyword.Trim();
 
             var sanPhamTimDuoc = ql.SanPhams
-                .Include("AnhSanPhams")
-                .Include("DanhMuc")
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.DanhMuc)
+                .Include(sp => sp.CuaHang)
                 .Where(sp =>
-                    sp.TenSanPham.Contains(keyword) ||
-                    sp.DanhMuc.TenDanhMuc.Contains(keyword)
+                    sp.CuaHang.TrangThai == true &&
+                    (
+                        sp.TenSanPham.Contains(keyword) ||
+                        sp.DanhMuc.TenDanhMuc.Contains(keyword)
+                    )
                 )
                 .ToList();
 
@@ -267,6 +333,7 @@ namespace ECommerceWebsiteMVC.Controllers
                     (hot, sp) => sp
                 )
                 .ToList();
+            
 
             return sanPhamHot;
         }
@@ -275,6 +342,28 @@ namespace ECommerceWebsiteMVC.Controllers
         [HttpGet]
         public ActionResult LoadMoreProducts(int skip)
         {
+            //var randomIds = Session["RandomProductIds"] as List<int>;
+            //if (randomIds == null)
+            //    return Content("");
+
+            //var nextIds = randomIds
+            //    .Skip(skip)
+            //    .Take(24)
+            //    .ToList();
+
+            //if (!nextIds.Any())
+            //    return Content("");
+
+            //var products = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Where(sp => nextIds.Contains(sp.MaSanPham))
+            //    .ToList();
+
+            //products = products
+            //    .OrderBy(sp => nextIds.IndexOf(sp.MaSanPham))
+            //    .ToList();
+
+            //return PartialView("_ProductListPartial", products);
             var randomIds = Session["RandomProductIds"] as List<int>;
             if (randomIds == null)
                 return Content("");
@@ -288,18 +377,18 @@ namespace ECommerceWebsiteMVC.Controllers
                 return Content("");
 
             var products = ql.SanPhams
-                .Include("AnhSanPhams")
-                .Where(sp => nextIds.Contains(sp.MaSanPham))
-                .ToList();
-
-            products = products
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.CuaHang)
+                .Where(sp =>
+                    nextIds.Contains(sp.MaSanPham) &&
+                    sp.CuaHang.TrangThai == true
+                )
+                .ToList()
                 .OrderBy(sp => nextIds.IndexOf(sp.MaSanPham))
                 .ToList();
 
             return PartialView("_ProductListPartial", products);
         }
-
-
 
     }
 }

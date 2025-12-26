@@ -27,6 +27,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
                      where ch.MaNguoiBan == id
                      select dh;
             return (int)rs.Where(t => t.TrangThaiDonHang == "Đã giao").Sum(t => t.TongTien);
+
         }
         public int DonHangThanhCong(int id)
         {
