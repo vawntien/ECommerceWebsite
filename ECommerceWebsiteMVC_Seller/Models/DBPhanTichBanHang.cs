@@ -18,6 +18,15 @@ namespace ECommerceWebsiteMVC_Seller.Models
         }
         public int TongDoanhThu(int id)
         {
+            //var rs = from dh in db.DonHangs
+            //         join ctdh in db.ChiTietDonHangs on dh.MaDonHang equals ctdh.MaDonHang
+            //         join ctgh in db.ChiTietGioHangs on ctdh.MaCTGH equals ctgh.MaCTGH
+            //         join bt in db.BienTheSanPhams on ctgh.MaBienThe equals bt.MaBienThe
+            //         join sp in db.SanPhams on bt.MaSanPham equals sp.MaSanPham
+            //         join ch in db.CuaHangs on sp.MaCuaHang equals ch.MaCuaHang
+            //         where ch.MaNguoiBan == id
+            //         select dh;
+            //return (int)rs.Where(t => t.TrangThaiDonHang == "Đã giao").Sum(t => t.TongTien);
             var rs = from dh in db.DonHangs
                      join ctdh in db.ChiTietDonHangs on dh.MaDonHang equals ctdh.MaDonHang
                      join ctgh in db.ChiTietGioHangs on ctdh.MaCTGH equals ctgh.MaCTGH
@@ -25,8 +34,13 @@ namespace ECommerceWebsiteMVC_Seller.Models
                      join sp in db.SanPhams on bt.MaSanPham equals sp.MaSanPham
                      join ch in db.CuaHangs on sp.MaCuaHang equals ch.MaCuaHang
                      where ch.MaNguoiBan == id
-                     select dh;
-            return (int)rs.Where(t => t.TrangThaiDonHang == "Đã giao").Sum(t => t.TongTien);
+                           && dh.TrangThaiDonHang == "Đã giao"
+                     select dh.TongTien;
+
+            // FIX NULL
+            decimal tong = rs.Sum(t => (decimal?)t) ?? 0;
+            return (int)tong;
+
 
         }
         public int DonHangThanhCong(int id)
