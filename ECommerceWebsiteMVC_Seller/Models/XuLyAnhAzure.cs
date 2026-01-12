@@ -10,7 +10,7 @@ public class XuLyAnhAzure
 {
     private readonly string _connectionString;
     /// <summary>
-    /// /abc
+    /// a/d/sadsadasdasdsad
     /// </summary>
     // Tên các container
     private const string USERS_CONTAINER = "users";
