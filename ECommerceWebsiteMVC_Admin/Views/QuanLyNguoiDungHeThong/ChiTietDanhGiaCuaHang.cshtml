@@ -1,0 +1,411 @@
+﻿@using ECommerceWebsiteMVC_Admin.Models
+@model CuaHang
+@{
+    ViewBag.Title = "Chi tiết Người Bán";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+    List<DanhGiaSanPham> dsDG = ViewBag.DanhSachDanhGia;
+}
+
+
+
+<style>
+    .star-rating {
+        display: inline-flex;
+        gap: 0.25rem;
+    }
+
+    .star-rating .material-icons {
+        font-size: 1.75rem;
+        color: #f59e0b;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .review-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .review-form-field.horizontal {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .review-form-field.textarea-field {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        align-items: start;
+        gap: 1rem;
+    }
+
+    .review-input-wrapper {
+        width: 100%;
+    }
+
+    .review-input-wrapper input,
+    .review-input-wrapper textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+    }
+
+    .review-input-wrapper input[readonly],
+    .review-input-wrapper textarea[readonly] {
+        background-color: #f3f4f6;
+        cursor: not-allowed;
+    }
+
+    .review-input-wrapper input:focus,
+    .review-input-wrapper textarea:focus {
+        outline: none;
+        border-color: #f97316;
+        box-shadow: 0 0 0 1px #f97316;
+    }
+
+    .review-input-wrapper textarea {
+        height: 128px;
+        resize: vertical;
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 50;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        max-width: 42rem;
+        width: calc(100% - 2rem);
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .modal-content.dark {
+        background: #1e293b;
+        color: #e5e7eb;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 0.5rem;
+    }
+
+    .modal-close:hover {
+        color: #6b7280;
+    }
+
+    .modal-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-content.dark .modal-title {
+        color: #f3f4f6;
+    }
+</style>
+
+<main class="p-6 lg:p-10">
+
+    <div class="mx-auto max-w-5xl">
+
+        <!-- =================================================================== -->
+        <!-- 🟦 THÔNG TIN CỬA HÀNG -->
+        <!-- =================================================================== -->
+        <div class="mb-10 rounded-lg border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900">
+
+            <h2 class="text-lg font-bold mb-4 text-stone-800 dark:text-stone-200">Thông tin Cửa Hàng</h2>
+
+            <div class="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+
+                <div class="flex items-center gap-6">
+
+                    <!-- Avatar cửa hàng -->
+                    <div class="bg-center bg-cover rounded-full h-24 w-24"
+                         style='background-image: url(https://e7.pngegg.com/pngimages/81/570/png-clipart-profile-logo-computer-icons-user-user-blue-heroes-thumbnail.png);'>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <p class="text-stone-900 dark:text-stone-100 text-xl font-bold">
+                            @Model.TenCuaHang
+                        </p>
+
+                        <p class="text-stone-500 dark:text-stone-400 text-sm">
+                            Ngày đăng ký:
+                            @(Model.NgayDangKy.HasValue
+                                ? Model.NgayDangKy.Value.ToString("dd/MM/yyyy")
+                                : "—")
+                        </p>
+
+                        <p class="text-stone-500 dark:text-stone-400 text-sm">
+                            Mã số thuế: @Model.MaSoThue
+                        </p>
+
+                        <p class="text-stone-500 dark:text-stone-400 text-sm">
+                            Địa chỉ: @Model.DiaChi
+                        </p>
+                    </div>
+                </div>
+
+                <button class="flex items-center justify-center rounded-md h-10 px-5 bg-red-500 text-white text-sm font-bold hover:bg-red-600">
+
+                    @Html.ActionLink((Model.TrangThai ? "Khóa cửa hàng" : "Mở khóa cửa hàng"), "ThayDoiTrangThaiCuaHang", "QuanLyNguoiDungHeThong", new { @pMaCH = Model.MaCuaHang, @pURL = Request.Url }, null)
+
+                </button>
+
+            </div>
+        </div>
+
+
+        <!-- 🟧 THÔNG TIN NGƯỜI BÁN -->
+        <div class="mb-6 rounded-lg border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900">
+
+            <h2 class="text-lg font-bold mb-4 text-stone-800 dark:text-stone-200">Thông tin Người Bán</h2>
+
+            <div class="flex flex-col gap-2">
+
+                <p class="text-stone-900 dark:text-stone-100 text-base font-semibold">
+                    Họ tên: @Model.NguoiBan.HoVaTen
+                </p>
+
+                <p class="text-stone-500 dark:text-stone-400 text-sm">
+                    Email: @Model.NguoiBan.Email
+                </p>
+
+                <p class="text-stone-500 dark:text-stone-400 text-sm">
+                    Số điện thoại: @Model.NguoiBan.SDT
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================================== -->
+        <!-- TAB MENU -->
+        <!-- =================================================================== -->
+        <div class="mb-6">
+            <div class="flex border-b border-stone-200 dark:border-stone-800">
+
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent px-4 pb-3 pt-4 text-stone-500 hover:text-primary" href="@Url.Action("ChiTietCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
+                    <p class="text-sm font-semibold">Lịch sử đơn hàng</p>
+                </a>
+
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary px-4 pb-3 pt-4 text-primary" href="@Url.Action("ChiTietDanhGiaCuaHang", "QuanLyNguoiDungHeThong", new {@pMaCH = @Model.MaCuaHang})">
+                    <p class="text-sm font-semibold">Danh sách đánh giá sản phẩm</p>
+                </a>
+
+            </div>
+        </div>
+
+
+
+        <!-- =================================================================== -->
+        <!-- DANH SÁCH ĐÁNH GIÁ -->
+        <!-- =================================================================== -->
+        <div class="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900">
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-left text-sm text-stone-600 dark:text-stone-300">
+                    <thead class="bg-stone-50 text-xs uppercase text-stone-700 dark:bg-stone-800 dark:text-stone-400">
+                        <tr>
+                            <th class="px-6 py-3 font-medium">Mã đánh giá</th>
+                            <th class="px-6 py-3 font-medium">Thời gian</th>
+                            <th class="px-6 py-3 font-medium">Khách Hàng</th>
+                            <th class="px-6 py-3 font-medium">Tên sản phẩm</th>
+                            <th class="px-6 py-3 font-medium">Số sao</th>
+                            <th class="px-6 py-3 font-medium">Tiêu đề</th>
+                            <th class="px-6 py-3 font-medium">hành động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var dg in dsDG)
+                        {
+                            <tr class="border-b border-stone-200/80 dark:border-stone-700/50">
+
+                                <td class="px-6 py-4 font-medium text-stone-900 dark:text-white">
+                                    @dg.MaDG
+                                </td>
+
+                                <td class="px-6 py-4">@dg.ThoiGian.Value.ToString("dd/MM/yyyy")</td>
+
+                                <td class="px-6 py-4">@dg.ChiTietDonHang.ChiTietGioHang.GioHang.NguoiMua.TaiKhoan</td>
+
+                                <td class="px-6 py-4 text-left">@dg.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.TenSanPham</td>
+
+                                <td class="px-6 py-4">@dg.SoSao</td>
+                                <td class="px-6 py-4">@dg.TieuDe</td>
+
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-center">
+                                        <button type="button"
+                                                class="flex items-center justify-center rounded-md h-10 px-5 bg-red-500 text-white text-sm font-bold hover:bg-red-600 btnChiTietDanhGia"
+                                                data-id="@dg.MaDG">
+                                            Chi tiết
+                                        </button>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Modal Chi tiết đánh giá sản phẩm -->
+<div id="product-review-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button type="button" class="modal-close" onclick="closeReviewModal()">
+            <span class="material-icons">close</span>
+        </button>
+
+        <h1 class="modal-title">Chi tiết Đánh Giá Sản Phẩm</h1>
+
+        <div id="modalReviewContent">
+            <!-- Nội dung sẽ được load bằng AJAX -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeReviewModal() {
+        var modal = document.getElementById('product-review-modal');
+        modal.classList.remove('active');
+        var content = document.getElementById('modalReviewContent');
+        if (content) content.innerHTML = '';
+    }
+
+    // mở modal khi click nút Chi tiết
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btnChiTietDanhGia')) {
+            var maDG = e.target.getAttribute('data-id');
+            var modal = document.getElementById('product-review-modal');
+            var modalContent = document.getElementById('modalReviewContent');
+
+            modalContent.innerHTML = '<div style="text-align: center; padding: 1rem;"><span>Đang tải...</span></div>';
+            modal.classList.add('active');
+
+            // Load chi tiết đánh giá từ server
+            fetch('@Url.Action("ChiTietDanhGia", "QuanLyNguoiDungHeThong")?pMaDG=' + maDG)
+                .then(response => response.text())
+                .then(html => {
+                    modalContent.innerHTML = html;
+                    initializeReviewModal();
+                })
+                .catch(error => {
+                    modalContent.innerHTML = '<div style="color: #dc2626;">Lỗi khi tải dữ liệu</div>';
+                });
+        }
+    });
+
+    // đóng modal khi click nền
+    document.addEventListener('click', function (e) {
+        var modal = document.getElementById('product-review-modal');
+        if (e.target === modal) {
+            closeReviewModal();
+        }
+    });
+
+    // Khởi tạo lại các event cho modal khi tải nội dung
+    function initializeReviewModal() {
+        var starsContainer = document.getElementById('review-stars');
+        var hiddenInput = document.getElementById('SoSao');
+        var ratingText = document.getElementById('rating-text');
+        var labels = ["", "Tệ", "Tạm ổn", "Khá", "Tốt", "Tuyệt vời"];
+
+        if (starsContainer && hiddenInput) {
+            var stars = starsContainer.querySelectorAll('.material-icons');
+
+            function render(value) {
+                stars.forEach(function (s) {
+                    var v = parseInt(s.getAttribute('data-value'));
+                    s.textContent = v <= value ? 'star' : 'star_border';
+                });
+                if (ratingText) ratingText.textContent = labels[value] || "";
+            }
+
+            var initial = parseInt(hiddenInput.value) || 5;
+            render(initial);
+            
+            // Disable star clicking since it's read-only
+            stars.forEach(function (s) {
+                s.style.cursor = 'default';
+                s.style.pointerEvents = 'none';
+            });
+        }
+
+        // Setup delete button from partial view
+        var deleteBtn = document.getElementById('btnDeleteReview');
+        if (deleteBtn && !deleteBtn.dataset.initialized) {
+            deleteBtn.dataset.initialized = 'true';
+            
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (!confirm('Bạn chắc chắn muốn xóa đánh giá này?')) return;
+
+                var maDG = this.getAttribute('data-madg');
+                
+                fetch('@Url.Action("XoaDanhGia", "QuanLyNguoiDungHeThong")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'pMaDG=' + encodeURIComponent(maDG)
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok: ' + res.status);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        alert('Xóa thành công');
+                        location.reload();
+                    } else {
+                        alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Có lỗi xảy ra: ' + err.message);
+                });
+            });
+        }
+    }
+</script>

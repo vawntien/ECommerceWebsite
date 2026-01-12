@@ -87,17 +87,36 @@ namespace ECommerceWebsiteMVC.Controllers
             // 🔹 1. Kiểm tra xem MaCTDH này đã có đánh giá chưa
             var danhGia = db.DanhGiaSanPhams.FirstOrDefault(x => x.MaCTDH == model.MaCTDH);
 
+
+
+
+
             if (danhGia == null)
             {
                 // 👉 CHƯA có đánh giá -> tạo mới
                 danhGia = new DanhGiaSanPham
                 {
-                    MaCTDH = model.MaCTDH
+                    MaCTDH = model.MaCTDH,
+                    SoLan = 1
                 };
                 db.DanhGiaSanPhams.Add(danhGia);
+                ViewBag.ReviewError = "";
             }
 
-            // 🔹 2. Cập nhật thông tin đánh giá (cả thêm mới và sửa)
+
+            else
+            {
+                if (danhGia.SoLan == 2 || DateTime.Now >= danhGia.ThoiGian.Value.AddDays(40))
+                {
+                    danhGia.SoLan = 2;
+                    db.SaveChanges();
+                    TempData["ReviewError"] = "Không được sửa đánh giá!";
+                    return Redirect(ReturnUrl);
+                }
+                danhGia.SoLan = 2;
+            }
+
+                // 🔹 2. Cập nhật thông tin đánh giá (cả thêm mới và sửa)
             danhGia.SoSao = model.SoSao;
             danhGia.TieuDe = model.TieuDe;
             danhGia.NoiDung = model.NoiDung;
@@ -136,15 +155,15 @@ namespace ECommerceWebsiteMVC.Controllers
 
         public ActionResult DanhGiaSanPhamPartial(int pMaSP)
         {
-            var param = new SqlParameter("@MaSanPham", pMaSP);
+            var result =
+                        (from dg in db.DanhGiaSanPhams
+                         join dh in db.ChiTietDonHangs on dg.MaCTDH equals dh.MaCTDH
+                         join gh in db.ChiTietGioHangs on dh.MaCTGH equals gh.MaCTGH
+                         join bt in db.BienTheSanPhams on gh.MaBienThe equals bt.MaBienThe
+                         where bt.MaSanPham == pMaSP
+                         select dg)
+                        .ToList();
 
-            // Gọi TVF: SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)
-            List<DanhGiaSanPham> lstdg = db.Database
-                .SqlQuery<DanhGiaSanPham>(
-                    "SELECT * FROM dbo.fn_LayDanhGiaSanPham(@MaSanPham)",
-                    param
-                )
-                .ToList();
             double saoTB = 0;
             var sp = db.SanPhams.SingleOrDefault(s => s.MaSanPham == pMaSP);
             if (sp != null && sp.SoSaoTrungBinh.HasValue)
@@ -154,7 +173,7 @@ namespace ECommerceWebsiteMVC.Controllers
 
             ViewBag.SaoTrungBinhSP = saoTB;
 
-            return PartialView("DanhGiaSanPhamPartial", lstdg);
+            return PartialView("DanhGiaSanPhamPartial", result);
         }
 
 

@@ -152,6 +152,45 @@ public class XuLyAnhAzure
 
         await blob.DeleteIfExistsAsync();
     }
+    public async Task<string> CopyProductImageToVariantAsync(string maSanPham,string productFileName,string variantFileName = null)
+    {
+        if (Uri.IsWellFormedUriString(productFileName, UriKind.Absolute))
+        {
+            productFileName = Path.GetFileName(new Uri(productFileName).LocalPath);
+        }
+        if (string.IsNullOrEmpty(maSanPham))
+            throw new Exception("Mã sản phẩm không hợp lệ!");
+
+        if (string.IsNullOrEmpty(productFileName))
+            throw new Exception("Tên file không hợp lệ!");
+
+        if (string.IsNullOrWhiteSpace(variantFileName))
+            variantFileName = productFileName;
+
+        BlobServiceClient service = new BlobServiceClient(_connectionString);
+
+        // Source: products/{maSP}/{fileName}
+        BlobContainerClient productContainer =
+            service.GetBlobContainerClient(PRODUCTS_CONTAINER);
+
+        BlobClient sourceBlob =
+            productContainer.GetBlobClient($"{maSanPham}/{productFileName}");
+
+        if (!await sourceBlob.ExistsAsync())
+            throw new Exception("Ảnh sản phẩm không tồn tại!");
+
+        // Destination: variants/{fileName}
+        BlobContainerClient variantContainer =
+            service.GetBlobContainerClient(VARIANTS_CONTAINER);
+
+        BlobClient destBlob =
+            variantContainer.GetBlobClient(variantFileName);
+
+        await destBlob.StartCopyFromUriAsync(sourceBlob.Uri);
+
+        return destBlob.Uri.ToString();
+    }
+
 
     // ==========================================================
     // 4) STORES

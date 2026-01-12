@@ -1,0 +1,30 @@
+﻿@model List<ECommerceWebsiteMVC.Models.SanPham>
+
+@foreach (var item in Model)
+{
+    var macdinh = item.AnhSanPhams
+        .Where(x => x.MacDinh == true)
+        .Select(x => x.HinhAnh)
+        .FirstOrDefault()
+        ?? item.AnhSanPhams.Select(x => x.HinhAnh).FirstOrDefault();
+
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+            <div class="product-img-wrapper">
+                <a href="@Url.Action("ChiTietSanPham", "SanPham", new { id = item.MaSanPham })">
+                    <img src="https://ecommerceshopstorage.blob.core.windows.net/products/@item.MaSanPham/@macdinh" />
+                </a>
+            </div>
+
+            <div class="product-body">
+                <div class="product-title">@item.TenSanPham</div>
+
+                <div class="product-meta d-flex justify-content-between mt-1"
+                     style="font-size:11px;color:#777;">
+                    <span>@item.SoSaoTrungBinh</span>
+                    <span>Đã bán @item.LoaiPhanLoai</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}

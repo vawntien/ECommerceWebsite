@@ -1,0 +1,223 @@
+@using ECommerceWebsiteMVC_Admin.Models
+@model CampaignInfo
+@{
+    ViewBag.Title = "Chi tiết Campaign";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+    var danhSachSanPham = ViewBag.DanhSachSanPham as List<int> ?? new List<int>();
+    var danhSachDanhMuc = ViewBag.DanhSachDanhMuc as List<int> ?? new List<int>();
+    var sanPhams = ViewBag.SanPhams as List<SanPham> ?? new List<SanPham>();
+    var danhMucs = ViewBag.DanhMucs as List<DanhMuc> ?? new List<DanhMuc>();
+    DateTime now = DateTime.Now;
+    bool isActive = Model.TrangThai && (Model.NgayBD == null || Model.NgayBD <= now) && (Model.NgayKT == null || Model.NgayKT >= now);
+    bool isExpired = Model.NgayKT != null && Model.NgayKT < now;
+    bool isUpcoming = Model.NgayBD != null && Model.NgayBD > now;
+}
+
+<!-- PageHeading -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-[#181210] dark:text-white text-3xl font-bold leading-tight tracking-tight">Chi tiết Campaign</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Thông tin chi tiết chương trình khuyến mãi</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="@Url.Action("SuaCampaign", "QuanLyNguoiDungHeThong", new { id = Model.MaCampaign })"
+           class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">
+            Sửa
+        </a>
+        <a href="@Url.Action("QuanLyCampaign", "QuanLyNguoiDungHeThong")"
+           class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">
+            Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Thông tin chính -->
+    <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Thông tin Campaign -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Thông tin Campaign</h2>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Mã Campaign</label>
+                        <p class="text-base text-gray-900 dark:text-white">@Model.MaCampaign</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Trạng thái</label>
+                        <p>
+                            @if (isActive)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    Đang hoạt động
+                                </span>
+                            }
+                            else if (isExpired)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                    Hết hạn
+                                </span>
+                            }
+                            else if (isUpcoming)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                    Sắp diễn ra
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">
+                                    Đã tắt
+                                </span>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Tên Campaign</label>
+                    <p class="text-base text-gray-900 dark:text-white">@Model.TenCampaign</p>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Mô tả</label>
+                    <p class="text-base text-gray-900 dark:text-white">@(Model.MoTa ?? "-")</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Loại giảm giá</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @(Model.LoaiGiamGia == "PhanTram" ? "Phần trăm (%)" : "Số tiền cố định (đ)")
+                        </p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Giá trị giảm</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @if (Model.LoaiGiamGia == "PhanTram")
+                            {
+                                <span>@Model.GiaTriGiam.ToString("0.##")%</span>
+                            }
+                            else
+                            {
+                                <span>@Model.GiaTriGiam.ToString("N0") đ</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày bắt đầu</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @(Model.NgayBD.HasValue ? Model.NgayBD.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                        </p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày kết thúc</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @(Model.NgayKT.HasValue ? Model.NgayKT.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sản phẩm áp dụng (@danhSachSanPham.Count)</h2>
+            
+            @if (danhSachSanPham.Any())
+            {
+                <div class="space-y-2">
+                    @foreach (var maSP in danhSachSanPham)
+                    {
+                        var sp = sanPhams.FirstOrDefault(s => s.MaSanPham == maSP);
+                        if (sp != null)
+                        {
+                            <div class="p-3 border border-gray-200 dark:border-gray-700 rounded-md">
+                                <span class="text-sm text-gray-900 dark:text-white">@sp.TenSanPham</span>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">Không có sản phẩm nào được chọn</p>
+            }
+        </div>
+
+        <!-- Danh sách danh mục -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Danh mục áp dụng (@danhSachDanhMuc.Count)</h2>
+            
+            @if (danhSachDanhMuc.Any())
+            {
+                <div class="space-y-2">
+                    @foreach (var maDM in danhSachDanhMuc)
+                    {
+                        var dm = danhMucs.FirstOrDefault(d => d.MaDanhMuc == maDM);
+                        if (dm != null)
+                        {
+                            <div class="p-3 border border-gray-200 dark:border-gray-700 rounded-md">
+                                <span class="text-sm text-gray-900 dark:text-white">@dm.TenDanhMuc</span>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">Không có danh mục nào được chọn</p>
+            }
+        </div>
+
+    </div>
+
+    <!-- Sidebar actions -->
+    <div class="space-y-6">
+        
+        <!-- Actions -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Hành động</h2>
+            
+            <div class="space-y-3">
+                <form method="post" action="@Url.Action("XoaCampaign", "QuanLyNguoiDungHeThong")">
+                    <input type="hidden" name="id" value="@Model.MaCampaign" />
+                    <button type="submit" 
+                            class="w-full px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
+                            onclick="return confirm('Bạn có chắc muốn xóa campaign này?');">
+                        Xóa Campaign
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Thống kê</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Số sản phẩm</label>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">@Model.SoSanPham</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Số danh mục</label>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">@Model.SoDanhMuc</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày tạo</label>
+                    <p class="text-base text-gray-900 dark:text-white">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+

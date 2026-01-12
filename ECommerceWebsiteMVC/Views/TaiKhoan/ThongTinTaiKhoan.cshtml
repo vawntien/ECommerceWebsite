@@ -4,203 +4,205 @@
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
 <style>
-    /* TẤT CẢ CSS CHỈ ÁP DỤNG TRONG TRANG HỒ SƠ */
-    .profile-page body .container {
-        max-width: 100% !important;
-        padding: 0 !important;
+    :root {
+        --shopee-orange: #ee4d2d;
     }
 
-    .profile-page .profile-wrapper {
-        width: 100%;
-        display: flex;
-        justify-content: center;
+    .profile-body {
         background: #f5f5f5;
-        padding: 150px 0;
+        /* Đẩy xuống 180px để không bị header che khuất */
+        padding-top: 180px;
+        padding-bottom: 60px;
+        min-height: 100vh;
     }
 
-    .profile-page .profile-container {
-        max-width: 750px;
-        width: 100%;
-        margin: 0 auto;
-        padding: 30px 40px;
+    .profile-card {
         background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        border: 1px solid #f0f0f0;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 3px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
-        .profile-page .profile-container h3 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .profile-page .profile-container p {
-            font-size: 14px;
-            color: #777;
-        }
-
-        .profile-page .profile-container label {
-            font-weight: 500;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-    .profile-page .form-control-plaintext {
-        background: #fafafa;
-        padding: 10px 14px;
-        border-radius: 4px;
-        border: 1px solid #eee;
-        font-size: 15px;
-        color: #444;
+    .profile-header {
+        border-bottom: 1px solid #efefef;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
-    .profile-page .profile-container input.form-control {
-        padding: 10px 14px;
-        height: 45px;
-        font-size: 15px;
-    }
-
-    .profile-page .profile-container a {
-        font-size: 14px;
-        color: #007bff;
-        text-decoration: none;
-    }
-
-        .profile-page .profile-container a:hover {
-            text-decoration: underline;
-        }
-
-    .profile-page .profile-avatar img {
-        border: 2px solid #eee;
-        transition: 0.2s;
-    }
-
-        .profile-page .profile-avatar img:hover {
-            border-color: #ee4d2d;
-            transform: scale(1.05);
-        }
-
-    .profile-page .btn-save {
-        background: #ee4d2d;
-        border: none;
-        padding: 10px 35px;
-        color: #fff;
-        font-size: 15px;
-        font-weight: 500;
-        border-radius: 4px;
-        transition: 0.2s;
-    }
-
-        .profile-page .btn-save:hover {
-            background: #d84324;
-        }
-
-    .profile-page .btn-back-home {
-        display: inline-block;
-        margin-bottom: 15px;
-        padding: 6px 14px;
-        background: #e3e3e3;
-        color: #333 !important;
-        border-radius: 4px;
-        font-size: 14px;
+    .btn-back {
         text-decoration: none !important;
-        transition: background 0.2s, color 0.2s;
+        color: #555;
+        font-size: 14px;
+        transition: color 0.2s;
     }
 
-        .profile-page .btn-back-home:hover {
-            background: #ffe4db;
-            color: #ee4d2d !important;
-        }
+    .btn-back:hover {
+        color: var(--shopee-orange);
+    }
 
-        .profile-page .btn-back-home:active {
-            background: #f5c5b9;
-            color: #c5321d !important;
-        }
+    .profile-form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        min-height: 40px;
+    }
+
+    .profile-label {
+        width: 25%;
+        text-align: right;
+        padding-right: 20px;
+        color: rgba(85, 85, 85, 0.8);
+        font-size: 14px;
+    }
+
+    .profile-input-wrap {
+        width: 75%;
+    }
+
+    /* Input style chuẩn Shopee */
+    .shopee-input {
+        width: 100%;
+        max-width: 450px;
+        height: 40px;
+        padding: 10px;
+        border: 1px solid rgba(0,0,0,0.14);
+        border-radius: 2px;
+        outline: none;
+        box-shadow: inset 0 2px 0 rgba(0,0,0,0.02);
+        transition: border-color 0.2s;
+    }
+
+    .shopee-input:focus {
+        border-color: rgba(0,0,0,0.54);
+        box-shadow: inset 0 2px 0 rgba(0,0,0,0.02);
+    }
+
+    .btn-shopee-main {
+        background: var(--shopee-orange);
+        color: #fff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 2px;
+        font-size: 15px;
+        min-width: 100px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .btn-shopee-main:hover {
+        opacity: 0.9;
+    }
+
+    .btn-shopee-main:disabled {
+        background: #ff8b72;
+        cursor: not-allowed;
+    }
+
+    .text-username {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Responsive cho mobile */
+    @@media (max-width: 768px) {
+        .profile-body { padding-top: 120px; }
+        .profile-form-group { flex-direction: column; align-items: flex-start; }
+        .profile-label { width: 100%; text-align: left; margin-bottom: 8px; }
+        .profile-input-wrap { width: 100%; }
+        .shopee-input { max-width: 100%; }
+    }
 </style>
-http://localhost:59750/TaiKhoan/DangKy
-<div class="profile-page">
-    <div class="profile-wrapper">
-        <div class="profile-container">
 
-            <a href="@Url.Action("Index", "NguoiMua")" class="btn-back-home">
-                ⬅ Quay lại trang chủ
+<div class="profile-body">
+    <div class="profile-card">
+
+        <div class="profile-header">
+            <div>
+                <h4 class="m-0" style="font-size: 1.2rem; font-weight: 500;">Hồ Sơ Của Tôi</h4>
+                <p class="text-muted small m-0 mt-1">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+            </div>
+            <a href="@Url.Action("Index", "NguoiMua")" class="btn-back">
+                <i class="fa-solid fa-house-chimney me-1"></i> Quay lại trang chủ
             </a>
-
-            <h3 class="fw-bold">Hồ Sơ Của Tôi</h3>
-            <p class="text-muted">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
-            <form method="post" action="@Url.Action("CapNhatThongTin", "TaiKhoan")">
-
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success">@TempData["Success"]</div>
-                }
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger">@TempData["Error"]</div>
-                }
-
-                <div class="mb-3">
-                    <label class="text-muted">Tên đăng nhập</label>
-                    <div class="form-control-plaintext fw-bold">@Model.TaiKhoan</div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="text-muted">Họ và tên</label>
-                    <div class="form-control-plaintext fw-bold">@Model.HoVaTen</div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="text-muted">Email</label>
-                    <div class="input-group">
-                        <input type="email" name="Email" class="form-control" value="@Model.Email" placeholder="Nhập email mới" required />
-                        <span class="input-group-text bg-white text-success"><i class="fas fa-check"></i></span>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="text-muted">Số điện thoại</label>
-                    <div class="input-group">
-                        <input type="text" name="SDT" class="form-control" value="@Model.SDT" placeholder="Nhập SĐT mới" required pattern="[0-9]{10}" title="10 số" />
-                        <span class="input-group-text bg-white text-success"><i class="fas fa-check"></i></span>
-                    </div>
-                </div>
-
-                <center>
-                    <button type="submit" class="btn-save">Lưu Thay Đổi</button>
-                </center>
-
-            </form>
-
         </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success border-0 shadow-sm mb-4" id="successAlert">
+                <i class="fa-solid fa-circle-check me-2"></i> @TempData["Success"]
+            </div>
+        }
+
+        @using (Html.BeginForm("ThongTinTaiKhoan", "TaiKhoan", FormMethod.Post, new { id = "profileForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="profile-form-group">
+                <div class="profile-label">Tên đăng nhập</div>
+                <div class="profile-input-wrap">
+                    <span class="text-username">@Model.TaiKhoan</span>
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <div class="profile-label">Họ và tên</div>
+                <div class="profile-input-wrap">
+                    <input type="text" name="HoVaTen" class="shopee-input" value="@Model.HoVaTen" required placeholder="Nhập họ tên" />
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <div class="profile-label">Email</div>
+                <div class="profile-input-wrap">
+                    <input type="email" name="Email" class="shopee-input" value="@Model.Email" required placeholder="Nhập email" />
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <div class="profile-label">Số điện thoại</div>
+                <div class="profile-input-wrap">
+                    <input type="text" name="SDT" class="shopee-input" value="@Model.SDT" required pattern="[0-9]{10,11}" title="Vui lòng nhập số điện thoại hợp lệ" placeholder="Nhập số điện thoại" />
+                </div>
+            </div>
+
+            <div class="profile-form-group" style="margin-top: 40px;">
+                <div class="profile-label"></div>
+                <div class="profile-input-wrap">
+                    <button type="submit" class="btn-shopee-main" id="btnSave">
+                        <span id="btnText">Lưu thay đổi</span>
+                        <span class="spinner-border spinner-border-sm d-none" id="loadingIcon"></span>
+                    </button>
+                </div>
+            </div>
+        }
     </div>
 </div>
 
-@helper MaskEmail(string email)
-{
-    if (string.IsNullOrEmpty(email))
-    {
-        @:""
-    }
-    else
-    {
-        var p = email.Split('@');
-        var masked = p[0].Substring(0, 2) + "********@" + p[1];
-        @masked
-    }
-}
+<script>
+    document.getElementById("profileForm").onsubmit = function () {
+        const btn = document.getElementById("btnSave");
+        const text = document.getElementById("btnText");
+        const icon = document.getElementById("loadingIcon");
 
-@helper MaskPhone(string phone)
-{
-    if (string.IsNullOrEmpty(phone))
-    {
-        @:""
-    }
-    else
-    {
-        var masked = new string('*', phone.Length - 2) + phone.Substring(phone.Length - 2);
-        @masked
-    }
-}
+        btn.disabled = true;
+        text.innerText = "Đang lưu...";
+        icon.classList.remove("d-none");
+    };
+
+    setTimeout(function () {
+        const alert = document.getElementById("successAlert");
+        if (alert) {
+            alert.style.transition = "opacity 0.5s";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 4000);
+</script>

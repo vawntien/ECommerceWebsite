@@ -21,6 +21,7 @@ namespace ECommerceWebsiteMVC_Admin.Models
         public string NoiDung { get; set; }
         public string HinhAnh { get; set; }
         public Nullable<System.DateTime> ThoiGian { get; set; }
+        public int SoLan { get; set; }
     
         public virtual ChiTietDonHang ChiTietDonHang { get; set; }
     }

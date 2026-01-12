@@ -1,6 +1,8 @@
-﻿@{
+﻿
+@{
     ViewBag.Title = "Đặt hàng thành công";
     Layout = "~/Views/Shared/_LayoutNguoiMua.cshtml";
+    @model int
 }
 
 <style>
@@ -29,10 +31,25 @@
     <h1>Đặt hàng thành công!</h1>
     <p>Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang chờ xác nhận.</p>
 
-    <a href="/GioHang/Index"
-       style="display:inline-block;margin-top:20px;
-              background:#ee4d2d;color:#fff;padding:12px 26px;
-              text-decoration:none;border-radius:4px;">
-        Quay lại giỏ hàng
-    </a>
+    <div style="margin-top:25px;">
+        <a href="/NguoiMua/ChiTietDonHang/@Model"
+           style="display:inline-block;
+                  background:#28a745;color:#fff;
+                  padding:12px 26px;
+                  text-decoration:none;
+                  border-radius:4px;
+                  margin-right:10px;">
+            Xem chi tiết đơn hàng
+        </a>
+
+        <a href="/GioHang/Index"
+           style="display:inline-block;
+                  background:#ee4d2d;color:#fff;
+                  padding:12px 26px;
+                  text-decoration:none;
+                  border-radius:4px;">
+            Quay lại giỏ hàng
+        </a>
+    </div>
 </div>
+

@@ -1,0 +1,141 @@
+﻿@using ECommerceWebsiteMVC_Seller.Models
+@model DanhGiaSanPham
+
+@{
+    Layout = null;
+    var macdinh = Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams
+        .Where(x => x.MacDinh == true)
+        .Select(x => x.HinhAnh)
+        .FirstOrDefault()
+        ?? Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.AnhSanPhams
+            .Select(x => x.HinhAnh)
+            .FirstOrDefault();
+
+    var productImageUrl = !string.IsNullOrEmpty(macdinh)
+        ? $"https://ecommerceshopstorage.blob.core.windows.net/products/{Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.MaSanPham}/{macdinh}"
+        : "https://via.placeholder.com/80?text=No+Image";
+
+    var hasReviewImage = !string.IsNullOrEmpty(Model.HinhAnh);
+    var reviewImageUrl = hasReviewImage
+        ? $"https://ecommerceshopstorage.blob.core.windows.net/reviews/{Model.HinhAnh}"
+        : "";
+}
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<style>
+    .modal-content-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+        position: relative;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end; /* chỉ còn nút bên phải */
+        margin-top: 1rem;
+    }
+
+    .star-icon {
+        font-size: 1.5rem;
+        color: #fbbf24;
+    }
+
+        .star-icon.empty {
+            color: #d1d5db;
+        }
+
+    /* NÚT XÓA ĐÁNH GIÁ – STYLE MỚI */
+    .btn-delete-review {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        background: linear-gradient(135deg, #ff512f, #dd2476);
+        box-shadow: 0 6px 14px rgba(255, 80, 80, 0.35);
+        transition: all 0.2s ease;
+    }
+
+        .btn-delete-review:hover {
+            background: linear-gradient(135deg, #e63e2b, #c81d65);
+            box-shadow: 0 8px 18px rgba(255, 80, 80, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-delete-review:active {
+            transform: scale(0.97);
+        }
+</style>
+
+<div class="tw-w-full tw-max-w-2xl tw-mx-auto tw-p-4">
+    <div class="modal-content-card">
+
+        <!-- Product Info -->
+        <div class="tw-bg-gray-50 tw-rounded-lg tw-border tw-border-gray-100 tw-overflow-hidden tw-mb-3 tw-p-3">
+            <div class="tw-flex tw-items-start tw-gap-3">
+                @*<div class="tw-w-16 tw-h-16 tw-rounded-md tw-bg-gray-100 tw-overflow-hidden tw-border tw-flex-shrink-0">
+                    <img src="@productImageUrl" class="tw-w-full tw-h-full tw-object-cover" />
+                </div>*@
+                <div class="tw-flex-1">
+                    @*<h3 class="tw-font-medium tw-text-gray-900 tw-text-sm">
+                        @Model.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.SanPham.TenSanPham
+                    </h3>*@
+                    <p class="tw-text-xs tw-font-semibold tw-text-red-600 tw-mt-1">
+                        Giá của khách hàng: @Model.ChiTietDonHang.DonGia.ToString("N0") đ
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviewer Info -->
+        <div class="tw-bg-gray-50 tw-rounded-lg tw-border tw-border-gray-100 tw-p-3 tw-mb-3">
+            <div class="tw-flex tw-items-center tw-gap-2">
+                <span class="material-icons tw-text-gray-400">account_circle</span>
+                <div>
+                    <p class="tw-font-medium tw-text-gray-900 tw-text-sm">
+                        @Model.ChiTietDonHang.ChiTietGioHang.GioHang.NguoiMua.TaiKhoan
+                    </p>
+                    <p class="tw-text-xs tw-text-gray-500">
+                        @(Model.ThoiGian.HasValue
+                            ? Model.ThoiGian.Value.ToString("dd/MM/yyyy HH:mm")
+                            : "—")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="tw-bg-gray-50 tw-rounded-lg tw-border tw-border-gray-100 tw-p-3 tw-mb-3">
+            <div class="tw-flex tw-items-center tw-gap-1 tw-mb-2">
+                @{
+                    string[] ratingLabels = { "", "Tệ", "Tạm ổn", "Khá", "Tốt", "Tuyệt vời" };
+                    string label = (Model.SoSao >= 1 && Model.SoSao <= 5)
+                        ? ratingLabels[Model.SoSao]
+                        : "";
+                }
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="material-icons @(i <= Model.SoSao ? "star-icon" : "star-icon empty")">star</span>
+                }
+                <span class="tw-text-amber-600 tw-font-semibold tw-text-sm tw-ml-1">@label</span>
+            </div>
+
+            <h4 class="tw-font-bold tw-text-gray-900 tw-text-sm tw-mb-1">@Model.TieuDe</h4>
+            <p class="tw-text-gray-700 tw-text-sm">@Model.NoiDung</p>
+
+            @if (hasReviewImage)
+            {
+                <div class="tw-mt-3">
+                    <img src="@reviewImageUrl" class="tw-w-20 tw-h-20 tw-object-cover tw-rounded tw-border" />
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+

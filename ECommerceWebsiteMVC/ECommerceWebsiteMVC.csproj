@@ -254,6 +254,7 @@
     <Compile Include="Controllers\NguoiBanController.cs" />
     <Compile Include="Controllers\TaiKhoanController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
+    <Compile Include="Controllers\ThanhToanController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -263,6 +264,7 @@
     <Compile Include="Models\BienTheSanPham.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CampaignHelper.cs" />
     <Compile Include="Models\CartViewModels.cs" />
     <Compile Include="Models\ChiTietDonHang.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
@@ -298,6 +300,8 @@
     <Compile Include="Models\KhieuNai.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MomoIPNModel.cs" />
+    <Compile Include="Models\MomoSecurity.cs" />
     <Compile Include="Models\NguoiBan.cs">
       <DependentUpon>QL_BanHangModel.tt</DependentUpon>
     </Compile>
@@ -384,6 +388,9 @@
     <Content Include="Views\TaiKhoan\DangKy.cshtml" />
     <Content Include="Views\TaiKhoan\DatLaiMatKhau.cshtml" />
     <Content Include="Views\TaiKhoan\QuenMatKhau.cshtml" />
+    <Content Include="Views\NguoiMua\_ProductListPartial.cshtml" />
+    <None Include="Properties\PublishProfiles\ECommerceWebsite - Web Deploy.pubxml" />
+    <Content Include="Views\ThanhToan\MomoReturn.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

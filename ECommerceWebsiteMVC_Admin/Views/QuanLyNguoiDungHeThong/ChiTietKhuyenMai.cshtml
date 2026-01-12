@@ -1,0 +1,227 @@
+@model ECommerceWebsiteMVC_Admin.Models.GiamGia
+@{
+    ViewBag.Title = "Chi tiết khuyến mãi";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+    
+    var donHangs = ViewBag.DonHangs as List<ECommerceWebsiteMVC_Admin.Models.DonHang> ?? new List<ECommerceWebsiteMVC_Admin.Models.DonHang>();
+    bool hieuLuc = ViewBag.HieuLuc != null && (bool)ViewBag.HieuLuc;
+    DateTime now = DateTime.Now;
+    bool isActive = (Model.NgayBD == null || Model.NgayBD <= now) && (Model.NgayKT == null || Model.NgayKT >= now);
+    bool isExpired = Model.NgayKT != null && Model.NgayKT < now;
+    bool isUpcoming = Model.NgayBD != null && Model.NgayBD > now;
+}
+
+<!-- PageHeading -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-[#181210] dark:text-white text-3xl font-bold leading-tight tracking-tight">Chi tiết khuyến mãi</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Thông tin chi tiết mã giảm giá</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="@Url.Action("SuaKhuyenMai", "QuanLyNguoiDungHeThong", new { id = Model.MaGiamGia })"
+           class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">
+            Sửa
+        </a>
+        <a href="@Url.Action("QuanLyKhuyenMai", "QuanLyNguoiDungHeThong")"
+           class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">
+            Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Thông tin chính -->
+    <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Thông tin khuyến mãi -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Thông tin khuyến mãi</h2>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Mã khuyến mãi</label>
+                        <p class="text-base text-gray-900 dark:text-white">@Model.MaGiamGia</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Trạng thái</label>
+                        <p>
+                            @if (isActive)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    Đang hiệu lực
+                                </span>
+                            }
+                            else if (isExpired)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                    Hết hạn
+                                </span>
+                            }
+                            else if (isUpcoming)
+                            {
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                    Sắp diễn ra
+                                </span>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Tên mã giảm giá</label>
+                    <p class="text-base text-gray-900 dark:text-white">@Model.TenMaGG</p>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Mô tả</label>
+                    <p class="text-base text-gray-900 dark:text-white">@(Model.MoTa ?? "-")</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Giá trị đơn hàng tối thiểu</label>
+                        <p class="text-base text-gray-900 dark:text-white">@string.Format("{0:N0}", Model.GiaTriDonHangToiThieu) đ</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Giá trị giảm tối đa</label>
+                        <p class="text-base text-gray-900 dark:text-white">@string.Format("{0:N0}", Model.GiaTriGiamToiDa) đ</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Giá trị giảm</label>
+                    <p class="text-base text-gray-900 dark:text-white">
+                        @if (Model.GiaTriGiam <= 1)
+                        {
+                            <span>@string.Format("{0:P0}", Model.GiaTriGiam)</span>
+                        }
+                        else
+                        {
+                            <span>@string.Format("{0:N0}", Model.GiaTriGiam) đ</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày bắt đầu</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @(Model.NgayBD.HasValue ? Model.NgayBD.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                        </p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày kết thúc</label>
+                        <p class="text-base text-gray-900 dark:text-white">
+                            @(Model.NgayKT.HasValue ? Model.NgayKT.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lịch sử sử dụng -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Lịch sử sử dụng</h2>
+            
+            @if (donHangs.Any())
+            {
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50">
+                            <tr>
+                                <th class="px-4 py-3">Mã đơn hàng</th>
+                                <th class="px-4 py-3">Người nhận</th>
+                                <th class="px-4 py-3">Tổng tiền</th>
+                                <th class="px-4 py-3">Ngày đặt</th>
+                                <th class="px-4 py-3">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dh in donHangs)
+                            {
+                                <tr class="border-b dark:border-gray-700">
+                                    <td class="px-4 py-3">@dh.MaDonHang</td>
+                                    <td class="px-4 py-3">@dh.TenNguoiNhan</td>
+                                    <td class="px-4 py-3">@string.Format("{0:N0}", dh.TongTien) đ</td>
+                                    <td class="px-4 py-3">@dh.ThoiGianDat.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="px-4 py-3">@dh.TrangThaiDonHang</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">Chưa có đơn hàng nào sử dụng mã giảm giá này</p>
+            }
+        </div>
+
+    </div>
+
+    <!-- Sidebar actions -->
+    <div class="space-y-6">
+        
+        <!-- Actions -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Hành động</h2>
+            
+            <div class="space-y-3">
+                @if (isActive)
+                {
+                    <form method="post" action="@Url.Action("AnKhuyenMai", "QuanLyNguoiDungHeThong")">
+                        <input type="hidden" name="id" value="@Model.MaGiamGia" />
+                        <button type="submit" 
+                                class="w-full px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
+                                onclick="return confirm('Bạn có chắc muốn ẩn khuyến mãi này?');">
+                            Ẩn khuyến mãi
+                        </button>
+                    </form>
+                }
+                else if (isExpired)
+                {
+                    <form method="post" action="@Url.Action("HienKhuyenMai", "QuanLyNguoiDungHeThong")">
+                        <input type="hidden" name="id" value="@Model.MaGiamGia" />
+                        <button type="submit" 
+                                class="w-full px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
+                                onclick="return confirm('Bạn có chắc muốn hiện lại khuyến mãi này?');">
+                            Hiện lại khuyến mãi
+                        </button>
+                    </form>
+                }
+
+                <form method="post" action="@Url.Action("XoaKhuyenMai", "QuanLyNguoiDungHeThong")">
+                    <input type="hidden" name="id" value="@Model.MaGiamGia" />
+                    <button type="submit" 
+                            class="w-full px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
+                            onclick="return confirm('Bạn có chắc muốn xóa khuyến mãi này?');">
+                        Xóa khuyến mãi
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Thống kê</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Số đơn hàng đã sử dụng</label>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">@donHangs.Count</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng giá trị đơn hàng</label>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                        @string.Format("{0:N0}", donHangs.Sum(d => d.TongTien)) đ
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+

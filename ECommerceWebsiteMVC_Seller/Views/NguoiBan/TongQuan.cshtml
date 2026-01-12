@@ -1,0 +1,201 @@
+﻿@{
+    ViewBag.Title = "Tong quan";
+    Layout = "~/Views/Shared/_LayoutNguoiBan.cshtml";
+
+    var doanhThu = Json.Encode(ViewBag.DoanhThu6Thang);
+    var soDon = Json.Encode(ViewBag.DonHang6Thang);
+}
+
+<style>
+    /* ===== DASHBOARD BASE ===== */
+    .dashboard-container {
+        background: #f7f8fa;
+        min-height: 100vh;
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-title {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #111827;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        font-size: 15px;
+    }
+
+    /* ===== CARD ===== */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 24px;
+        border: 1px solid #eee;
+        transition: all 0.25s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+        }
+
+    .stat-label {
+        font-size: 15px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        margin-top: 6px;
+        font-size: 30px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    /* ===== CHART CARD ===== */
+    .chart-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #eee;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .chart-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    canvas {
+        margin-top: 16px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+
+</style>
+
+<main class="dashboard-container p-6 lg:p-8">
+    <div class="w-full max-w-7xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="flex flex-col gap-1 mb-8">
+            <p class="page-title">Tổng quan</p>
+            <p class="page-subtitle">Tổng quan doanh thu</p>
+        </div>
+
+        <!-- TOP CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+            <div class="stat-card">
+                <p class="stat-label">Tổng doanh thu</p>
+                <p class="stat-value">
+                    @String.Format("{0:N0}₫", ViewBag.TongDoanhThu)
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-label">Đơn hàng thành công</p>
+                <p class="stat-value">
+                    @ViewBag.DonHangThanhCong
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-label">Đơn hàng thất bại</p>
+                <p class="stat-value">
+                    @ViewBag.DonHangThatBai
+                </p>
+            </div>
+
+        </div>
+
+        <!-- CHARTS -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+            <!-- DOANH THU -->
+            <div class="lg:col-span-3 chart-card">
+                <p class="chart-title">Doanh thu 6 tháng gần nhất</p>
+                <canvas id="revenueChart"></canvas>
+            </div>
+
+            <!-- ĐƠN HÀNG -->
+            <div class="lg:col-span-2 chart-card">
+                <p class="chart-title">Số đơn hàng 6 tháng gần nhất</p>
+                <canvas id="orderChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const doanhThuData = @Html.Raw(doanhThu);
+    const soDonData = @Html.Raw(soDon);
+
+    const labels = doanhThuData.map(x => x.Thang);
+
+    // ===== DOANH THU CHART =====
+    new Chart(document.getElementById("revenueChart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Doanh thu (VND)",
+                data: doanhThuData.map(x => x.TongTien),
+                borderColor: "#ee4b2b",
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                backgroundColor: "rgba(238,75,43,0.12)",
+                pointRadius: 4,
+                pointBackgroundColor: "#ee4b2b"
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    grid: { color: "#f1f1f1" }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // ===== ĐƠN HÀNG CHART =====
+    new Chart(document.getElementById("orderChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Số đơn",
+                data: soDonData.map(x => x.SoLuong),
+                backgroundColor: "rgba(238,75,43,0.6)",
+                borderRadius: 6
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    grid: { color: "#f1f1f1" }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>

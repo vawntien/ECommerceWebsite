@@ -165,6 +165,11 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
             return View(model);
         }
 
+        public ActionResult PhanTichBanHang() { 
+            
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult HuyDonHangSeller(int id)
@@ -183,8 +188,10 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
 
             int maCuaHang = cuaHang.MaCuaHang;
 
+            // --- SỬA ĐỔI 1: Include thêm BienTheSanPham để có thể cập nhật kho ---
             var donHang = db.DonHangs
-                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham))
+                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham)) // Để lấy SoLuongTonKho
+                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham)) // Để kiểm tra MaCuaHang
                 .SingleOrDefault(dh => dh.MaDonHang == id);
 
             if (donHang == null ||
@@ -199,10 +206,24 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
                 return RedirectToAction("Index");
             }
 
-            donHang.TrangThaiDonHang = "Đã hủy";
-            db.SaveChanges();
+            // --- SỬA ĐỔI 2: Thực hiện hoàn lại số lượng tồn kho ---
+            foreach (var chiTiet in donHang.ChiTietDonHangs)
+            {
+                var bienThe = chiTiet.ChiTietGioHang?.BienTheSanPham;
 
-            TempData["UpdateSuccess"] = "Đơn hàng đã được hủy.";
+                // Kiểm tra an toàn: Biến thể tồn tại VÀ Sản phẩm thuộc đúng cửa hàng này
+                // (Phòng trường hợp đơn hàng chứa sản phẩm của nhiều shop khác nhau nếu hệ thống cho phép)
+                if (bienThe != null && bienThe.SanPham.MaCuaHang == maCuaHang)
+                {
+                    // Cộng lại số lượng khách đã mua vào kho
+                    bienThe.SoLuongTonKho = bienThe.SoLuongTonKho + chiTiet.SoLuong;
+                }
+            }
+
+            donHang.TrangThaiDonHang = "Đã hủy";
+            db.SaveChanges(); // Lưu thay đổi cả trạng thái đơn hàng lẫn số lượng tồn kho
+
+            TempData["UpdateSuccess"] = "Đơn hàng đã được hủy và hoàn lại số lượng tồn kho.";
             return RedirectToAction("Index");
         }
 
@@ -383,6 +404,51 @@ namespace ECommerceWebsiteMVC_Seller.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult XacNhanGiaoHangThanhCong(int id)
+        {
+            if (Session["MaNguoiBan"] == null)
+            {
+                return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+            }
+
+            int maNguoiBan = (int)Session["MaNguoiBan"];
+            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            if (cuaHang == null) return Content("Bạn chưa tạo cửa hàng.");
+
+            int maCuaHang = cuaHang.MaCuaHang;
+
+            var donHang = db.DonHangs
+                .Include(dh => dh.ChiTietDonHangs.Select(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham))
+                .SingleOrDefault(dh => dh.MaDonHang == id);
+
+            // Kiểm tra quyền sở hữu
+            if (donHang == null || !donHang.ChiTietDonHangs.Any(ct => ct.ChiTietGioHang.BienTheSanPham.SanPham.MaCuaHang == maCuaHang))
+            {
+                // Sử dụng TempData để báo lỗi thất bại
+                TempData["UpdateError"] = "Đơn hàng không tồn tại hoặc không thuộc cửa hàng của bạn.";
+                return RedirectToAction("Index");
+            }
+
+            // Kiểm tra trạng thái hợp lệ
+            if (donHang.TrangThaiDonHang != "Chờ giao hàng")
+            {
+                TempData["UpdateError"] = "Chỉ có thể xác nhận thành công cho đơn đang ở trạng thái 'Chờ giao hàng'.";
+                return RedirectToAction("Index");
+            }
+
+            // Cập nhật trạng thái
+            donHang.TrangThaiDonHang = "Đã giao";
+            donHang.TrangThaiThanhToan = true;
+            
+
+            db.SaveChanges();
+
+            TempData["UpdateSuccess"] = "Xác nhận giao hàng thành công!";
+            return RedirectToAction("Index");
         }
     }
 }

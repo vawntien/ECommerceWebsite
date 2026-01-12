@@ -27,10 +27,43 @@ namespace ECommerceWebsiteMVC.Controllers
         {
             var sp = ql.SanPhams.Include("AnhSanPhams").Include("BienTheSanPhams").Where(s => s.MaSanPham == id).FirstOrDefault();
             if (sp == null) return HttpNotFound();
+
+            var sanPhamLienQuan = ql.SanPhams
+        .Include("AnhSanPhams")
+        .Where(x =>
+            x.MaDanhMuc == sp.MaDanhMuc &&
+            x.MaSanPham != sp.MaSanPham
+        )
+        .OrderBy(x => Guid.NewGuid()) 
+        .Take(5)
+        .ToList();
+
+            ViewBag.SanPhamLienQuan = sanPhamLienQuan;
             return View(sp);
         }
 
         // File: Controllers/SanPhamController.cs
+
+        [HttpGet]
+        public JsonResult GetPriceWithCampaign(int maBienThe, decimal giaGoc)
+        {
+            try
+            {
+                var priceResult = Models.CampaignHelper.TinhGiaSauGiamChoBienThe(ql, maBienThe, giaGoc);
+                return Json(new
+                {
+                    coGiamGia = priceResult.CoGiamGia,
+                    giaGoc = priceResult.GiaGoc,
+                    giaSauGiam = priceResult.GiaSauGiam,
+                    phanTramGiam = priceResult.PhanTramGiam,
+                    tenCampaign = priceResult.TenCampaign
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { coGiamGia = false, giaGoc = giaGoc, giaSauGiam = giaGoc }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         [HttpGet]
         public JsonResult KiemTraTonKho(int maBienThe, int soLuong)

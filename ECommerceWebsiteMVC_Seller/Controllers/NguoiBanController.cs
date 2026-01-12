@@ -1,4 +1,5 @@
-﻿using ECommerceWebsiteMVC_Seller.Models;
+﻿using ECommerceWebsiteMVC_Admin.Models;
+using ECommerceWebsiteMVC_Seller.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -17,11 +18,36 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: NguoiBan
 
         ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
+        DBQuanLyNguoiDungHeThong dtbs = new DBQuanLyNguoiDungHeThong();
+
         public ActionResult Index()
         {
             return View();
         }
-        
+        public ActionResult ChiTietDanhGiaSanPham(int id)
+        {
+            SanPham sp = db.SanPhams.FirstOrDefault(x => x.MaSanPham == id);
+            ViewBag.DanhSachDanhGia = db.DanhGiaSanPhams.Where(t => t.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.MaSanPham == id).ToList();
+            return View(sp);
+        }
+        public ActionResult ChiTietDanhGia(int pMaDG)
+        {
+            var danhGia = db.DanhGiaSanPhams
+                .FirstOrDefault(t => t.MaDG == pMaDG);
+
+            if (danhGia == null)
+                return HttpNotFound();
+
+            // Nếu là AJAX request, trả về partial view
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("ChiTietDanhGia", danhGia);
+            }
+
+            // Nếu không, trả về view thông thường
+            return View(danhGia);
+        }
+
 
         public ActionResult TatCaSanPham()
         {
@@ -42,7 +68,13 @@ namespace ECommerceWebsiteMVC.Controllers
             if (Session["MaNguoiBan"] == null)
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
             int maNguoiBan = (int)Session["MaNguoiBan"];
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            var cuaHang = db.CuaHangs
+    .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+    .OrderBy(x => x.MaCuaHang)
+    .FirstOrDefault();
+
 
             if (cuaHang == null)
                 return Content("Bạn chưa tạo cửa hàng.");
@@ -81,7 +113,14 @@ namespace ECommerceWebsiteMVC.Controllers
             int maNguoiBan = (int)Session["MaNguoiBan"];
 
             // Kiểm tra sản phẩm có thuộc về người bán này không
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            var cuaHang = db.CuaHangs
+    .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+    .OrderBy(x => x.MaCuaHang)
+    .FirstOrDefault();
+
+
             if (cuaHang == null)
                 return Content("Bạn chưa tạo cửa hàng.");
 
@@ -107,7 +146,12 @@ namespace ECommerceWebsiteMVC.Controllers
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
 
             int maNguoiBan = (int)Session["MaNguoiBan"];
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            var cuaHang = db.CuaHangs
+    .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+    .OrderBy(x => x.MaCuaHang)
+    .FirstOrDefault();
+
             if (cuaHang == null)
                 return Content("Bạn chưa tạo cửa hàng.");
 
@@ -165,6 +209,18 @@ namespace ECommerceWebsiteMVC.Controllers
 
         }
 
+        public ActionResult TongQuan()
+        {
+            int  id  = Session["MaNguoiBan"] != null ? (int)Session["MaNguoiBan"] : 0;
+            DBPhanTichBanHang db = new DBPhanTichBanHang();
+            ViewBag.DoanhThu6Thang = db.GetDoanhThu6Thang(id);
+            ViewBag.DonHang6Thang = db.GetSoDon6Thang(id);
+            ViewBag.TongDoanhThu = db.TongDoanhThu(id);
+            ViewBag.DonHangThanhCong = db.DonHangThanhCong(id);
+            ViewBag.DonHangThatBai = db.DonHangThatBai(id);
+            return View();
+        }
+
         public ActionResult ThemSanPham()
         {
             if (Session["MaNguoiBan"] == null)
@@ -186,12 +242,29 @@ namespace ECommerceWebsiteMVC.Controllers
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
 
             int maNguoiBan = (int)Session["MaNguoiBan"];
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //        var cuaHang = db.CuaHangs
+            //.Where(x => x.MaNguoiBan == maNguoiBan)
+            //.OrderByDescending(x => x.NgayDangKy) 
+            //.FirstOrDefault();
+
+
+            //        if (cuaHang == null)
+            //        {
+            //            ModelState.AddModelError("", "Bạn chưa tạo cửa hàng.");
+            //        }
+            var cuaHang = db.CuaHangs
+            .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+            .OrderByDescending(x => x.NgayDangKy)
+            .FirstOrDefault();
 
             if (cuaHang == null)
             {
-                ModelState.AddModelError("", "Bạn chưa tạo cửa hàng.");
+                ModelState.AddModelError("", "Cửa hàng của bạn đang bị khóa hoặc chưa được kích hoạt.");
+                model.DanhMucs = GetDanhMucSelectList();
+                return View(model);
             }
+
 
             var attributeOneValues = Request.Form.GetValues("AttributeOneValues") ?? Array.Empty<string>();
             var variantNames = Request.Form.GetValues("VariantNames") ?? Array.Empty<string>();
@@ -321,43 +394,76 @@ namespace ECommerceWebsiteMVC.Controllers
             db.SaveChanges();
         }
 
+        private string GetSafeFileName(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+                return Path.GetFileName(new Uri(input).LocalPath);
+
+            return Path.GetFileName(input);
+        }
+
+        private string NormalizeVariantImage(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            return GetSafeFileName(input);
+        }
+
+
+
         private async Task LuuBienTheSanPhamAsync(int maSanPham)
         {
-            var azureHelper = new XuLyAnhAzure();
-            var variantNames = Request.Form.GetValues("VariantNames") ?? Array.Empty<string>();
-            var variantPrices = Request.Form.GetValues("VariantPrices") ?? Array.Empty<string>();
-            var variantStocks = Request.Form.GetValues("VariantStocks") ?? Array.Empty<string>();
-            var variantSkus = Request.Form.GetValues("VariantSkus") ?? Array.Empty<string>();
+            var xuLyAnh = new XuLyAnhAzure();
+            var variantNames = Request.Form.GetValues("VariantNames");
 
             for (int i = 0; i < variantNames.Length; i++)
             {
-                var variant = new BienTheSanPham
+                var file = Request.Files[$"VariantImage_{i}"];
+                string variantImage = null;
+
+                if (file != null && file.ContentLength > 0)
+                {
+                    // ✅ CÓ upload ảnh mới
+                    string fileName = GetSafeFileName(file.FileName);
+
+                    await xuLyAnh.UploadProductImageAsync(
+                        file,
+                        maSanPham.ToString(),
+                        fileName
+                    );
+
+                    await xuLyAnh.CopyProductImageToVariantAsync(
+                        maSanPham.ToString(),
+                        fileName
+                    );
+
+                    variantImage = fileName; // ❗ CHỈ LƯU filename
+                }
+                else
+                {
+                    // ✅ KHÔNG upload ảnh → lấy ảnh cũ NHƯNG PHẢI CHUẨN HÓA
+                    string rawValue = Request.Form[$"VariantImageValue_{i}"];
+                    variantImage = NormalizeVariantImage(rawValue);
+                }
+
+                var bienThe = new BienTheSanPham
                 {
                     MaSanPham = maSanPham,
                     TenBienThe = variantNames[i],
-                    GiaBan = ParseDecimalSafe(variantPrices, i),
-                    SoLuongTonKho = ParseIntSafe(variantStocks, i)
+                    HinhAnh = variantImage
                 };
 
-                // Ảnh biến thể là bắt buộc
-                var fileKey = $"VariantImage_{i}";
-                var file = Request.Files[fileKey];
-                if (file == null || file.ContentLength == 0)
-                {
-                    throw new Exception($"Ảnh biến thể là bắt buộc cho: {variantNames[i]}");
-                }
-
-                // Upload ảnh biến thể vào Azure (cùng folder với ảnh sản phẩm: products/{maSanPham}/)
-                var fileExtension = Path.GetExtension(file.FileName);
-                var fileName = $"variant_{Guid.NewGuid()}{fileExtension}";
-                await azureHelper.UploadProductImageAsync(file, maSanPham.ToString(), fileName);
-                variant.HinhAnh = fileName;
-
-                db.BienTheSanPhams.Add(variant);
+                db.BienTheSanPhams.Add(bienThe);
             }
 
             db.SaveChanges();
         }
+
+
 
         private decimal ParseDecimalSafe(string[] sources, int index)
         {
@@ -387,7 +493,12 @@ namespace ECommerceWebsiteMVC.Controllers
                 return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
 
             int maNguoiBan = (int)Session["MaNguoiBan"];
-            var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            //var cuaHang = db.CuaHangs.SingleOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            var cuaHang = db.CuaHangs
+    .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+    .OrderBy(x => x.MaCuaHang)
+    .FirstOrDefault();
+
             if (cuaHang == null)
                 return Content("Bạn chưa tạo cửa hàng.");
 
@@ -426,6 +537,56 @@ namespace ECommerceWebsiteMVC.Controllers
 
             return RedirectToAction("TatCaSanPham");
         }
+
+
+        public ActionResult XemDanhGiaSanPham(int id)
+        {
+            if (Session["MaNguoiBan"] == null)
+                return RedirectToAction("DangNhapNguoiBan", "TaiKhoan");
+
+            int maNguoiBan = (int)Session["MaNguoiBan"];
+
+            //var cuaHang = db.CuaHangs.FirstOrDefault(x => x.MaNguoiBan == maNguoiBan);
+            var cuaHang = db.CuaHangs
+    .Where(x => x.MaNguoiBan == maNguoiBan && x.TrangThai == true)
+    .OrderBy(x => x.MaCuaHang)
+    .FirstOrDefault();
+
+            if (cuaHang == null)
+                return Content("Bạn chưa tạo cửa hàng.");
+
+            var sanPham = db.SanPhams
+                .FirstOrDefault(sp => sp.MaSanPham == id && sp.MaCuaHang == cuaHang.MaCuaHang);
+
+            if (sanPham == null)
+                return HttpNotFound();
+
+            var danhGias = (
+                from dg in db.DanhGiaSanPhams
+                join ctdh in db.ChiTietDonHangs
+                    on dg.MaCTDH equals ctdh.MaCTDH
+                join ctgh in db.ChiTietGioHangs
+                    on ctdh.MaCTGH equals ctgh.MaCTGH
+                join bt in db.BienTheSanPhams
+                    on ctgh.MaBienThe equals bt.MaBienThe
+                where bt.MaSanPham == id
+                orderby dg.ThoiGian descending
+                select dg
+            ).ToList();
+
+            var vm = new XemDanhGiaSanPhamViewModel
+            {
+                MaSanPham = sanPham.MaSanPham,
+                TenSanPham = sanPham.TenSanPham,
+                DanhGias = danhGias
+            };
+
+            return View(vm);
+        }
+
+
+
+
 
     }
 }

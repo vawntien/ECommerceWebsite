@@ -1,0 +1,236 @@
+@using ECommerceWebsiteMVC_Admin.Models
+@model List<CampaignInfo>
+
+@{
+    ViewBag.Title = "Quản lý Campaign";
+    Layout = "~/Views/Shared/_QuanLyNguoiDungHeThongLayout.cshtml";
+}
+
+<!-- PageHeading -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-[#181210] dark:text-white text-3xl font-bold leading-tight tracking-tight">Quản lý Campaign</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Quản lý các chương trình khuyến mãi chủ động</p>
+    </div>
+    <a href="@Url.Action("ThemCampaign", "QuanLyNguoiDungHeThong")"
+       class="flex max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 min-w-0 px-4 text-sm font-semibold leading-normal bg-primary text-white hover:bg-orange-600">
+        <span class="material-symbols-outlined text-base">add_circle</span>
+        <span>Thêm Campaign</span>
+    </a>
+</div>
+
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="mb-4 p-4 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="mb-4 p-4 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="bg-white dark:bg-[#2c1d17] rounded-lg shadow-sm p-6">
+
+    <!-- TÌM KIẾM + BỘ LỌC -->
+    <form method="get" action="@Url.Action("QuanLyCampaign", "QuanLyNguoiDungHeThong")" class="flex flex-wrap items-center gap-4 mb-6">
+
+        <!-- Ô tìm kiếm -->
+        <div class="relative w-full sm:w-64">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                search
+            </span>
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   placeholder="Tìm theo tên, mô tả"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-transparent
+                      focus:ring-primary focus:border-primary text-sm" />
+        </div>
+
+        <!-- Bộ lọc trạng thái -->
+        <div class="relative w-full sm:w-48">
+            <select name="status"
+                    class="w-full appearance-none border border-gray-300 dark:border-gray-600 rounded-md py-2 px-4 bg-transparent
+                       focus:ring-primary focus:border-primary text-sm">
+
+                <option value="" @(ViewBag.Status == "" ? "selected" : "")>Tất cả trạng thái</option>
+                <option value="active" @(ViewBag.Status == "active" ? "selected" : "")>Đang hoạt động</option>
+                <option value="expired" @(ViewBag.Status == "expired" ? "selected" : "")>Hết hạn</option>
+                <option value="upcoming" @(ViewBag.Status == "upcoming" ? "selected" : "")>Sắp diễn ra</option>
+                <option value="inactive" @(ViewBag.Status == "inactive" ? "selected" : "")>Đã tắt</option>
+            </select>
+
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                expand_more
+            </span>
+        </div>
+
+        <button class="px-4 py-2 bg-primary text-white rounded-md hover:bg-orange-600 text-sm">
+            Lọc
+        </button>
+    </form>
+
+
+    <!-- TABLE -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+            <thead class="text-xs text-slate-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-gray-800/50">
+                <tr>
+                    <th class="px-6 py-3">Mã</th>
+                    <th class="px-6 py-3">Tên Campaign</th>
+                    <th class="px-6 py-3">Loại giảm giá</th>
+                    <th class="px-6 py-3">Giá trị giảm</th>
+                    <th class="px-6 py-3">Số SP/DM</th>
+                    <th class="px-6 py-3">Ngày bắt đầu</th>
+                    <th class="px-6 py-3">Ngày kết thúc</th>
+                    <th class="px-6 py-3">Trạng thái</th>
+                    <th class="px-6 py-3 text-center">Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        DateTime now = DateTime.Now;
+                        bool isActive = item.TrangThai && (item.NgayBD == null || item.NgayBD <= now) && (item.NgayKT == null || item.NgayKT >= now);
+                        bool isExpired = item.NgayKT != null && item.NgayKT < now;
+                        bool isUpcoming = item.NgayBD != null && item.NgayBD > now;
+
+                        <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                            <td class="px-6 py-4">@item.MaCampaign</td>
+                            <td class="px-6 py-4">
+                                <div class="font-medium">@item.TenCampaign</div>
+                                @if (!string.IsNullOrEmpty(item.MoTa))
+                                {
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">@(item.MoTa.Length > 50 ? item.MoTa.Substring(0, 50) + "..." : item.MoTa)</div>
+                                }
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300">
+                                    @(item.LoaiGiamGia == "PhanTram" ? "Phần trăm" : "Số tiền")
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (item.LoaiGiamGia == "PhanTram")
+                                {
+                                    <span>@item.GiaTriGiam.ToString("0.##")%</span>
+                                }
+                                else
+                                {
+                                    <span>@item.GiaTriGiam.ToString("N0") đ</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-xs">@item.SoSanPham SP</span><br />
+                                <span class="text-xs">@item.SoDanhMuc DM</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @(item.NgayBD.HasValue ? item.NgayBD.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                            </td>
+                            <td class="px-6 py-4">
+                                @(item.NgayKT.HasValue ? item.NgayKT.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (isActive)
+                                {
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                        Đang hoạt động
+                                    </span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                        Hết hạn
+                                    </span>
+                                }
+                                else if (isUpcoming)
+                                {
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                        Sắp diễn ra
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">
+                                        Đã tắt
+                                    </span>
+                                }
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="@Url.Action("ChiTietCampaign", "QuanLyNguoiDungHeThong", new { id = item.MaCampaign })"
+                                       class="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                        Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("SuaCampaign", "QuanLyNguoiDungHeThong", new { id = item.MaCampaign })"
+                                       class="px-3 py-1 text-xs font-medium text-yellow-600 dark:text-yellow-400 hover:underline">
+                                        Sửa
+                                    </a>
+                                    <form method="post" action="@Url.Action("XoaCampaign", "QuanLyNguoiDungHeThong")" style="display: inline;">
+                                        <input type="hidden" name="id" value="@item.MaCampaign" />
+                                        <button type="submit" 
+                                                class="px-3 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:underline"
+                                                onclick="return confirm('Bạn có chắc muốn xóa campaign này?');">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PHÂN TRANG -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="flex items-center justify-between mt-6">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Hiển thị @ViewBag.From - @ViewBag.To trong tổng số @ViewBag.TotalItems kết quả
+            </div>
+            <div class="flex gap-2">
+                @if (ViewBag.Page > 1)
+                {
+                    <a href="@Url.Action("QuanLyCampaign", "QuanLyNguoiDungHeThong", new { page = ViewBag.Page - 1, search = ViewBag.Search, status = ViewBag.Status })"
+                       class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-sm">
+                        Trước
+                    </a>
+                }
+
+                @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                {
+                    <a href="@Url.Action("QuanLyCampaign", "QuanLyNguoiDungHeThong", new { page = i, search = ViewBag.Search, status = ViewBag.Status })"
+                       class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-sm @(i == ViewBag.Page ? "bg-primary text-white border-primary" : "")">
+                        @i
+                    </a>
+                }
+
+                @if (ViewBag.Page < ViewBag.TotalPages)
+                {
+                    <a href="@Url.Action("QuanLyCampaign", "QuanLyNguoiDungHeThong", new { page = ViewBag.Page + 1, search = ViewBag.Search, status = ViewBag.Status })"
+                       class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-sm">
+                        Sau
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
+

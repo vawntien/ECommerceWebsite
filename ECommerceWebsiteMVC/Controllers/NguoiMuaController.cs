@@ -14,8 +14,76 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: Home
         public ActionResult Index()
         {
+
+            //ViewBag.SanPhamHot = GetTopSanPhamHot(10);
+            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
+
+            //if (Session["RandomProductIds"] == null)
+            //{
+            //    var allIds = ql.SanPhams
+            //        .Select(sp => sp.MaSanPham)
+            //        .ToList();
+
+            //    if (!allIds.Any())
+            //        return View(new List<SanPham>());
+
+            //    Random rnd = new Random();
+            //    var shuffledIds = allIds
+            //        .OrderBy(x => rnd.Next())
+            //        .ToList();
+
+            //    Session["RandomProductIds"] = shuffledIds;
+            //}
+
+            //var randomIds = Session["RandomProductIds"] as List<int>;
+
+            //var firstIds = randomIds.Take(24).ToList();
+
+            //List<SanPham> dssp = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Where(sp => firstIds.Contains(sp.MaSanPham))
+            //    .ToList();
+
+            //dssp = dssp
+            //    .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
+            //    .ToList();
+
+            //return View(dssp);
+            //Session.Remove("RandomProductIds");
+            ViewBag.SanPhamHot = GetTopSanPhamHot(10);
             ViewBag.DanhMuc = ql.DanhMucs.ToList();
-            List<SanPham> dssp = ql.SanPhams.Include("AnhSanPhams").ToList();
+
+            if (Session["RandomProductIds"] == null)
+            {
+                var allIds = ql.SanPhams
+                    .Include(sp => sp.CuaHang)
+                    .Where(sp => sp.CuaHang.TrangThai == true)
+                    .Select(sp => sp.MaSanPham)
+                    .ToList();
+
+                if (!allIds.Any())
+                    return View(new List<SanPham>());
+
+                var rnd = new Random();
+                Session["RandomProductIds"] = allIds
+                    .OrderBy(x => rnd.Next())
+                    .ToList();
+            }
+
+            var randomIds = Session["RandomProductIds"] as List<int>;
+            var firstIds = randomIds.Take(24).ToList();
+
+            var dssp = ql.SanPhams
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.CuaHang)
+                .Where(sp =>
+                    firstIds.Contains(sp.MaSanPham) &&
+                    sp.CuaHang.TrangThai == true
+                )
+                .ToList()
+                .OrderBy(sp => firstIds.IndexOf(sp.MaSanPham))
+                .ToList();
+
             return View(dssp);
         }
 
@@ -98,16 +166,18 @@ namespace ECommerceWebsiteMVC.Controllers
                     return Json(new { success = false, message = "Vui lòng đăng nhập để thực hiện thao tác này." });
                 }
 
-                // Tìm đơn hàng
-                var donHang = ql.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+                // ---Include các bảng liên quan để lấy được thông tin Biến thể sản phẩm ---
+                var donHang = ql.DonHangs
+                    .Include("ChiTietDonHangs.ChiTietGioHang.BienTheSanPham")
+                    .FirstOrDefault(d => d.MaDonHang == maDonHang);
 
                 if (donHang == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
                 }
 
-                // Kiểm tra quyền sở hữu
-                //if (donHang.MaNguoiMua != maNguoiMua.Value)
+                // Kiểm tra quyền sở hữu (bạn có thể bỏ comment nếu cần)
+                //if (donHang.ChiTietDonHangs.FirstOrDefault()?.ChiTietGioHang.GioHang.MaNguoiMua != maNguoiMua)
                 //{
                 //    return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng này." });
                 //}
@@ -116,6 +186,25 @@ namespace ECommerceWebsiteMVC.Controllers
                 if (donHang.TrangThaiDonHang != "Chờ xác nhận")
                 {
                     return Json(new { success = false, message = "Chỉ có thể hủy đơn hàng đang ở trạng thái 'Chờ xác nhận'." });
+                }
+
+                if (donHang.ChiTietDonHangs != null)
+                {
+                    foreach (var chiTiet in donHang.ChiTietDonHangs)
+                    {
+                        // Lấy ra biến thể sản phẩm tương ứng
+                        var bienThe = chiTiet.ChiTietGioHang.BienTheSanPham;
+
+                        // Lấy số lượng khách đã mua trong đơn hàng này
+                        int soLuongMua = chiTiet.ChiTietGioHang.SoLuong;
+
+
+                        if (bienThe != null)
+                        {
+                            // Cộng lại vào kho
+                            bienThe.SoLuongTonKho = bienThe.SoLuongTonKho + soLuongMua;
+                        }
+                    }
                 }
 
                 // Cập nhật trạng thái đơn hàng
@@ -163,5 +252,143 @@ namespace ECommerceWebsiteMVC.Controllers
 
             return View(donHang);
         }
+
+        public ActionResult TimKiem(string keyword)
+        {
+            //ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            //ViewBag.Keyword = keyword;
+
+            //if (string.IsNullOrWhiteSpace(keyword))
+            //{
+            //    var tatCa = ql.SanPhams
+            //        .Include("AnhSanPhams")
+            //        .ToList();
+
+            //    return View("Index", tatCa);
+            //}
+
+            //keyword = keyword.Trim();
+
+            //var sanPhamTimDuoc = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Include("DanhMuc")
+            //    .Where(sp =>
+            //        (sp.TenSanPham.Contains(keyword) ||
+            //        sp.DanhMuc.TenDanhMuc.Contains(keyword)&& sp.CuaHang.TrangThai == true)
+            //    )
+            //    .ToList();
+
+            //return View("Index", sanPhamTimDuoc);
+            ViewBag.DanhMuc = ql.DanhMucs.ToList();
+            ViewBag.Keyword = keyword;
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                var tatCa = ql.SanPhams
+                    .Include(sp => sp.AnhSanPhams)
+                    .Include(sp => sp.CuaHang)
+                    .Where(sp => sp.CuaHang.TrangThai == true)
+                    .ToList();
+
+                return View("Index", tatCa);
+            }
+
+            keyword = keyword.Trim();
+
+            var sanPhamTimDuoc = ql.SanPhams
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.DanhMuc)
+                .Include(sp => sp.CuaHang)
+                .Where(sp =>
+                    sp.CuaHang.TrangThai == true &&
+                    (
+                        sp.TenSanPham.Contains(keyword) ||
+                        sp.DanhMuc.TenDanhMuc.Contains(keyword)
+                    )
+                )
+                .ToList();
+
+            return View("Index", sanPhamTimDuoc);
+        }
+
+        private List<SanPham> GetTopSanPhamHot(int top = 10)
+        {
+            var sanPhamHot = ql.ChiTietDonHangs
+                .Where(ct =>
+                    ct.DonHang.TrangThaiDonHang == "Chờ giao hàng" ||
+                    ct.DonHang.TrangThaiDonHang == "Đã giao"
+                )
+                .GroupBy(ct => ct.ChiTietGioHang.BienTheSanPham.MaSanPham)
+                .Select(g => new
+                {
+                    MaSanPham = g.Key,
+                    SoLuongBan = g.Sum(x => x.SoLuong)
+                })
+                .OrderByDescending(x => x.SoLuongBan)
+                .Take(top)
+                .Join(
+                    ql.SanPhams.Include("AnhSanPhams"),
+                    hot => hot.MaSanPham,
+                    sp => sp.MaSanPham,
+                    (hot, sp) => sp
+                )
+                .ToList();
+            
+
+            return sanPhamHot;
+        }
+
+
+        [HttpGet]
+        public ActionResult LoadMoreProducts(int skip)
+        {
+            //var randomIds = Session["RandomProductIds"] as List<int>;
+            //if (randomIds == null)
+            //    return Content("");
+
+            //var nextIds = randomIds
+            //    .Skip(skip)
+            //    .Take(24)
+            //    .ToList();
+
+            //if (!nextIds.Any())
+            //    return Content("");
+
+            //var products = ql.SanPhams
+            //    .Include("AnhSanPhams")
+            //    .Where(sp => nextIds.Contains(sp.MaSanPham))
+            //    .ToList();
+
+            //products = products
+            //    .OrderBy(sp => nextIds.IndexOf(sp.MaSanPham))
+            //    .ToList();
+
+            //return PartialView("_ProductListPartial", products);
+            var randomIds = Session["RandomProductIds"] as List<int>;
+            if (randomIds == null)
+                return Content("");
+
+            var nextIds = randomIds
+                .Skip(skip)
+                .Take(24)
+                .ToList();
+
+            if (!nextIds.Any())
+                return Content("");
+
+            var products = ql.SanPhams
+                .Include(sp => sp.AnhSanPhams)
+                .Include(sp => sp.CuaHang)
+                .Where(sp =>
+                    nextIds.Contains(sp.MaSanPham) &&
+                    sp.CuaHang.TrangThai == true
+                )
+                .ToList()
+                .OrderBy(sp => nextIds.IndexOf(sp.MaSanPham))
+                .ToList();
+
+            return PartialView("_ProductListPartial", products);
+        }
+
     }
 }

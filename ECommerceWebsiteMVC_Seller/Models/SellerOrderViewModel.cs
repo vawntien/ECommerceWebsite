@@ -32,7 +32,7 @@ namespace ECommerceWebsiteMVC_Seller.Models
         public string AnhSanPhamDauTien { get; set; }
 
         public string PhuongThucThanhToanHienThi =>
-            TrangThaiThanhToan ? "Thanh toán online" : "Thanh toán khi nhận hàng";
+            TrangThaiThanhToan ? "Đã thanh toán" : "Thanh toán khi nhận hàng";
     }
 
     public class SellerOrderItemDetailViewModel

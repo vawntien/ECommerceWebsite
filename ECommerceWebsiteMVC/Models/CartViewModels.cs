@@ -8,14 +8,16 @@ namespace ECommerceWebsiteMVC.Models
 
     public class BienTheSanPhamViewModel
     {
+
         int _MaBienThe;
         string _TenBienThe;
         decimal _GiaBan;
         string _HinhAnh;
-        public int MaBienThe { get; set; }
         public string TenBienThe { get; set; }
         public decimal GiaBan { get; set; }
         public string HinhAnh { get; set; }
+        public int MaBienThe { get => _MaBienThe; set => _MaBienThe = value; }
+
         public BienTheSanPhamViewModel() { }    
     }
 
@@ -33,6 +35,7 @@ namespace ECommerceWebsiteMVC.Models
         int _SoLuongTonKho; 
         public int MaCTGH { get; set; }
         public int MaBienThe { get; set; }
+        public int MaSanPham { get; set; } 
 
         public int MaCuaHang { get; set; }
         public string TenCuaHang { get; set; }
@@ -42,6 +45,9 @@ namespace ECommerceWebsiteMVC.Models
         public string HinhAnh { get; set; }
 
         public decimal DonGia { get; set; }
+        public decimal GiaGoc { get; set; }
+        public bool CoGiamGia { get; set; } 
+        public decimal PhanTramGiam { get; set; } 
         public int SoLuong { get; set; }
 
         public int SoLuongTonKho { get; set; }
@@ -109,6 +115,7 @@ namespace ECommerceWebsiteMVC.Models
         public string MaVoucher { get; set; }
 
         public List<GiamGia> DanhSachVoucher { get; set; }
+        public List<DonViVanChuyen> DanhSachDVVC { get; set; }
         public List<CheckoutItemVM> Items { get; set; }
 
         public decimal TongTienHang { get; set; }
