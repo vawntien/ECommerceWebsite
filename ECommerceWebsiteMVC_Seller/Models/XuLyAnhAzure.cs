@@ -9,7 +9,9 @@ using System.Web;
 public class XuLyAnhAzure
 {
     private readonly string _connectionString;
-
+    /// <summary>
+    /// /abc
+    /// </summary>
     // Tên các container
     private const string USERS_CONTAINER = "users";
     private const string PRODUCTS_CONTAINER = "products";
