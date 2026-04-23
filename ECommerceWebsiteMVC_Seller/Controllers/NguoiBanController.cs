@@ -1,4 +1,5 @@
-﻿using ECommerceWebsiteMVC_Seller.Models;
+﻿using ECommerceWebsiteMVC_Admin.Models;
+using ECommerceWebsiteMVC_Seller.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -17,11 +18,36 @@ namespace ECommerceWebsiteMVC.Controllers
         // GET: NguoiBan
 
         ECommerceWebsiteEntities db = new ECommerceWebsiteEntities();
+        DBQuanLyNguoiDungHeThong dtbs = new DBQuanLyNguoiDungHeThong();
+
         public ActionResult Index()
         {
             return View();
         }
-        
+        public ActionResult ChiTietDanhGiaSanPham(int id)
+        {
+            SanPham sp = db.SanPhams.FirstOrDefault(x => x.MaSanPham == id);
+            ViewBag.DanhSachDanhGia = db.DanhGiaSanPhams.Where(t => t.ChiTietDonHang.ChiTietGioHang.BienTheSanPham.MaSanPham == id).ToList();
+            return View(sp);
+        }
+        public ActionResult ChiTietDanhGia(int pMaDG)
+        {
+            var danhGia = db.DanhGiaSanPhams
+                .FirstOrDefault(t => t.MaDG == pMaDG);
+
+            if (danhGia == null)
+                return HttpNotFound();
+
+            // Nếu là AJAX request, trả về partial view
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("ChiTietDanhGia", danhGia);
+            }
+
+            // Nếu không, trả về view thông thường
+            return View(danhGia);
+        }
+
 
         public ActionResult TatCaSanPham()
         {
